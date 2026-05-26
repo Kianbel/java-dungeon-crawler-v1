@@ -1,13 +1,22 @@
 package world;
 
-public class DungeonMapGenerator {
-    private int length;
-    private int height;
+import util.TILE;
 
-    public DungeonMapGenerator() {
-        this.length = length;
-        this.height = height;
+public class DungeonMapGenerator {
+    private TILE[][] mapLayout;
+    private Generator generator;
+
+    public DungeonMapGenerator(Generator generator) {
+        mapLayout = null;
+        this.generator = generator;
     }
 
+    public void generate(int roomsAmount) {
+        mapLayout = generator.start(roomsAmount);
+    }
 
+    public TILE[][] getMapLayout() {
+        if(mapLayout == null) throw new RuntimeException("Dungeon map layout has not been generated");
+        return mapLayout;
+    }
 }
