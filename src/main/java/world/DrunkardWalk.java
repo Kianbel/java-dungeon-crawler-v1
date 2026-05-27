@@ -13,6 +13,7 @@ public class DrunkardWalk extends Generator {
     public TILE[][] start(int roomsAmount) {
         int attempts = 0;
         mapLayout[walker.x][walker.y] = TILE.ROOM;
+        firstRoomPosition = new Position(walker.x, walker.y);
 
         int MAX_ATTEMPTS = 8;
         while(currentRoomAmount < roomsAmount && attempts < MAX_ATTEMPTS) {
@@ -31,6 +32,7 @@ public class DrunkardWalk extends Generator {
                 }
             }
         }
+        lastRoomPosition = new Position(walker.x, walker.y);
         System.out.println("maxRooms: " + roomsAmount + "| roomsMade: " + currentRoomAmount);
         return mapLayout;
     }

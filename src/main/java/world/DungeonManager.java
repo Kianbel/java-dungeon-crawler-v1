@@ -1,20 +1,25 @@
 package world;
 
-import core.EntityRoomPositionManager;
+import core.EntityRoomManager;
+import entity.Player;
+import util.Position;
+import util.ROOM_TYPE;
 import util.TILE;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DungeonManager {
-    private static DungeonManager instance = null;
+    private static final DungeonManager instance = new DungeonManager();
 
     private TILE[][] minimapOverviewLayout;
     private List<Room> roomList = new ArrayList<>();
 
+    private Position firstRoomMinimapPosition = null;
+    private Position lastRoomMinimapPosition = null;
+
     private DungeonManager() {}
     public static DungeonManager getInstance() {
-        if(instance == null) instance = new DungeonManager();
         return instance;
     }
 
@@ -24,11 +29,14 @@ public class DungeonManager {
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk());
         dungeonMapGenerator.generate(ROOM_AMOUNT);
         minimapOverviewLayout = dungeonMapGenerator.getMapLayout();
+        firstRoomMinimapPosition = dungeonMapGenerator.getFirstRoomMinimapPosition();
+        lastRoomMinimapPosition = dungeonMapGenerator.getLastRoomMinimapPosition();
 
         generateRooms();
 
         for(Room r : roomList) {
-            EntityRoomPositionManager.getInstance().addRoom(r);
+            EntityRoomManager.getInstance().addRoom(r);
+            r.populateWithEntities();
         }
     }
 
@@ -46,13 +54,22 @@ public class DungeonManager {
 
                     if(y-1 >= 0 && minimapOverviewLayout[y-1][x] == TILE.VCORRIDOR) northDoor = true;
                     if(y+1 < MAP_HEIGHT && minimapOverviewLayout[y+1][x] == TILE.VCORRIDOR) southDoor = true;
-                    if(x-1 >= 0 && minimapOverviewLayout[y][x-1] == TILE.VCORRIDOR) westDoor = true;
-                    if(x+1 < MAP_LENGTH && minimapOverviewLayout[y][x+1] == TILE.VCORRIDOR) eastDoor = true;
+                    if(x-1 >= 0 && minimapOverviewLayout[y][x-1] == TILE.HCORRIDOR) westDoor = true;
+                    if(x+1 < MAP_LENGTH && minimapOverviewLayout[y][x+1] == TILE.HCORRIDOR) eastDoor = true;
 
                     final int ROOM_LENGTH = 11;
                     final int ROOM_HEIGHT = 11;
-                    Room newRoom = new Room(ROOM_HEIGHT, ROOM_LENGTH);
-                    newRoom.generateWithDoors(northDoor, eastDoor, southDoor, westDoor);
+
+                    Room newRoom;
+
+                    // TODO: IMPLEMENT OPEN-CLOSE PRINCIPLE
+                    if(x == firstRoomMinimapPosition.x && y == firstRoomMinimapPosition.y) {
+                        newRoom = new SpawnRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                    }
+                    else {
+                        newRoom = new InfestedRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                    }
+                    newRoom.generateWithDoors(northDoor,eastDoor,southDoor,westDoor);
                     roomList.add(newRoom);
                 }
             }

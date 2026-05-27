@@ -2,21 +2,16 @@ package entity;
 
 import item.Fist;
 import item.Weapon;
-import util.DIRECTION;
+import util.Position;
 
 public class Player extends Entity {
-    public Player() {
-        String NAME = "Player";
-        int HEALTH = 100;
-        int ARMOR = 0;
-        Weapon WEAPON = new Fist();
+    public Player(Position position) {
+        final String NAME = "Player";
+        final int HEALTH = 100;
+        final int ARMOR = 0;
+        final Weapon WEAPON = new Fist();
 
-        super(NAME, HEALTH, ARMOR, WEAPON);
-    }
-
-    @Override
-    public void walk(DIRECTION direction) {
-
+        super(NAME, HEALTH, ARMOR, WEAPON, position);
     }
 
     @Override
