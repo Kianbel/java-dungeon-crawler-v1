@@ -28,4 +28,8 @@ public class Room {
         layout[height/2][0] = TILE.DOOR;
         layout[height/2][length-1] = TILE.DOOR;
     }
+
+    public TILE[][] getLayout() {
+        return layout;
+    }
 }

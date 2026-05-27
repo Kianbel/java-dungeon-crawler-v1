@@ -14,12 +14,13 @@ public class EntityRoomPositionManager {
 
     private EntityRoomPositionManager() {}
 
-    public EntityRoomPositionManager getInstance() {
+    public static EntityRoomPositionManager getInstance() {
         if(instance == null) instance = new EntityRoomPositionManager();
         return instance;
     }
 
     public void addRoom(Room room) {
+        if(room == null) throw new RuntimeException("Cannot add room as room is null");
         hashmap.put(room, new ArrayList<Entity>());
     }
 
