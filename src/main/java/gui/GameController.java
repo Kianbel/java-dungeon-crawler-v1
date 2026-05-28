@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import util.Position;
+import util.TILE;
 import world.DungeonManager;
 import world.Room;
 import java.util.List;
@@ -37,7 +38,8 @@ public class GameController {
     private final int MAP_WIDTH = 118;
     private final int MAP_HEIGHT = 30;
     private final int MAX_LOG_LINES = 6;
-    private double mapFontSize = 22.0;
+    private double mapFontSize;
+    private final String fontStyle = "Courier New";
 
     private final int SCREEN_FLASH_DURATION_MS = 100;
 
@@ -47,35 +49,20 @@ public class GameController {
     private Entity player = null;
     private final Text[][] gridNodes = new Text[MAP_HEIGHT][MAP_WIDTH];
 
-    // Track the active room state on the screen
     private Room lastRenderedRoom = null;
 
     @FXML
     public void initialize() {
-        Font gameFont = Font.font("Courier New", mapFontSize);
+        Font gameFont = Font.font(fontStyle, mapFontSize);
 
         // 1. Clear out any previous layout constraints to reset cleanly
         dungeonGrid.getColumnConstraints().clear();
 
-        // 2. Set an absolute, unyielding pixel width for every column
-        // For Courier New at size 14, each character is roughly 8 to 9 pixels wide
-        double lockedColumnWidth = mapFontSize * 0.62;
-
-        javafx.scene.layout.ColumnConstraints colRule = new javafx.scene.layout.ColumnConstraints();
-        colRule.setPrefWidth(lockedColumnWidth);
-        colRule.setMinWidth(lockedColumnWidth);
-        colRule.setMaxWidth(lockedColumnWidth);
-
-        // Apply this exact rule to every single column in your map width
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            dungeonGrid.getColumnConstraints().add(colRule);
-        }
-
-        // 3. Populate the base matrix canvas nodes as usual
+        // 2. Populate the base matrix canvas nodes as usual
         for (int y = 0; y < MAP_HEIGHT; y++) {
             for (int x = 0; x < MAP_WIDTH; x++) {
                 Text cell = new Text(" ");
-                cell.setFont(gameFont); // Explicit code configuration bypasses FXML font leak bugs
+                cell.setFont(gameFont);
                 cell.setFill(Color.BLACK);
                 gridNodes[y][x] = cell;
                 dungeonGrid.add(cell, x, y);
@@ -86,13 +73,13 @@ public class GameController {
         GUIManager.getInstance().registerController(this);
 
         // System Startup
-        world.DungeonManager.getInstance().generateDungeon();
-        world.Room playerRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
+        DungeonManager.getInstance().generateDungeon();
+        Room playerRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
 
         drawToScreen(playerRoom);
-        handleControls();
-
         setMapFontSize(22);
+
+        handleControls();
     }
 
     public void drawToScreen(Room playerRoom) {
@@ -102,7 +89,7 @@ public class GameController {
         int roomId = playerRoom.hashCode();
 
         List<Entity> entities = core.EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
-        util.TILE[][] layout = playerRoom.getLayout();
+        TILE[][] layout = playerRoom.getLayout();
 
         int roomHeight = layout.length;
         int roomWidth = (roomHeight > 0) ? layout[0].length : 0;
@@ -135,7 +122,7 @@ public class GameController {
                     }
 
                     // 2. Process Tiles (Now passing the unique roomId identifier!)
-                    util.TILE tile = layout[roomY][roomX];
+                    TILE tile = layout[roomY][roomX];
                     GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, roomId) : glyphs.getVoidStyle();
                     updateCell(x, y, style.glyph, style.color);
                 } else {
@@ -156,7 +143,7 @@ public class GameController {
     public void setMapFontSize(double newSize) {
         if (newSize < 6.0 || newSize > 24.0) return;
         this.mapFontSize = newSize;
-        Font updatedFont = Font.font("Courier New", mapFontSize);
+        Font updatedFont = Font.font(fontStyle, mapFontSize);
 
         // Recalculate and update the column width constraint rules dynamically
         double lockedColumnWidth = mapFontSize * 0.62;
@@ -189,25 +176,17 @@ public class GameController {
     public void updateRenderingPipeline() {
         Room currentRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
 
-        // 1. Initial boot check: If nothing has been drawn yet, draw it instantly
         if (lastRenderedRoom == null) {
             lastRenderedRoom = currentRoom;
             drawToScreen(currentRoom);
             return;
         }
-
-        // 2. Transition Check: If the player shifted into a different room instance
         if (lastRenderedRoom != currentRoom) {
-            // Update our tracking reference immediately so we don't loop the flash
             lastRenderedRoom = currentRoom;
-
-            // Execute the flash effect, passing the new room to be drawn on finish
             roomTransferFlashScreenEffect(Color.web(ROOM_TRANSFER_TRANSITION_COLOR), currentRoom);
+            return;
         }
-        // 3. Normal Movement Check: Player is moving around inside the same room
-        else {
-            drawToScreen(currentRoom);
-        }
+        drawToScreen(currentRoom);
     }
 
     /**
@@ -268,7 +247,7 @@ public class GameController {
     // --- LOGGING RENDERERS ---
     public void addLog(String message, Color color) {
         Text logEntry = new Text(message);
-        logEntry.setFont(Font.font("Courier New", 14));
+        logEntry.setFont(Font.font(fontStyle, 14));
         logEntry.setFill(color);
         logEntry.setWrappingWidth(580);
         if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().remove(0);
@@ -277,6 +256,7 @@ public class GameController {
 
     public void clearLogContainer() { logContainer.getChildren().clear(); }
 
+    // --- PLAYER CONTROL HANDLER ---
     private void handleControls() {
         dungeonGrid.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {

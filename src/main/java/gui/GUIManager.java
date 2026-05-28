@@ -12,7 +12,7 @@ public class GUIManager {
     public static GUIManager getInstance() { return instance; }
 
     /**
-     * Connects the active active FXML view controller instance to the manager pipeline.
+     * Connects the active FXML view controller instance to the manager pipeline.
      */
     public void registerController(GameController controller) {
         this.controller = controller;
