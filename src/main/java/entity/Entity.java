@@ -45,7 +45,7 @@ public abstract class Entity {
             case TILE.DOOR -> {
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
                 EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
-
+                fixEntityPositionAfterTransferFromUnitPos(unitPos);
             }
         }
     }
@@ -73,7 +73,25 @@ public abstract class Entity {
     }
 
     protected void fixEntityPositionAfterTransferFromUnitPos(Position unitPos) {
-        // TODO
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        final int roomHeight = currentRoom.getLayout().length;
+        final int roomLength = currentRoom.getLayout()[0].length;
+        if(unitPos.x < 0) {
+            position.x = roomLength-2;
+            position.y = roomHeight/2;
+        }
+        else if(unitPos.x > 0) {
+            position.x = 1;
+            position.y = roomHeight/2;
+        }
+        else if(unitPos.y < 0) {
+            position.x = roomLength/2;
+            position.y = roomHeight-2;
+        }
+        else if(unitPos.y > 0) {
+            position.x = roomLength/2;
+            position.y = 1;
+        }
     }
 
     @Override
