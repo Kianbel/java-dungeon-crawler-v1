@@ -1,5 +1,6 @@
 package gui;
 
+import entity.Zombie;
 import javafx.scene.paint.Color;
 import util.TILE;
 import entity.Entity;
@@ -63,7 +64,7 @@ public class GlyphRegistry {
 
         // --- CHARACTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", playerColor);
-        registerEntity(Monster.class, "⎔", monsterColor); // Uses a menacing runic geometric diamond ring
+        registerEntity(Zombie.class, "Z", monsterColor); // Uses a menacing runic geometric diamond ring
     }
 
     public static GlyphRegistry getInstance() { return instance; }

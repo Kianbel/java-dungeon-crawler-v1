@@ -1,6 +1,8 @@
 package world;
 
+import core.EntityRoomManager;
 import entity.Entity;
+import entity.Zombie;
 import util.Position;
 
 import java.util.ArrayList;
@@ -14,13 +16,14 @@ public class InfestedRoom extends  Room {
 
     @Override
     public void populateWithEntities() {
-        if(layout == null) throw new RuntimeException("Room not generated");
+        if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
 
         final int MONSTER_AMOUNT = 5;
 
-        List<Entity> entities = new ArrayList<>();
+        List<Position> spawnablePositions = getSpawnablePositions();
         for(int i = 0; i < MONSTER_AMOUNT; i++) {
-            // TODO: spawn monsters;
+            Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
+            EntityRoomManager.getInstance().addEntityToRoom(new Zombie(randomSpawnPosition), this);
         }
     }
 }

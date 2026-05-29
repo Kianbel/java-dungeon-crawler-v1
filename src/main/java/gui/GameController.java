@@ -39,7 +39,7 @@ public class GameController {
     private final int MAP_HEIGHT = 30;
     private final int MAX_LOG_LINES = 6;
     private double mapFontSize;
-    private final String fontStyle = "Courier New";
+    private final String fontStyle = "DejaVu Sans Mono";
 
     private final int SCREEN_FLASH_DURATION_MS = 100;
     private final String ROOM_TRANSFER_TRANSITION_COLOR = "#000000";

@@ -12,7 +12,7 @@ public class SpawnRoom extends Room {
 
     @Override
     public void populateWithEntities() {
-        if(layout == null) throw new RuntimeException("Room not generated");
+        if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
 
         EntityRoomManager.getInstance().addEntityToRoom(new Player(new Position(length/2, height/2)), this);
     }

@@ -1,7 +1,9 @@
 package entity;
 
 import core.EntityRoomManager;
+import gui.GUIManager;
 import item.Weapon;
+import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
 import world.Room;
@@ -50,10 +52,41 @@ public abstract class Entity {
         }
     }
 
-    public abstract void die();
-    public abstract void attack(Entity entity);
-    public abstract void hurt(int damage, boolean isCritical, Entity attacker);
+    public void die() {
+        health = 0;
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
+    }
+
+    public void attack(Entity targetEntity) {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        if(EntityRoomManager.getInstance().isEntityInRoom(targetEntity, currentRoom)) {
+            int inflictedDamage = weapon.getCalculatedAttackDamage();
+            targetEntity.hurt(inflictedDamage, this);
+
+            GUIManager.getInstance().printLog(name + " attacked " + targetEntity.name + " for " + inflictedDamage + "HP.", Color.RED);
+        }
+        else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
+    }
+
+    public void hurt(int damage, Entity attacker) {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
+            health -= damage;
+            if(health <= 0) die();
+        }
+    }
+
     public abstract void update();
+
+    public boolean isAlive() {
+        return health > 0;
+    }
+
+
+
+
+
 
     protected Room getAdjacentRoomFromUnitPos(Position unitPos) {
         unitPos.x *= 2;

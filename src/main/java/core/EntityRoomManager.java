@@ -30,8 +30,18 @@ public class EntityRoomManager {
     }
 
     public boolean addEntityToRoom(Entity entity, Room room) {
-        if(hashmap.get(room) == null) throw new RuntimeException("Room: " + room + " not found");
+        if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
         return hashmap.get(room).add(entity);
+    }
+
+    public boolean removeEntityFromRoom(Entity entity, Room room) {
+        if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
+        return hashmap.get(room).remove(entity);
+    }
+
+    public boolean isEntityInRoom(Entity entity, Room room) {
+        if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
+        return hashmap.get(room).contains(entity);
     }
 
     public boolean transferEntityFromToRoom(Entity entity, Room fromRoom, Room toRoom) {
