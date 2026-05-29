@@ -42,9 +42,10 @@ public class GameController {
     private final String fontStyle = "Courier New";
 
     private final int SCREEN_FLASH_DURATION_MS = 100;
-
     private final String ROOM_TRANSFER_TRANSITION_COLOR = "#000000";
     private final int ROOM_TRANSFER_TRANSITION_DURATION_MS = 600;
+
+    private boolean isControlsEnabled = true;
 
     private Entity player = null;
     private final Text[][] gridNodes = new Text[MAP_HEIGHT][MAP_WIDTH];
@@ -141,7 +142,7 @@ public class GameController {
     }
 
     public void setMapFontSize(double newSize) {
-        if (newSize < 6.0 || newSize > 24.0) return;
+        if (newSize < 6.0 || newSize > 30.0) return;
         this.mapFontSize = newSize;
         Font updatedFont = Font.font(fontStyle, mapFontSize);
 
@@ -193,6 +194,7 @@ public class GameController {
      * Triggers a momentary screen overlay flash, then renders the destination room.
      */
     public void roomTransferFlashScreenEffect(Color flashColor, Room targetRoom) {
+        isControlsEnabled = false;
         // Fill the grid with the flash color
         for (int y = 0; y < MAP_HEIGHT; y++) {
             for (int x = 0; x < MAP_WIDTH; x++) {
@@ -203,6 +205,7 @@ public class GameController {
         FadeTransition flashDelay = new FadeTransition(Duration.millis(ROOM_TRANSFER_TRANSITION_DURATION_MS), dungeonGrid);
         flashDelay.setOnFinished(event -> {
             drawToScreen(targetRoom);
+            isControlsEnabled = true;
         });
         flashDelay.play();
     }
@@ -261,6 +264,8 @@ public class GameController {
         dungeonGrid.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(e -> {
+                    if(!isControlsEnabled) return;
+
                     Position unitPos = new Position(0,0);
                     switch (e.getCode()) {
                         case KeyCode.W -> unitPos.y--;
