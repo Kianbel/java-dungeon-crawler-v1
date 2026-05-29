@@ -1,18 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #1d1d1d;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GameController">
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ScrollPane?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.GameController"
+      alignment="CENTER" spacing="10.0"
+      style="-fx-background-color: black; -fx-font-family: 'Courier New'; -fx-font-size: 14px;">
+
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets top="15" right="15" bottom="15" left="15"/>
     </padding>
-   <children>
-      <Text fx:id="textOutput" fill="#bcbcbc" lineSpacing="1.0" scaleY="0.7" strokeType="OUTSIDE" strokeWidth="0.0" text="output">
-         <font>
-            <Font name="Consolas" size="20.0" />
-         </font>
-      </Text>
-   </children>
+
+    <ScrollPane fx:id="mapScrollPane"
+                prefWidth="1000.0" prefHeight="480.0"
+                minWidth="1000.0" minHeight="480.0"
+                maxWidth="1000.0" maxHeight="480.0"
+                hbarPolicy="NEVER" vbarPolicy="NEVER"
+                style="-fx-background: black; -fx-background-color: black; -fx-border-color: #333333; -fx-border-width: 1;">
+        <content>
+            <GridPane fx:id="dungeonGrid" alignment="CENTER" hgap="0" vgap="0"
+                      style="-fx-background-color: black;" />
+        </content>
+    </ScrollPane>
+
+    <HBox alignment="CENTER" spacing="10.0">
+        <StackPane alignment="TOP_LEFT">
+            <Text fill="WHITE" text="╔══════════════════════════════╣ MESSAGE LOGS ╠══════════════════════════════╗&#10;║                                                                            ║&#10;║                                                                            ║&#10;║                                                                            ║&#10;║                                                                            ║&#10;║                                                                            ║&#10;║                                                                            ║&#10;╚════════════════════════════════════════════════════════════════════════════╝" />
+
+            <VBox fx:id="logContainer" alignment="TOP_LEFT" spacing="2.0">
+                <padding>
+                    <javafx.geometry.Insets top="18" right="20" bottom="15" left="20"/>
+                </padding>
+            </VBox>
+        </StackPane>
+
+        <StackPane alignment="TOP_LEFT">
+            <Text fill="WHITE" text="╔══════════╣ CHARACTER STATS ╠═══════════╗&#10;║                                        ║&#10;║                                        ║&#10;║                                        ║&#10;║                                        ║&#10;║                                        ║&#10;║                                        ║&#10;╚════════════════════════════════════════╝" />
+
+            <GridPane alignment="TOP_LEFT" hgap="5" vgap="4">
+                <padding>
+                    <javafx.geometry.Insets top="18" right="15" bottom="15" left="15"/>
+                </padding>
+
+                <Text fill="WHITE" text="Health:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Text fx:id="healthBarText" fill="RED" text="[■■■■■■■■■■■■■■■]" />
+                    <Text fx:id="healthValText" fill="WHITE" text="100/100" />
+                </HBox>
+
+                <Text fill="WHITE" text="Hunger:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Text fx:id="hungerBarText" fill="CHOCOLATE" text="[■■■■■■■■■■■■■■·]" />
+                    <Text fx:id="hungerValText" fill="WHITE" text="96/100" />
+                </HBox>
+
+                <Text fill="WHITE" text="Armor: " GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Text fx:id="armorText" fill="LIGHTSTEELBLUE" text="0/20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Text fill="WHITE" text="Weapon:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Text fx:id="weaponText" fill="LIGHTGRAY" text="Sword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <HBox spacing="0" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                    <Text fill="WHITE" text="Coins: " />
+                    <Text fx:id="coinsText" fill="GOLD" text="0" />
+
+                    <Region prefWidth="35" />
+
+                    <Text fill="WHITE" text="HP Potions: " />
+                    <Text fx:id="potionsText" fill="AQUAMARINE" text="0" />
+                </HBox>
+            </GridPane>
+        </StackPane>
+    </HBox>
+
+    <Text fx:id="controlsText" fill="DARKGRAY" text="╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗&#10;║                 [WASD] Move    [E] Interact    [H] Heal    [M] Open Map    [X] Return/Exit                           ║&#10;╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝" />
+
 </VBox>
