@@ -51,9 +51,4 @@ public class Player extends Entity {
             if(health <= 0) die();
         }
     }
-
-    @Override
-    public void update() {
-
-    }
 }

@@ -16,9 +16,24 @@ public class Zombie extends Monster {
         super(NAME, HEALTH, ARMOR, WEAPON, position);
     }
 
+    @Override
+    public void pathfindToPlayerPosition() {
+        Entity player = EntityRoomManager.getInstance().getPlayer();
+        Position playerPosition = player.position;
+        int dx = playerPosition.x - position.x;
+        int dy = playerPosition.y - position.y;
+
+        dx = (int) Math.ceil((double) dx / position.x);
+        dy = (int) Math.ceil((double) dy / position.y);
+
+        System.out.println(id + ":\t" + dx + " " + dy);
+
+        // TODO: CONTINUE GET UNIT VECTOR FROM 2 POINTS
+    }
+
 
     @Override
-    public void update() {
-
+    public void makeMove() {
+        pathfindToPlayerPosition();
     }
 }

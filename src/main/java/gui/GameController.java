@@ -2,9 +2,9 @@ package gui;
 
 import core.EntityRoomManager;
 import entity.Entity;
+import entity.Monster;
 import entity.Player;
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
@@ -37,9 +37,10 @@ public class GameController {
 
     private final int MAP_WIDTH = 118;
     private final int MAP_HEIGHT = 30;
-    private final int MAX_LOG_LINES = 6;
+    private final int MAX_LOG_LINES = 5;
     private double mapFontSize;
-    private final String fontStyle = "DejaVu Sans Mono";
+    private final String DEFAULT_FONT_STYLE = "Courier New";
+    private final int DEFAULT_FONT_SIZE = 22;
 
     private final int SCREEN_FLASH_DURATION_MS = 100;
     private final String ROOM_TRANSFER_TRANSITION_COLOR = "#000000";
@@ -54,7 +55,7 @@ public class GameController {
 
     @FXML
     public void initialize() {
-        Font gameFont = Font.font(fontStyle, mapFontSize);
+        Font gameFont = Font.font(DEFAULT_FONT_STYLE, mapFontSize);
 
         // 1. Clear out any previous layout constraints to reset cleanly
         dungeonGrid.getColumnConstraints().clear();
@@ -78,16 +79,13 @@ public class GameController {
         Room playerRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
 
         drawToScreen(playerRoom);
-        setMapFontSize(22);
+        setMapFontSize(DEFAULT_FONT_SIZE);
 
         handleControls();
     }
 
     public void drawToScreen(Room playerRoom) {
         if (playerRoom == null) return;
-
-        // Grab a stable, unique integer footprint signature for this specific room instance
-        int roomId = playerRoom.hashCode();
 
         List<Entity> entities = core.EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
         TILE[][] layout = playerRoom.getLayout();
@@ -122,9 +120,9 @@ public class GameController {
                         continue;
                     }
 
-                    // 2. Process Tiles (Now passing the unique roomId identifier!)
+                    // 2. Process Tiles
                     TILE tile = layout[roomY][roomX];
-                    GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, roomId) : glyphs.getVoidStyle();
+                    GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, playerRoom.id) : glyphs.getVoidStyle();
                     updateCell(x, y, style.glyph, style.color);
                 } else {
                     updateCell(x, y, glyphs.getVoidStyle().glyph, glyphs.getVoidStyle().color);
@@ -144,7 +142,7 @@ public class GameController {
     public void setMapFontSize(double newSize) {
         if (newSize < 6.0 || newSize > 30.0) return;
         this.mapFontSize = newSize;
-        Font updatedFont = Font.font(fontStyle, mapFontSize);
+        Font updatedFont = Font.font(DEFAULT_FONT_STYLE, mapFontSize);
 
         // Recalculate and update the column width constraint rules dynamically
         double lockedColumnWidth = mapFontSize * 0.62;
@@ -250,7 +248,7 @@ public class GameController {
     // --- LOGGING RENDERERS ---
     public void addLog(String message, Color color) {
         Text logEntry = new Text(message);
-        logEntry.setFont(Font.font(fontStyle, 14));
+        logEntry.setFont(Font.font(DEFAULT_FONT_STYLE, 14));
         logEntry.setFill(color);
         logEntry.setWrappingWidth(580);
         if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().remove(0);
@@ -278,10 +276,24 @@ public class GameController {
                     }
                     if ((unitPos.x != 0 || unitPos.y != 0) && player != null) {
                         player.walk(unitPos);
+                        makeMonstersMove();
                         updateRenderingPipeline();
                     }
                 });
             }
         });
+    }
+
+    // --- MONSTER MOVEMENT HANDLER ---
+    private void makeMonstersMove() {
+        Room playerRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
+
+        System.out.println("==========================");
+        for(Entity e : entities) {
+            if(e instanceof Monster m) {
+                m.makeMove();
+            }
+        }
     }
 }

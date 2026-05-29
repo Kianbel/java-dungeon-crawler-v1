@@ -17,6 +17,7 @@ public abstract class Entity {
     public int health;
     public Weapon weapon;
     public Position position;
+    public int id;
 
     public Entity(String name, int armor, int health, Weapon weapon, Position position) {
         this.name = name;
@@ -24,6 +25,7 @@ public abstract class Entity {
         this.health = health;
         this.weapon = weapon;
         this.position = position;
+        id = this.hashCode();
     }
 
 
@@ -40,7 +42,11 @@ public abstract class Entity {
         switch(currentRoomLayout[dPos.y][dPos.x]) {
             case TILE.FLOOR -> {
                 for(Entity e : entities) {
-                    if(Objects.equals(e.position, dPos) && e != this) return;
+                    if(e == this) continue;
+                    if(e.position.x == dPos.x && e.position.y == dPos.y) {
+                        attack(e);
+                        return;
+                    }
                 }
                 position = dPos;
             }
@@ -76,8 +82,6 @@ public abstract class Entity {
             if(health <= 0) die();
         }
     }
-
-    public abstract void update();
 
     public boolean isAlive() {
         return health > 0;

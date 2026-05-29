@@ -14,6 +14,7 @@ public abstract class Room {
     public int length;
     public Position minimapPosition;
     protected TILE[][] layout;
+    public int id;
 
     protected boolean isRoomGenerated = false;
 
@@ -22,6 +23,7 @@ public abstract class Room {
         this.length = length;
         this.minimapPosition = minimapPosition;
         layout = new TILE[height][length];
+        id = this.hashCode();
     }
 
     public void generateWithDoors(boolean north, boolean east, boolean south, boolean west) {

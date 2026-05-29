@@ -29,6 +29,15 @@ public class EntityRoomManager {
         hashmap.remove(room);
     }
 
+    public Entity getPlayer() {
+        for(Map.Entry<Room, List<Entity>> set : hashmap.entrySet()) {
+            for(Entity e : set.getValue()) {
+                if(e instanceof Player) return e;
+            }
+        }
+        throw new RuntimeException("Player cannot be found");
+    }
+
     public boolean addEntityToRoom(Entity entity, Room room) {
         if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
         return hashmap.get(room).add(entity);
