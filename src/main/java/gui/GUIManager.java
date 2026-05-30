@@ -39,9 +39,9 @@ public class GUIManager {
     }
 
     // --- HUD Passthroughs ---
-    public void setHP(int current, int max) { if (controller != null) controller.updateHealth(current, max); }
-    public void setHunger(int current, int max) { if (controller != null) controller.updateHunger(current, max); }
-    public void setArmor(int current, int max) { if (controller != null) controller.updateArmor(current, max); }
+    public void setHP(int current) { if (controller != null) controller.updateHealth(current); }
+    public void setHunger(int current) { if (controller != null) controller.updateHunger(current); }
+    public void setArmor(int current) { if (controller != null) controller.updateArmor(current); }
     public void setWeapon(String name) { if (controller != null) controller.updateWeapon(name); }
     public void setCoins(int amount) { if (controller != null) controller.updateCoins(amount); }
     public void setPotions(int amount) { if (controller != null) controller.updatePotions(amount); }

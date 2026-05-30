@@ -4,18 +4,30 @@ import core.EntityRoomManager;
 import gui.GUIManager;
 import item.Fist;
 import item.Weapon;
+import item.WoodenSword;
 import javafx.scene.paint.Color;
 import util.Position;
 import world.Room;
 
+import java.util.List;
+
 public class Player extends Entity {
+    public int coins = 0;
+    public int hpPotions = 0;
+
     public Player(Position position) {
         final String NAME = "Player";
         final int HEALTH = 100;
         final int ARMOR = 0;
-        final Weapon WEAPON = new Fist();
+        final Weapon WEAPON = new WoodenSword();
 
         super(NAME, HEALTH, ARMOR, WEAPON, position);
+
+        GUIManager.getInstance().setHP(HEALTH);
+        GUIManager.getInstance().setArmor(ARMOR);
+        GUIManager.getInstance().setWeapon(WEAPON.name);
+        GUIManager.getInstance().setCoins(0);
+        GUIManager.getInstance().setPotions(0);
     }
 
     public void attack(Entity targetEntity) {
@@ -24,7 +36,7 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog(name + " attacked " + targetEntity.name + " for " + inflictedDamage + "HP.", Color.RED);
+            GUIManager.getInstance().printLog("You attacked " + targetEntity.name + " for " + inflictedDamage + "HP. " + targetEntity, Color.RED);
 
             if(!targetEntity.isAlive()) {
                 GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", Color.GREEN);
@@ -46,9 +58,30 @@ public class Player extends Entity {
     public void hurt(int damage, Entity attacker) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
+            damage -= armor;
+            if(damage < 0) damage = 0;
             health -= damage;
+            if(health < 0) health = 0;
+
             GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", Color.RED);
-            if(health <= 0) die();
+            GUIManager.getInstance().setHP(health);
+
+            if(health == 0) die();
         }
+    }
+
+    public void handleMove(Position unitPos) {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
+
+        Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
+        for(Entity e : entities) {
+            if(e == this) continue;
+            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) {
+                attack(e);
+                return;
+            }
+        }
+        walk(unitPos);
     }
 }

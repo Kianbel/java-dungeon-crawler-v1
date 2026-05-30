@@ -6,6 +6,7 @@ import entity.Monster;
 import entity.Player;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
@@ -222,17 +223,22 @@ public class GameController {
     }
 
     // --- HUD RENDERERS ---
-    public void updateHealth(int current, int max) {
-        healthValText.setText(current + "/" + max);
-        healthBarText.setText(generateAsciiMeter(current, max));
+    public void updateHealth(int health) {
+        final int MAX_HP = 100;
+        healthValText.setText(health + "/" + MAX_HP);
+        healthBarText.setText(generateAsciiMeter(health, MAX_HP));
     }
 
-    public void updateHunger(int current, int max) {
-        hungerValText.setText(current + "/" + max);
-        hungerBarText.setText(generateAsciiMeter(current, max));
+    public void updateHunger(int hunger) {
+        final int MAX_HUNGER = 100;
+        hungerValText.setText(hunger + "/" + MAX_HUNGER);
+        hungerBarText.setText(generateAsciiMeter(hunger, MAX_HUNGER));
     }
 
-    public void updateArmor(int current, int max) { armorText.setText(current + "/" + max); }
+    public void updateArmor(int armor) {
+        final int MAX_ARMOR = 10;
+        armorText.setText(armor + "/" + MAX_ARMOR);
+    }
     public void updateWeapon(String weaponName) { weaponText.setText(weaponName); }
     public void updateCoins(int amount) { coinsText.setText(String.valueOf(amount)); }
     public void updatePotions(int amount) { potionsText.setText(String.valueOf(amount)); }
@@ -251,11 +257,18 @@ public class GameController {
         logEntry.setFont(Font.font(DEFAULT_FONT_STYLE, 14));
         logEntry.setFill(color);
         logEntry.setWrappingWidth(580);
-        if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().remove(0);
+        if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
         logContainer.getChildren().add(logEntry);
     }
 
     public void clearLogContainer() { logContainer.getChildren().clear(); }
+
+    private void grayOutOldLogs() {
+        for(int i = 0; i < logContainer.getChildren().size(); i++) {
+            Node prevLog = logContainer.getChildren().get(i);
+            ((Text)prevLog).setFill(Color.GRAY);
+        }
+    }
 
     // --- PLAYER CONTROL HANDLER ---
     private void handleControls() {
@@ -275,8 +288,11 @@ public class GameController {
                         default -> { return; }
                     }
                     if ((unitPos.x != 0 || unitPos.y != 0) && player != null) {
-                        player.walk(unitPos);
-                        makeMonstersMove();
+                        grayOutOldLogs();
+
+                        ((Player)player).handleMove(unitPos);
+                        handleMonstersMove();
+
                         updateRenderingPipeline();
                     }
                 });
@@ -285,11 +301,10 @@ public class GameController {
     }
 
     // --- MONSTER MOVEMENT HANDLER ---
-    private void makeMonstersMove() {
+    private void handleMonstersMove() {
         Room playerRoom = EntityRoomManager.getInstance().getPlayerRoom();
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
 
-        System.out.println("==========================");
         for(Entity e : entities) {
             if(e instanceof Monster m) {
                 m.makeMove();

@@ -13,13 +13,13 @@ import java.util.Objects;
 
 public abstract class Entity {
     public String name;
-    public int armor;
     public int health;
+    public int armor;
     public Weapon weapon;
     public Position position;
     public int id;
 
-    public Entity(String name, int armor, int health, Weapon weapon, Position position) {
+    public Entity(String name, int health, int armor, Weapon weapon, Position position) {
         this.name = name;
         this.armor = armor;
         this.health = health;
@@ -37,17 +37,9 @@ public abstract class Entity {
 
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         TILE[][] currentRoomLayout = currentRoom.getLayout();
-        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
 
         switch(currentRoomLayout[dPos.y][dPos.x]) {
             case TILE.FLOOR -> {
-                for(Entity e : entities) {
-                    if(e == this) continue;
-                    if(e.position.x == dPos.x && e.position.y == dPos.y) {
-                        attack(e);
-                        return;
-                    }
-                }
                 position = dPos;
             }
             case TILE.DOOR -> {
@@ -69,8 +61,6 @@ public abstract class Entity {
         if(EntityRoomManager.getInstance().isEntityInRoom(targetEntity, currentRoom)) {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
-
-            GUIManager.getInstance().printLog(name + " attacked " + targetEntity.name + " for " + inflictedDamage + "HP.", Color.RED);
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
     }
@@ -78,17 +68,28 @@ public abstract class Entity {
     public void hurt(int damage, Entity attacker) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
+            damage -= armor;
+            if(damage < 0) {
+                damage = 0;
+            }
+
+            if(damage == 0) {
+                if(attacker instanceof Player) {
+                    GUIManager.getInstance().printLog("You missed!", Color.YELLOW);
+                }
+            }
+
             health -= damage;
-            if(health <= 0) die();
+            if(health <= 0) {
+                health = 0;
+                die();
+            }
         }
     }
 
     public boolean isAlive() {
         return health > 0;
     }
-
-
-
 
 
 

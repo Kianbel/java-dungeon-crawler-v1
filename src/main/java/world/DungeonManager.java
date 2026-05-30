@@ -57,14 +57,14 @@ public class DungeonManager {
                     if(x-1 >= 0 && minimapOverviewLayout[y][x-1] == TILE.HCORRIDOR) westDoor = true;
                     if(x+1 < MAP_LENGTH && minimapOverviewLayout[y][x+1] == TILE.HCORRIDOR) eastDoor = true;
 
-                    final int ROOM_LENGTH = 11;
-                    final int ROOM_HEIGHT = 11;
+                    final int ROOM_LENGTH = 21;
+                    final int ROOM_HEIGHT = 21;
 
                     Room newRoom;
 
                     // TODO: IMPLEMENT OPEN-CLOSE PRINCIPLE
                     if(x == firstRoomMinimapPosition.x && y == firstRoomMinimapPosition.y) {
-                        newRoom = new SpawnRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                        newRoom = new SpawnRoom(11, 11, new Position(x, y));
                     }
                     else {
                         newRoom = new InfestedRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
