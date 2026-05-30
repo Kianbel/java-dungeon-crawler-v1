@@ -1,7 +1,7 @@
 package gui;
 
 import javafx.scene.paint.Color;
-import world.Room;
+import core.Room;
 
 public class GUIManager {
     private static final GUIManager instance = new GUIManager();

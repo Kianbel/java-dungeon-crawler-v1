@@ -2,7 +2,7 @@ package core;
 
 import entity.Entity;
 import entity.Player;
-import world.Room;
+import world.InteractableTile;
 
 import java.util.*;
 
@@ -89,5 +89,12 @@ public class EntityRoomManager {
             }
         }
         throw new RuntimeException("Player cannot be found");
+    }
+
+    public List<InteractableTile> getInteractableTilesFromRoom(Room room) {
+        for(Room r : hashmap.keySet()) {
+            if(r == room) return r.getInteractableTiles();
+        }
+        return null;
     }
 }

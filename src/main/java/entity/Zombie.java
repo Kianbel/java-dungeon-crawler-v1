@@ -1,8 +1,7 @@
 package entity;
 
 import core.EntityRoomManager;
-import item.Fist;
-import item.Weapon;
+import weapon.Fist;
 import util.Position;
 
 public class Zombie extends Monster {

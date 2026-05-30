@@ -1,9 +1,9 @@
-package world;
+package core;
 
-import javafx.geometry.Pos;
+import entity.Entity;
 import util.Position;
-import util.ROOM_TYPE;
 import util.TILE;
+import world.InteractableTile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ public abstract class Room {
     public Position minimapPosition;
     protected TILE[][] layout;
     public int id;
+    private List<InteractableTile> interactableTiles = new ArrayList<>();
 
     protected boolean isRoomGenerated = false;
 
@@ -66,5 +67,30 @@ public abstract class Room {
             }
         }
         return spawnablePositions;
+    }
+
+    public List<InteractableTile> getInteractableTiles() {
+        if(!isRoomGenerated) throw new RuntimeException("Cannot get interactableTiles as room has not generated");
+        return interactableTiles;
+    }
+
+    public boolean addInteractableTile(InteractableTile tile) {
+        Position targetPosition = tile.roomLayoutPosition;
+        if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
+        if(targetPosition.y < 0 || targetPosition.y >= height) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
+        if(layout[targetPosition.y][targetPosition.x] != TILE.FLOOR) throw new RuntimeException("Cannot put interactable tile to room due to room tile is already there");
+
+        for(InteractableTile t : interactableTiles) {
+            if(t.roomLayoutPosition.x == tile.roomLayoutPosition.x && t.roomLayoutPosition.y == tile.roomLayoutPosition.y) {
+                return false;
+            }
+        }
+
+        return interactableTiles.add(tile);
+    }
+
+    public boolean removeInteractableTile(InteractableTile tile) {
+        if(!interactableTiles.contains(tile)) throw new RuntimeException("Cannot find interactable tile: " + tile);
+        return interactableTiles.remove(tile);
     }
 }

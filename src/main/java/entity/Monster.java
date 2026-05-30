@@ -1,10 +1,10 @@
 package entity;
 
 import core.EntityRoomManager;
-import item.Weapon;
+import weapon.Weapon;
 import util.Position;
 import util.TILE;
-import world.Room;
+import core.Room;
 
 import java.util.List;
 

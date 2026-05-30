@@ -1,6 +1,5 @@
-package world;
+package core;
 
-import core.EntityRoomManager;
 import entity.Player;
 import util.Position;
 

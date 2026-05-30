@@ -2,14 +2,13 @@ package entity;
 
 import core.EntityRoomManager;
 import gui.GUIManager;
-import item.Weapon;
+import weapon.Weapon;
 import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
-import world.Room;
+import core.Room;
 
 import java.util.List;
-import java.util.Objects;
 
 public abstract class Entity {
     public String name;
@@ -90,7 +89,6 @@ public abstract class Entity {
     public boolean isAlive() {
         return health > 0;
     }
-
 
 
     protected Room getAdjacentRoomFromUnitPos(Position unitPos) {

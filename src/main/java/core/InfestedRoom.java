@@ -1,11 +1,9 @@
-package world;
+package core;
 
-import core.EntityRoomManager;
-import entity.Entity;
+import entity.GiantSpider;
 import entity.Zombie;
 import util.Position;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InfestedRoom extends  Room {
@@ -18,12 +16,12 @@ public class InfestedRoom extends  Room {
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
 
-        final int MONSTER_AMOUNT = 5;
+        final int MONSTER_AMOUNT = 1;
 
         List<Position> spawnablePositions = getSpawnablePositions();
         for(int i = 0; i < MONSTER_AMOUNT; i++) {
             Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
-            EntityRoomManager.getInstance().addEntityToRoom(new Zombie(randomSpawnPosition), this);
+            EntityRoomManager.getInstance().addEntityToRoom(new GiantSpider(randomSpawnPosition), this);
         }
     }
 }

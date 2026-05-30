@@ -17,8 +17,10 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import util.Position;
 import util.TILE;
-import world.DungeonManager;
-import world.Room;
+import core.DungeonManager;
+import core.Room;
+import world.InteractableTile;
+
 import java.util.List;
 
 public class GameController {
@@ -77,7 +79,7 @@ public class GameController {
 
         // System Startup
         DungeonManager.getInstance().generateDungeon();
-        Room playerRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
+        Room playerRoom = EntityRoomManager.getInstance().getPlayerRoom();
 
         drawToScreen(playerRoom);
         setMapFontSize(DEFAULT_FONT_SIZE);
@@ -88,7 +90,8 @@ public class GameController {
     public void drawToScreen(Room playerRoom) {
         if (playerRoom == null) return;
 
-        List<Entity> entities = core.EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
+        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
+        List<InteractableTile> interactableTiles = playerRoom.getInteractableTiles();
         TILE[][] layout = playerRoom.getLayout();
 
         int roomHeight = layout.length;
@@ -128,7 +131,21 @@ public class GameController {
                         continue;
                     }
 
-                    // 2. Process Tiles
+                    // 2. Process Interactable Tiles
+                    InteractableTile interactableTile = null;
+                    for(InteractableTile it : interactableTiles) {
+                        if(it.roomLayoutPosition.x == roomX && it.roomLayoutPosition.y == roomY) {
+                            interactableTile = it;
+                            break;
+                        }
+                    }
+                    if(interactableTile != null) {
+                        GlyphRegistry.GlyphStyle style = glyphs.getStyle(interactableTile);
+                        updateCell(x, y, style.glyph, style.color);
+                        continue;
+                    }
+
+                    // 3. Process Room Tiles
                     TILE tile = layout[roomY][roomX];
                     GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, playerRoom.id) : glyphs.getVoidStyle();
                     updateCell(x, y, style.glyph, style.color);
@@ -181,7 +198,7 @@ public class GameController {
      * and applies the appropriate visual effects.
      */
     public void updateRenderingPipeline() {
-        Room currentRoom = core.EntityRoomManager.getInstance().getPlayerRoom();
+        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
 
         if (lastRenderedRoom == null) {
             lastRenderedRoom = currentRoom;

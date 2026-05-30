@@ -1,4 +1,4 @@
-package item;
+package weapon;
 
 public class Fist extends Weapon {
 

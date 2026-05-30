@@ -2,12 +2,11 @@ package entity;
 
 import core.EntityRoomManager;
 import gui.GUIManager;
-import item.Fist;
-import item.Weapon;
-import item.WoodenSword;
+import weapon.Weapon;
+import weapon.WoodenSword;
 import javafx.scene.paint.Color;
 import util.Position;
-import world.Room;
+import core.Room;
 
 import java.util.List;
 
