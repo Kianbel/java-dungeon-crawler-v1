@@ -39,7 +39,8 @@ public class GlyphRegistry {
         Color floorColorLit = Color.web("#23362B"); // Slightly lighter accent green
         Color doorColor     = Color.web("#CD853F"); // Warm Peruvian brown/amber
         Color playerColor   = Color.web("#FFD700"); // Rich radiant gold
-        Color monsterColor  = Color.web("#E04D5A"); // Desaturated crimson red
+//        Color monsterColor  = Color.web("#E04D5A"); // Desaturated crimson red
+        Color monsterColor  = Color.DARKOLIVEGREEN; // Desaturated crimson red
 
         // --- MULTI-TEXTURE STRUCTURAL REGISTRY ---
         // Registering arrays allows the engine to pull random variants, preventing repetitive grid patterns

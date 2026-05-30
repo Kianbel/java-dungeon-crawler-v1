@@ -36,7 +36,7 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog("You attacked " + targetEntity.name + " for " + inflictedDamage + "HP. " + targetEntity, Color.RED);
+            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), Color.RED);
 
             if(!targetEntity.isAlive()) {
                 GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", Color.GREEN);

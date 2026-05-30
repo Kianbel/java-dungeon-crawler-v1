@@ -115,9 +115,16 @@ public class GameController {
                     }
 
                     if (occupyingEntity != null) {
-                        if (occupyingEntity instanceof Player) player = occupyingEntity;
                         GlyphRegistry.GlyphStyle style = glyphs.getStyle(occupyingEntity);
-                        updateCell(x, y, style.glyph, style.color);
+                        if (occupyingEntity instanceof Player) {
+                            player = occupyingEntity;
+                            updateCell(x, y, style.glyph, style.color);
+                        }
+                        else {
+                            double outputSaturation = ((occupyingEntity.id * 13 + 17) % 113) % 100;
+                            Color outputColor = Color.hsb(style.color.getHue(), Math.abs(outputSaturation)/100, style.color.getBrightness());
+                            updateCell(x, y, style.glyph, outputColor);
+                        }
                         continue;
                     }
 
