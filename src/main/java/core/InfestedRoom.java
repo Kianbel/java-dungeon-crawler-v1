@@ -16,7 +16,7 @@ public class InfestedRoom extends  Room {
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
 
-        final int MONSTER_AMOUNT = 1;
+        final int MONSTER_AMOUNT = 5;
 
         List<Position> spawnablePositions = getSpawnablePositions();
         for(int i = 0; i < MONSTER_AMOUNT; i++) {

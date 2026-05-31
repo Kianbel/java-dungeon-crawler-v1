@@ -132,6 +132,6 @@ public abstract class Entity {
 
     @Override
     public String toString() {
-        return String.format("Entity: %s(A: %d, H:%d, W:%s)", name, armor, health, weapon.name);
+        return String.format("Entity: %s(A:%d,H:%d,W:%s,POS:%s)", name, armor, health, weapon.name, position);
     }
 }

@@ -22,11 +22,18 @@ public class Player extends Entity {
 
         super(NAME, HEALTH, ARMOR, WEAPON, position);
 
+        activateGodMode();
+
         GUIManager.getInstance().setHP(HEALTH);
         GUIManager.getInstance().setArmor(ARMOR);
         GUIManager.getInstance().setWeapon(WEAPON.name);
         GUIManager.getInstance().setCoins(0);
         GUIManager.getInstance().setPotions(0);
+    }
+
+    public void activateGodMode() {
+        System.out.println("!!! PLAYER IN GOD MODE !!!");
+        armor = 1000;
     }
 
     public void attack(Entity targetEntity) {

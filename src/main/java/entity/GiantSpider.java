@@ -11,17 +11,24 @@ import world.Web;
 import java.util.List;
 
 public class GiantSpider extends Monster implements RangeAttack {
-    private boolean hasBackedOffOnce = false;
+    public boolean isAggressive = true;
 
     public GiantSpider(Position position) {
-        super("Spider", 20, 0, new GiantSpiderFang(), position);
+        super("Giant Spider",
+                20,
+                0,
+                new GiantSpiderFang(),
+                position
+        );
     }
 
     @Override
     public void makeMove() {
-        final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 6;
+        final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 5;
         final int AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD = 3;
-        final double WEBBING_CHANCE = 0.1;
+        final double WEBBING_CHANCE = 0.2;
+        final double BACK_OFF_CHANCE = 0.9;
+        final double BACK_OFF_HEALTH_THRESHOLD = 10;
 
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
@@ -29,13 +36,14 @@ public class GiantSpider extends Monster implements RangeAttack {
         int dy = playerPosition.y - position.y;
         int distanceToPlayer = (int) Math.sqrt(dx*dx + dy*dy);
 
-        if(health <= 10) {
-            // TODO: back off to 3 tiles behind in terms of player's position
-//            if(backOffTo())
+        if(distanceToPlayer <= 2) {
+            if(health <= BACK_OFF_HEALTH_THRESHOLD) {
+                isAggressive = false;
+                if(Math.random() <= BACK_OFF_CHANCE) if(backOff()) return;
+            }
         }
-
         if(distanceToPlayer <= WEBBING_DISTANCE_TO_PLAYER_THRESHOLD) {
-            if(distanceToPlayer <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD) {
+            if(distanceToPlayer <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && isAggressive) {
                 handleWalk();
                 return;
             }
@@ -65,29 +73,43 @@ public class GiantSpider extends Monster implements RangeAttack {
         }
     }
 
-    private boolean backOffTo(Position targetPosition) {
-        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        TILE[][] roomLayout = currentRoom.getLayout();
+    public boolean backOff() {
+        Position playerPosition = EntityRoomManager.getInstance().getPlayer().position;
 
-        if(targetPosition.x < 0 || targetPosition.x >= currentRoom.length) return false;
-        if(targetPosition.y < 0 || targetPosition.y >= currentRoom.height) return false;
-        if(roomLayout[targetPosition.y][targetPosition.x] != TILE.FLOOR) return false;
+        int dx = playerPosition.x - position.x;
+        int dy = playerPosition.y - position.y;
+        int unitX = (dx == 0) ? 0 : ((dx < 0) ? -1 : 1);
+        int unitY = (dy == 0) ? 0 : ((dy < 0) ? -1 : 1);
 
-        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-        for(Entity e : entities) {
-            if(e == this) continue;
-            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) {
-                return false;
-            }
+        Position targetPosition = new Position(position.x-unitX, position.y-unitY);
+        if(isValidTargetPosition(targetPosition)) {
+            walk(new Position(-unitX, -unitY));
+            return true;
         }
-        position = targetPosition;
-        return true;
+
+        System.out.println(this + " cannot back off to " + targetPosition);
+        return false;
+    }
+
+    private Position getBackOffTargetPosition() {
+        final int BACK_OFF_DISTANCE = 3;
+
+        Position playerPosition = EntityRoomManager.getInstance().getPlayer().position;
+        int dx = playerPosition.x - position.x;
+        int dy = playerPosition.y - position.y;
+
+        if(dx == 0 && dy == 0) return new Position(0,0);
+        if(dx != 0) {
+            return new Position(position.x-dx*BACK_OFF_DISTANCE, position.y);
+        }
+        return new Position(position.x, position.y-dy*BACK_OFF_DISTANCE);
     }
 
     @Override
     public boolean shoot(Position targetPosition) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
 
+        // TODO: shoot near/at player
         Position temp = new Position(targetPosition.x-1, targetPosition.y);
 
         InteractableTile web = new Web(temp);

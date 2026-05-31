@@ -23,9 +23,8 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         int dx = playerPosition.x - position.x;
         int dy = playerPosition.y - position.y;
 
-        double magnitude = Math.sqrt(dx * dx + dy * dy);
-        int unitX = (int) Math.round(dx / magnitude);
-        int unitY = (int) Math.round(dy / magnitude);
+        int unitX = (dx == 0) ? 0 : ((dx < 0) ? -1 : 1);
+        int unitY = (dy == 0) ? 0 : ((dy < 0) ? -1 : 1);
 
         if(Math.abs(unitX) == 1 && Math.abs(unitY) == 1) {
             if(isValidTargetPosition(new Position(position.x, position.y+unitY))) return new Position(0, unitY);
