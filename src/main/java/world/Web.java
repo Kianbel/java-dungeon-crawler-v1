@@ -11,6 +11,6 @@ public class Web extends InteractableTile {
 
     @Override
     public void interact(Entity doer) {
-        // TODO
+
     }
 }

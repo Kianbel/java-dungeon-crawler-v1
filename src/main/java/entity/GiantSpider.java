@@ -8,6 +8,7 @@ import core.Room;
 import world.InteractableTile;
 import world.Web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GiantSpider extends Monster implements RangeAttack {
@@ -29,6 +30,7 @@ public class GiantSpider extends Monster implements RangeAttack {
         final double WEBBING_CHANCE = 0.2;
         final double BACK_OFF_CHANCE = 0.9;
         final double BACK_OFF_HEALTH_THRESHOLD = 10;
+        final int WEB_RANGE = 2;
 
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
@@ -49,7 +51,7 @@ public class GiantSpider extends Monster implements RangeAttack {
             }
 
             if(Math.random() <= WEBBING_CHANCE) {
-                if(shoot(playerPosition)) return;
+                if(shoot(playerPosition, WEB_RANGE)) return;
             }
         }
         handleWalk();
@@ -106,13 +108,32 @@ public class GiantSpider extends Monster implements RangeAttack {
     }
 
     @Override
-    public boolean shoot(Position targetPosition) {
+    public boolean shoot(Position targetPosition, int range) {
+        final double webPlayerChance = 0.4;
+
+        List<Position> validWebPositions = new ArrayList<>();
+        for(int y = targetPosition.y-range; y < targetPosition.y+range; y++) {
+            for(int x = targetPosition.x-range; x < targetPosition.x+range; x++) {
+                Position testPos = new Position(x,y);
+                if(isValidTargetPosition(testPos)) validWebPositions.add(testPos);
+            }
+        }
+
+        Position webPosition;
+        if(validWebPositions.isEmpty()) {
+            System.out.println("no valid web position so web player directly");
+            webPosition = targetPosition;
+        }
+        else if(Math.random() <= webPlayerChance) {
+            System.out.println("webbed player directly");
+            webPosition = targetPosition;
+        }
+        else {
+            webPosition = validWebPositions.get((int) (Math.random() * 100 % validWebPositions.size()));
+        }
+
+        InteractableTile web = new Web(webPosition);
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-
-        // TODO: shoot near/at player
-        Position temp = new Position(targetPosition.x-1, targetPosition.y);
-
-        InteractableTile web = new Web(temp);
         return currentRoom.addInteractableTile(web);
     }
 }

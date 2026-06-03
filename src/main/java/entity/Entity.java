@@ -17,6 +17,7 @@ public abstract class Entity {
     public Weapon weapon;
     public Position position;
     public int id;
+    public int stunCounter;
 
     public Entity(String name, int health, int armor, Weapon weapon, Position position) {
         this.name = name;
@@ -25,6 +26,7 @@ public abstract class Entity {
         this.weapon = weapon;
         this.position = position;
         id = this.hashCode();
+        stunCounter = 0;
     }
 
 
@@ -90,6 +92,11 @@ public abstract class Entity {
         return health > 0;
     }
 
+    /**
+     * Override to implement stun.
+     * @param moveCounter number of moves the entity is stunned for.
+     */
+    public void stun(int moveCounter) {};
 
     protected Room getAdjacentRoomFromUnitPos(Position unitPos) {
         unitPos.x *= 2;

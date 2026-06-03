@@ -108,7 +108,7 @@ public class GameController {
                 int roomY = y - offsetY;
 
                 if (roomX >= 0 && roomX < roomWidth && roomY >= 0 && roomY < roomHeight) {
-                    // 1. Process Entities
+                    // 1. Draw Entities
                     Entity occupyingEntity = null;
                     for (Entity e : entities) {
                         if (e.position.x == roomX && e.position.y == roomY) {
@@ -131,7 +131,7 @@ public class GameController {
                         continue;
                     }
 
-                    // 2. Process Interactable Tiles
+                    // 2. Draw Interactable Tiles
                     InteractableTile interactableTile = null;
                     for(InteractableTile it : interactableTiles) {
                         if(it.roomLayoutPosition.x == roomX && it.roomLayoutPosition.y == roomY) {
@@ -145,7 +145,7 @@ public class GameController {
                         continue;
                     }
 
-                    // 3. Process Room Tiles
+                    // 3. Draw Room Tiles
                     TILE tile = layout[roomY][roomX];
                     GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, playerRoom.id) : glyphs.getVoidStyle();
                     updateCell(x, y, style.glyph, style.color);
@@ -334,5 +334,10 @@ public class GameController {
                 m.makeMove();
             }
         }
+    }
+
+    // --- INTERACTABLE TILES HANDLER ---
+    private void handleInteractableTiles() {
+        // TODO
     }
 }

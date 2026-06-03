@@ -77,6 +77,12 @@ public class Player extends Entity {
     }
 
     public void handleMove(Position unitPos) {
+        if(stunCounter > 0) {
+            stunCounter--;
+            GUIManager.getInstance().printLog("Player is stunned and cannot move.", Color.YELLOW);
+            return;
+        }
+
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
 
@@ -89,5 +95,10 @@ public class Player extends Entity {
             }
         }
         walk(unitPos);
+    }
+
+    @Override
+    public void stun(int moveCount) {
+        stunCounter = moveCount;
     }
 }
