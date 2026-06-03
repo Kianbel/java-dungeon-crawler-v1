@@ -13,4 +13,12 @@ public class Position {
     public String toString() {
         return "(x: " + x + " y: " + y + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Position p) {
+            return (x == p.x && y == p.y);
+        }
+        else throw new IllegalArgumentException("Argument must be of class Position");
+    }
 }

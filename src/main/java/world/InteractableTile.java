@@ -10,5 +10,9 @@ public abstract class InteractableTile {
         this.roomLayoutPosition = roomLayoutPosition;
     }
 
-    public abstract void interact(Entity doer);
+    public void onEntityEnter(Entity entity) {}
+
+    public void onEntityStay(Entity entity) {}
+
+    public void onEntityExit(Entity entity) {}
 }

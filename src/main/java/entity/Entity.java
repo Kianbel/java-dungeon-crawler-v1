@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
 import core.Room;
+import world.InteractableTile;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public abstract class Entity {
         switch(currentRoomLayout[dPos.y][dPos.x]) {
             case TILE.FLOOR -> {
                 position = dPos;
+                handleInteractTile();
             }
             case TILE.DOOR -> {
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
@@ -134,6 +136,18 @@ public abstract class Entity {
         else if(unitPos.y > 0) {
             position.x = roomLength/2;
             position.y = 1;
+        }
+    }
+
+    protected void handleInteractTile() {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
+
+        for(InteractableTile tile : interactableTiles) {
+            if(tile.roomLayoutPosition.equals(this.position)) {
+                tile.onEntityEnter(this);
+                return;
+            }
         }
     }
 

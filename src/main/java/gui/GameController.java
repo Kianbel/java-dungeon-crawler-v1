@@ -335,9 +335,4 @@ public class GameController {
             }
         }
     }
-
-    // --- INTERACTABLE TILES HANDLER ---
-    private void handleInteractableTiles() {
-        // TODO
-    }
 }

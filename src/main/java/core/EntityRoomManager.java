@@ -97,4 +97,11 @@ public class EntityRoomManager {
         }
         return null;
     }
+
+    public boolean removeInteractableTile(InteractableTile tile) {
+        for(Room r : hashmap.keySet()) {
+            if(r.getInteractableTiles().remove(tile)) return true;
+        }
+        return false;
+    }
 }

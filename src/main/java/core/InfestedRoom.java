@@ -16,12 +16,16 @@ public class InfestedRoom extends  Room {
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
 
-        final int MONSTER_AMOUNT = 1;
+        final int MONSTER_AMOUNT = 4;
 
         List<Position> spawnablePositions = getSpawnablePositions();
         for(int i = 0; i < MONSTER_AMOUNT; i++) {
             Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
             EntityRoomManager.getInstance().addEntityToRoom(new GiantSpider(randomSpawnPosition), this);
+        }
+        for(int i = 0; i < MONSTER_AMOUNT; i++) {
+            Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
+            EntityRoomManager.getInstance().addEntityToRoom(new Zombie(randomSpawnPosition), this);
         }
     }
 }

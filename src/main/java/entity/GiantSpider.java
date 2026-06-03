@@ -1,7 +1,6 @@
 package entity;
 
 import core.EntityRoomManager;
-import util.TILE;
 import weapon.GiantSpiderFang;
 import util.Position;
 import core.Room;
@@ -12,7 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GiantSpider extends Monster implements RangeAttack {
-    public boolean isAggressive = true;
+    private final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 5;
+    private final int AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD = 2;
+
+    private final double WEBBING_CHANCE = 0.2;
+    private final int WEB_RANGE = 2;
+    private int WEB_SHOOT_MOVE_COOLDOWN = 5;
+
+    private final double BACK_OFF_CHANCE = 0.9;
+    private final int BACK_OFF_HEALTH_THRESHOLD = health/2;
+
+    private final double WALK_CHANCE = 0.6;
+
+    private int webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;
 
     public GiantSpider(Position position) {
         super("Giant Spider",
@@ -25,12 +36,7 @@ public class GiantSpider extends Monster implements RangeAttack {
 
     @Override
     public void makeMove() {
-        final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 5;
-        final int AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD = 3;
-        final double WEBBING_CHANCE = 0.2;
-        final double BACK_OFF_CHANCE = 0.9;
-        final double BACK_OFF_HEALTH_THRESHOLD = 10;
-        final int WEB_RANGE = 2;
+        if(webShootCooldown > 0) webShootCooldown--;
 
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
@@ -40,12 +46,11 @@ public class GiantSpider extends Monster implements RangeAttack {
 
         if(distanceToPlayer <= 2) {
             if(health <= BACK_OFF_HEALTH_THRESHOLD) {
-                isAggressive = false;
                 if(Math.random() <= BACK_OFF_CHANCE) if(backOff()) return;
             }
         }
         if(distanceToPlayer <= WEBBING_DISTANCE_TO_PLAYER_THRESHOLD) {
-            if(distanceToPlayer <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && isAggressive) {
+            if(distanceToPlayer <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD) {
                 handleWalk();
                 return;
             }
@@ -58,8 +63,6 @@ public class GiantSpider extends Monster implements RangeAttack {
     }
 
     private void handleWalk() {
-        final double WALK_CHANCE = 0.6;
-
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
         Position unitPos = pathfindToPlayerPosition();
@@ -89,27 +92,13 @@ public class GiantSpider extends Monster implements RangeAttack {
             return true;
         }
 
-        System.out.println(this + " cannot back off to " + targetPosition);
+//        System.out.println(this + " cannot back off to " + targetPosition);
         return false;
-    }
-
-    private Position getBackOffTargetPosition() {
-        final int BACK_OFF_DISTANCE = 3;
-
-        Position playerPosition = EntityRoomManager.getInstance().getPlayer().position;
-        int dx = playerPosition.x - position.x;
-        int dy = playerPosition.y - position.y;
-
-        if(dx == 0 && dy == 0) return new Position(0,0);
-        if(dx != 0) {
-            return new Position(position.x-dx*BACK_OFF_DISTANCE, position.y);
-        }
-        return new Position(position.x, position.y-dy*BACK_OFF_DISTANCE);
     }
 
     @Override
     public boolean shoot(Position targetPosition, int range) {
-        final double webPlayerChance = 0.4;
+        if(webShootCooldown > 0) return false;
 
         List<Position> validWebPositions = new ArrayList<>();
         for(int y = targetPosition.y-range; y < targetPosition.y+range; y++) {
@@ -119,21 +108,10 @@ public class GiantSpider extends Monster implements RangeAttack {
             }
         }
 
-        Position webPosition;
-        if(validWebPositions.isEmpty()) {
-            System.out.println("no valid web position so web player directly");
-            webPosition = targetPosition;
-        }
-        else if(Math.random() <= webPlayerChance) {
-            System.out.println("webbed player directly");
-            webPosition = targetPosition;
-        }
-        else {
-            webPosition = validWebPositions.get((int) (Math.random() * 100 % validWebPositions.size()));
-        }
-
+        Position webPosition = validWebPositions.get((int) (Math.random() * 100 % validWebPositions.size()));
         InteractableTile web = new Web(webPosition);
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;
         return currentRoom.addInteractableTile(web);
     }
 }

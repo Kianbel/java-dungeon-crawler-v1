@@ -78,8 +78,8 @@ public class Player extends Entity {
 
     public void handleMove(Position unitPos) {
         if(stunCounter > 0) {
+            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", Color.YELLOW);
             stunCounter--;
-            GUIManager.getInstance().printLog("Player is stunned and cannot move.", Color.YELLOW);
             return;
         }
 
@@ -99,6 +99,8 @@ public class Player extends Entity {
 
     @Override
     public void stun(int moveCount) {
+        if(stunCounter > 0) return;
         stunCounter = moveCount;
+        GUIManager.getInstance().printLog("You got stunned!", Color.YELLOW);
     }
 }
