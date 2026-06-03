@@ -13,6 +13,11 @@ import java.util.List;
 public class Player extends Entity {
     public int coins = 0;
     public int hpPotions = 0;
+    public int hunger = 100;
+
+    final int HUNGER_DECREASE_MOVE_COOLDOWN = 10;
+    private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+    final int HUNGER_DECREASE_AMOUNT = 5;
 
     public Player(Position position) {
         final String NAME = "Player";
@@ -22,9 +27,10 @@ public class Player extends Entity {
 
         super(NAME, HEALTH, ARMOR, WEAPON, position);
 
-        activateGodMode();
+//        activateGodMode();
 
         GUIManager.getInstance().setHP(HEALTH);
+        GUIManager.getInstance().setHunger(hunger);
         GUIManager.getInstance().setArmor(ARMOR);
         GUIManager.getInstance().setWeapon(WEAPON.name);
         GUIManager.getInstance().setCoins(0);
@@ -34,6 +40,31 @@ public class Player extends Entity {
     public void activateGodMode() {
         System.out.println("!!! PLAYER IN GOD MODE !!!");
         armor = 1000;
+        hungerDecreaseCounter = 9999999;
+        hunger = 99999999;
+    }
+
+    public void handleMove(Position unitPos) {
+        if(stunCounter > 0) {
+            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", Color.YELLOW);
+            stunCounter--;
+            return;
+        }
+
+        handleHungerDecrease();
+
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
+
+        Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
+        for(Entity e : entities) {
+            if(e == this) continue;
+            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) {
+                attack(e);
+                return;
+            }
+        }
+        walk(unitPos);
     }
 
     public void attack(Entity targetEntity) {
@@ -76,31 +107,22 @@ public class Player extends Entity {
         }
     }
 
-    public void handleMove(Position unitPos) {
-        if(stunCounter > 0) {
-            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", Color.YELLOW);
-            stunCounter--;
-            return;
-        }
-
-        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-
-        Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
-        for(Entity e : entities) {
-            if(e == this) continue;
-            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) {
-                attack(e);
-                return;
-            }
-        }
-        walk(unitPos);
-    }
-
     @Override
     public void stun(int moveCount) {
         if(stunCounter > 0) return;
         stunCounter = moveCount;
         GUIManager.getInstance().printLog("You got stunned!", Color.YELLOW);
+    }
+
+    private void handleHungerDecrease() {
+        if(hungerDecreaseCounter > 0) {
+            hungerDecreaseCounter--;
+            return;
+        }
+        hunger -= HUNGER_DECREASE_AMOUNT;
+        if(hunger < 0) hunger = 0;
+        GUIManager.getInstance().setHunger(hunger);
+
+        hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     }
 }

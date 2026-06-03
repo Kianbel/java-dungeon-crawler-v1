@@ -15,4 +15,6 @@ public abstract class InteractableTile {
     public void onEntityStay(Entity entity) {}
 
     public void onEntityExit(Entity entity) {}
+
+    public void onInteract(Entity entity) {}
 }

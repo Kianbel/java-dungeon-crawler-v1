@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
 import core.Room;
+import world.Coin;
 import world.InteractableTile;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public abstract class Entity {
         switch(currentRoomLayout[dPos.y][dPos.x]) {
             case TILE.FLOOR -> {
                 position = dPos;
-                handleInteractTile();
+                handleOnEntityEnterInteractableTiles();
             }
             case TILE.DOOR -> {
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
@@ -57,6 +58,8 @@ public abstract class Entity {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
+
+        currentRoom.addInteractableTile(new Coin(position, 5));
     }
 
     public void attack(Entity targetEntity) {
@@ -139,11 +142,12 @@ public abstract class Entity {
         }
     }
 
-    protected void handleInteractTile() {
+    private void handleOnEntityEnterInteractableTiles() {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
 
-        for(InteractableTile tile : interactableTiles) {
+        for(int i = 0; i < interactableTiles.size(); i++) {
+            InteractableTile tile = interactableTiles.get(i);
             if(tile.roomLayoutPosition.equals(this.position)) {
                 tile.onEntityEnter(this);
                 return;

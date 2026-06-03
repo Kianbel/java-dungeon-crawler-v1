@@ -3,6 +3,7 @@ package gui;
 import entity.*;
 import javafx.scene.paint.Color;
 import util.TILE;
+import world.Coin;
 import world.InteractableTile;
 import world.Web;
 
@@ -70,6 +71,7 @@ public class GlyphRegistry {
 
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "#", webColor);
+        registerInteractableTile(Coin.class, "$", Color.GOLD);
 
         // --- CHARACTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", playerColor);

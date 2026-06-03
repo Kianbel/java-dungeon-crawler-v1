@@ -33,7 +33,7 @@ public class DrunkardWalk extends Generator {
             }
         }
         lastRoomPosition = new Position(walker.x, walker.y);
-        System.out.println("maxRooms: " + roomsAmount + "| roomsMade: " + currentRoomAmount);
+//        System.out.println("maxRooms: " + roomsAmount + "| roomsMade: " + currentRoomAmount);
         return mapLayout;
     }
 

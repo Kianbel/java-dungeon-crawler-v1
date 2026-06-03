@@ -23,9 +23,5 @@ public class InfestedRoom extends  Room {
             Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
             EntityRoomManager.getInstance().addEntityToRoom(new GiantSpider(randomSpawnPosition), this);
         }
-        for(int i = 0; i < MONSTER_AMOUNT; i++) {
-            Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
-            EntityRoomManager.getInstance().addEntityToRoom(new Zombie(randomSpawnPosition), this);
-        }
     }
 }

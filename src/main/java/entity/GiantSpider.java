@@ -15,15 +15,15 @@ public class GiantSpider extends Monster implements RangeAttack {
     private final int AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD = 2;
 
     private final double WEBBING_CHANCE = 0.2;
-    private final int WEB_RANGE = 2;
+    private final int WEB_RANGE = 1;
     private int WEB_SHOOT_MOVE_COOLDOWN = 5;
+    private int webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;
 
     private final double BACK_OFF_CHANCE = 0.9;
     private final int BACK_OFF_HEALTH_THRESHOLD = health/2;
 
     private final double WALK_CHANCE = 0.6;
 
-    private int webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;
 
     public GiantSpider(Position position) {
         super("Giant Spider",
