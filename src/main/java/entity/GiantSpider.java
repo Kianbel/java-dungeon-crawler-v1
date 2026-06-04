@@ -3,7 +3,7 @@ package entity;
 import core.EntityRoomManager;
 import weapon.GiantSpiderFang;
 import util.Position;
-import core.Room;
+import core.room.Room;
 import world.InteractableTile;
 import world.Web;
 

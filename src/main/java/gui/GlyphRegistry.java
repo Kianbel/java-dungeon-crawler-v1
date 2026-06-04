@@ -3,9 +3,7 @@ package gui;
 import entity.*;
 import javafx.scene.paint.Color;
 import util.TILE;
-import world.Coin;
-import world.InteractableTile;
-import world.Web;
+import world.*;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -34,6 +32,11 @@ public class GlyphRegistry {
             this.color = color;
         }
     }
+
+    public static final Color LOG_COLOR_WORLD = Color.LIGHTBLUE;
+    public static final Color LOG_COLOR_PLAYER = Color.YELLOW;
+    public static final Color LOG_COLOR_PLAYER_KILLS = Color.GREEN;
+    public static final Color LOG_COLOR_MONSTER_ATTACKS = Color.RED;
 
     private GlyphRegistry() {
         // --- COLOR PALETTE DEFINITION (Gothic Catacomb Theme) ---
@@ -72,6 +75,8 @@ public class GlyphRegistry {
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "#", webColor);
         registerInteractableTile(Coin.class, "$", Color.GOLD);
+        registerInteractableTile(Chest.class, "C", Color.SADDLEBROWN);
+        registerInteractableTile(DroppedWeapon.class, "/", Color.LIGHTCYAN);
 
         // --- CHARACTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", playerColor);

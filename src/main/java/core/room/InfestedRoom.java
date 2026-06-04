@@ -1,7 +1,7 @@
-package core;
+package core.room;
 
+import core.EntityRoomManager;
 import entity.GiantSpider;
-import entity.Zombie;
 import util.Position;
 
 import java.util.List;

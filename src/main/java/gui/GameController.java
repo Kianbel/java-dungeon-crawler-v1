@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -18,7 +19,8 @@ import javafx.util.Duration;
 import util.Position;
 import util.TILE;
 import core.DungeonManager;
-import core.Room;
+import core.room.Room;
+import weapon.Weapon;
 import world.InteractableTile;
 
 import java.util.List;
@@ -85,6 +87,13 @@ public class GameController {
         setMapFontSize(DEFAULT_FONT_SIZE);
 
         handleControls();
+
+        // to not make screen go up when pressing space bar
+        mapScrollPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                event.consume();
+            }
+        });
     }
 
     public void drawToScreen(Room playerRoom) {
@@ -263,7 +272,7 @@ public class GameController {
         final int MAX_ARMOR = 10;
         armorText.setText(armor + "/" + MAX_ARMOR);
     }
-    public void updateWeapon(String weaponName) { weaponText.setText(weaponName); }
+    public void updateWeapon(Weapon weapon) { weaponText.setText(String.format("%s (ATK: %d)", weapon.name, weapon.baseAttackDamage)); }
     public void updateCoins(int amount) { coinsText.setText(String.valueOf(amount)); }
     public void updatePotions(int amount) { potionsText.setText(String.valueOf(amount)); }
 
@@ -302,23 +311,23 @@ public class GameController {
                     if(!isControlsEnabled) return;
 
                     Position unitPos = new Position(0,0);
+                    boolean skipPlayerMove = false;
                     switch (e.getCode()) {
                         case KeyCode.W -> unitPos.y--;
                         case KeyCode.A -> unitPos.x--;
                         case KeyCode.S -> unitPos.y++;
                         case KeyCode.D -> unitPos.x++;
-                        case KeyCode.EQUALS -> adjustMapFontSize(1.0);
-                        case KeyCode.MINUS  -> adjustMapFontSize(-1.0);
+                        case KeyCode.SPACE -> { skipPlayerMove = true; e.consume(); }
+                        case KeyCode.EQUALS -> { adjustMapFontSize(1.0); return; }
+                        case KeyCode.MINUS  -> { adjustMapFontSize(-1.0); return; }
                         default -> { return; }
                     }
-                    if ((unitPos.x != 0 || unitPos.y != 0) && player != null) {
-                        grayOutOldLogs();
+                    grayOutOldLogs();
 
-                        ((Player)player).handleMove(unitPos);
-                        handleMonstersMove();
+                    if(!skipPlayerMove) ((Player)player).handleMove(unitPos);
+                    handleMonstersMove();
 
-                        updateRenderingPipeline();
-                    }
+                    updateRenderingPipeline();
                 });
             }
         });

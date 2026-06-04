@@ -2,11 +2,12 @@ package entity;
 
 import core.EntityRoomManager;
 import gui.GUIManager;
+import gui.GlyphRegistry;
 import weapon.Weapon;
-import weapon.WoodenSword;
-import javafx.scene.paint.Color;
+import weapon.AncientSword;
 import util.Position;
-import core.Room;
+import core.room.Room;
+import world.InteractableTile;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Player extends Entity {
         final String NAME = "Player";
         final int HEALTH = 100;
         final int ARMOR = 0;
-        final Weapon WEAPON = new WoodenSword();
+        final Weapon WEAPON = new AncientSword();
 
         super(NAME, HEALTH, ARMOR, WEAPON, position);
 
@@ -32,7 +33,7 @@ public class Player extends Entity {
         GUIManager.getInstance().setHP(HEALTH);
         GUIManager.getInstance().setHunger(hunger);
         GUIManager.getInstance().setArmor(ARMOR);
-        GUIManager.getInstance().setWeapon(WEAPON.name);
+        GUIManager.getInstance().setWeapon(WEAPON);
         GUIManager.getInstance().setCoins(0);
         GUIManager.getInstance().setPotions(0);
     }
@@ -46,7 +47,7 @@ public class Player extends Entity {
 
     public void handleMove(Position unitPos) {
         if(stunCounter > 0) {
-            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", Color.YELLOW);
+            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", GlyphRegistry.LOG_COLOR_PLAYER);
             stunCounter--;
             return;
         }
@@ -59,11 +60,20 @@ public class Player extends Entity {
         Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
         for(Entity e : entities) {
             if(e == this) continue;
-            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) {
+            if(e.position.equals(targetPosition)) {
                 attack(e);
                 return;
             }
         }
+
+        List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
+        for(InteractableTile tile: interactableTiles) {
+            if(tile.roomLayoutPosition.equals(targetPosition) && tile.isSolid) {
+                tile.onEntityBump(this);
+                return;
+            }
+        }
+
         walk(unitPos);
     }
 
@@ -73,10 +83,10 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), Color.RED);
+            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), GlyphRegistry.LOG_COLOR_PLAYER);
 
             if(!targetEntity.isAlive()) {
-                GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", Color.GREEN);
+                GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", GlyphRegistry.LOG_COLOR_PLAYER_KILLS);
             }
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
@@ -88,7 +98,7 @@ public class Player extends Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
 
-        GUIManager.getInstance().printLog("You died!", Color.RED);
+        GUIManager.getInstance().printLog("You died!", GlyphRegistry.LOG_COLOR_MONSTER_ATTACKS);
     }
 
     @Override
@@ -100,7 +110,7 @@ public class Player extends Entity {
             health -= damage;
             if(health < 0) health = 0;
 
-            GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", Color.RED);
+            GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", GlyphRegistry.LOG_COLOR_MONSTER_ATTACKS);
             GUIManager.getInstance().setHP(health);
 
             if(health == 0) die();
@@ -111,7 +121,37 @@ public class Player extends Entity {
     public void stun(int moveCount) {
         if(stunCounter > 0) return;
         stunCounter = moveCount;
-        GUIManager.getInstance().printLog("You got stunned!", Color.YELLOW);
+        GUIManager.getInstance().printLog("You got stunned!", GlyphRegistry.LOG_COLOR_PLAYER);
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+        GUIManager.getInstance().setHP(health);
+    }
+
+    public void setArmor(int armor) {
+        this.armor = armor;
+        GUIManager.getInstance().setArmor(armor);
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
+        GUIManager.getInstance().setWeapon(weapon);
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
+        GUIManager.getInstance().setCoins(coins);
+    }
+
+    public void setHpPotions(int hpPotions) {
+        this.hpPotions = hpPotions;
+        GUIManager.getInstance().setPotions(hpPotions);
+    }
+
+    public void setHunger(int hunger) {
+        this.hunger = hunger;
+        GUIManager.getInstance().setHunger(hunger);
     }
 
     private void handleHungerDecrease() {

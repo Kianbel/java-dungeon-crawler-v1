@@ -1,5 +1,6 @@
 package core;
 
+import core.room.Room;
 import entity.Entity;
 import entity.Player;
 import world.InteractableTile;
@@ -103,5 +104,12 @@ public class EntityRoomManager {
             if(r.getInteractableTiles().remove(tile)) return true;
         }
         return false;
+    }
+
+    public Room getRoomFromInteractableTile(InteractableTile tile) {
+        for(Room r : hashmap.keySet()) {
+            if(r.getInteractableTiles().contains(tile)) return r;
+        }
+        return null;
     }
 }

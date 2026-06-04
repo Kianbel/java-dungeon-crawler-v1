@@ -1,6 +1,5 @@
-package core;
+package core.room;
 
-import entity.Entity;
 import util.Position;
 import util.TILE;
 import world.InteractableTile;

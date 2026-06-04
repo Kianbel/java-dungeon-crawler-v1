@@ -1,5 +1,8 @@
 package core;
 
+import core.room.InfestedRoom;
+import core.room.Room;
+import core.room.SpawnRoom;
 import util.Position;
 import util.TILE;
 
@@ -71,7 +74,7 @@ public class DungeonManager {
                 }
             }
         }
-        System.out.println("Rooms added to list: " + roomList.size());
+//        System.out.println("Rooms added to list: " + roomList.size());
     }
 
     public TILE[][] getMinimapOverviewLayout() {

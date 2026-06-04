@@ -9,7 +9,7 @@ public class Web extends InteractableTile {
     private final int STUN_MOVE_AMOUNT = 3;
 
     public Web(Position position) {
-        super(position);
+        super(position, false);
     }
 
     @Override

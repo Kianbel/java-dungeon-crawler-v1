@@ -1,7 +1,8 @@
 package gui;
 
 import javafx.scene.paint.Color;
-import core.Room;
+import core.room.Room;
+import weapon.Weapon;
 
 public class GUIManager {
     private static final GUIManager instance = new GUIManager();
@@ -42,7 +43,7 @@ public class GUIManager {
     public void setHP(int current) { if (controller != null) controller.updateHealth(current); }
     public void setHunger(int current) { if (controller != null) controller.updateHunger(current); }
     public void setArmor(int current) { if (controller != null) controller.updateArmor(current); }
-    public void setWeapon(String name) { if (controller != null) controller.updateWeapon(name); }
+    public void setWeapon(Weapon weapon) { if (controller != null) controller.updateWeapon(weapon); }
     public void setCoins(int amount) { if (controller != null) controller.updateCoins(amount); }
     public void setPotions(int amount) { if (controller != null) controller.updatePotions(amount); }
 }

@@ -4,7 +4,7 @@ import core.EntityRoomManager;
 import weapon.Weapon;
 import util.Position;
 import util.TILE;
-import core.Room;
+import core.room.Room;
 
 import java.util.List;
 
