@@ -211,7 +211,15 @@ public class GameController {
                         if (ent.position.x == worldLoc.x && ent.position.y == worldLoc.y) {
                             var style = glyphs.getStyle(ent);
                             activeChar = style.glyph;
-                            activeColor = style.color; // No dynamic dimming transformations, pure colors
+                            if(ent instanceof Player) {
+                                activeColor = style.color;
+                            }
+                            else {
+                                double hue = style.color.getHue();
+                                double saturation = Math.abs((double) (ent.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                                double brightness = Math.abs((double) (ent.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                                activeColor = Color.hsb(hue, saturation, brightness);
+                            }
                             break;
                         }
                     }
