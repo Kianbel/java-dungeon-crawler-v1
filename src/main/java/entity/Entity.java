@@ -2,9 +2,8 @@ package entity;
 
 import core.EntityRoomManager;
 import gui.GUIManager;
-import gui.GlyphRegistry;
+import gui.UITheme;
 import weapon.Weapon;
-import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
 import core.room.Room;
@@ -82,7 +81,7 @@ public abstract class Entity {
 
             if(damage == 0) {
                 if(attacker instanceof Player) {
-                    GUIManager.getInstance().printLog("You missed!", GlyphRegistry.LOG_COLOR_PLAYER);
+                    GUIManager.getInstance().printLog("You missed!", UITheme.LOG_PLAYER_ACTION);
                 }
             }
 

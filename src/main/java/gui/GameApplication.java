@@ -14,6 +14,7 @@ public class GameApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("dungeon crawler 1.0");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 }

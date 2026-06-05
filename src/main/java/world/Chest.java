@@ -4,10 +4,8 @@ import core.EntityRoomManager;
 import core.room.Room;
 import entity.Entity;
 import gui.GUIManager;
-import gui.GlyphRegistry;
-import javafx.scene.paint.Color;
+import gui.UITheme;
 import util.Position;
-import weapon.GiantSpiderFang;
 import weapon.IronBlade;
 
 public class Chest extends InteractableTile {
@@ -25,11 +23,11 @@ public class Chest extends InteractableTile {
         InteractableTile chestDrop;
         if(Math.random() <= COIN_CHANCE) {
             chestDrop = new Coin(roomLayoutPosition, 5);
-            GUIManager.getInstance().printLog("You break open the chest and it dropped some coins", GlyphRegistry.LOG_COLOR_WORLD);
+            GUIManager.getInstance().printLog("You break open the chest and it dropped some coins", UITheme.LOG_WORLD);
         }
         else {
             chestDrop = new DroppedWeapon(roomLayoutPosition, new IronBlade());
-            GUIManager.getInstance().printLog(String.format("You break open the chest and it dropped a %s (ATK: %d)", ((DroppedWeapon)chestDrop).weapon.name, ((DroppedWeapon)chestDrop).weapon.baseAttackDamage), GlyphRegistry.LOG_COLOR_WORLD);
+            GUIManager.getInstance().printLog(String.format("You break open the chest and it dropped a %s (ATK: %d)", ((DroppedWeapon)chestDrop).weapon.name, ((DroppedWeapon)chestDrop).weapon.baseAttackDamage), UITheme.LOG_WORLD);
         }
 
 

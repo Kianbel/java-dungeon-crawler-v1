@@ -5,8 +5,7 @@ import core.room.Room;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
-import gui.GlyphRegistry;
-import javafx.scene.paint.Color;
+import gui.UITheme;
 import util.Position;
 import weapon.Weapon;
 
@@ -24,7 +23,7 @@ public class DroppedWeapon extends InteractableTile {
             Weapon oldWeapon = p.weapon;
             Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
 
-            GUIManager.getInstance().printLog("You picked up " + weapon.name, GlyphRegistry.LOG_COLOR_WORLD);
+            GUIManager.getInstance().printLog("You picked up " + weapon.name, UITheme.LOG_WORLD);
             p.setWeapon(weapon);
             EntityRoomManager.getInstance().removeInteractableTile(this);
 

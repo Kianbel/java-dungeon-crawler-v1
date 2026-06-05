@@ -12,38 +12,38 @@ public class GUIManager {
 
     public static GUIManager getInstance() { return instance; }
 
-    /**
-     * Connects the active FXML view controller instance to the manager pipeline.
-     */
     public void registerController(GameController controller) {
         this.controller = controller;
     }
 
+    private boolean isPipelineOperational() {
+        return controller != null;
+    }
+
     public void refreshScreen(Room currentRoom) {
-        if (controller != null) controller.drawToScreen(currentRoom);
+        if (isPipelineOperational()) controller.updateRenderingPipeline();
     }
 
     public void printLog(String message, Color color) {
-        if (controller != null) controller.addLog(message, color);
+        if (isPipelineOperational()) controller.addLog(message, color);
     }
 
     public void wipeLogs() {
-        if (controller != null) controller.clearLogContainer();
+        if (isPipelineOperational()) controller.clearLogContainer();
     }
 
     public void triggerHurtFlash() {
-        if (controller != null) controller.flashScreenEffect(Color.DARKRED);
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED);
     }
 
     public void triggerHealFlash() {
-        if (controller != null) controller.flashScreenEffect(Color.web("#113311"));
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.web("#113311"));
     }
 
-    // --- HUD Passthroughs ---
-    public void setHP(int current) { if (controller != null) controller.updateHealth(current); }
-    public void setHunger(int current) { if (controller != null) controller.updateHunger(current); }
-    public void setArmor(int current) { if (controller != null) controller.updateArmor(current); }
-    public void setWeapon(Weapon weapon) { if (controller != null) controller.updateWeapon(weapon); }
-    public void setCoins(int amount) { if (controller != null) controller.updateCoins(amount); }
-    public void setPotions(int amount) { if (controller != null) controller.updatePotions(amount); }
+    public void setHP(int current) { if (isPipelineOperational()) controller.updateHealth(current); }
+    public void setHunger(int current) { if (isPipelineOperational()) controller.updateHunger(current); }
+    public void setArmor(int current) { if (isPipelineOperational()) controller.updateArmor(current); }
+    public void setWeapon(Weapon weapon) { if (isPipelineOperational()) controller.updateWeapon(weapon); }
+    public void setCoins(int amount) { if (isPipelineOperational()) controller.updateCoins(amount); }
+    public void setPotions(int amount) { if (isPipelineOperational()) controller.updatePotions(amount); }
 }
