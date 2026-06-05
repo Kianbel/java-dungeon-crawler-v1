@@ -47,7 +47,7 @@ public class Player extends Entity {
 
     public void handleMove(Position unitPos) {
         if(stunCounter > 0) {
-            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().printLog("[PLAYER]: Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
             stunCounter--;
             return;
         }
@@ -83,10 +83,10 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().printLog(String.format("[PLAYER]: You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
 
             if(!targetEntity.isAlive()) {
-                GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_KILLS);
+                GUIManager.getInstance().printLog("[PLAYER]: You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
             }
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
@@ -98,7 +98,7 @@ public class Player extends Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
 
-        GUIManager.getInstance().printLog("You died!", UITheme.LOG_MONSTER_ACTION);
+        GUIManager.getInstance().printLog("[PLAYER]: You died!", UITheme.LOG_MONSTER_ACTION);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Player extends Entity {
             health -= damage;
             if(health < 0) health = 0;
 
-            GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
+            GUIManager.getInstance().printLog("[MONSTER]: " + attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
             GUIManager.getInstance().setHP(health);
 
             if(health == 0) die();
@@ -121,7 +121,7 @@ public class Player extends Entity {
     public void stun(int moveCount) {
         if(stunCounter > 0) return;
         stunCounter = moveCount;
-        GUIManager.getInstance().printLog("You got stunned!", UITheme.LOG_PLAYER_ACTION);
+        GUIManager.getInstance().printLog("[PLAYER]: You got stunned!", UITheme.LOG_PLAYER_ACTION);
     }
 
     public void setHealth(int health) {

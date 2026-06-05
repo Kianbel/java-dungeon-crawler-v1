@@ -26,8 +26,6 @@ public class GameController {
     @FXML private StackPane canvasContainer;
     @FXML private Canvas renderCanvas;
     @FXML private VBox logContainer;
-
-    // FXML Card Panes & Text Elements for Style Injection
     @FXML private VBox statsPanel, logsPanel, controlsPanel, controlsBox;
     @FXML private Label statsHeader, logsHeader, controlsHeader;
     @FXML private Label lblHealth, lblHunger, lblCoins, lblPotions;
@@ -42,10 +40,14 @@ public class GameController {
     private TargetReticle targetSelector;
     private MenuModal confirmationPrompt;
 
+    // --- TILES ---
     private double currentTileSize = 44.0;
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 60.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
+
+    // --- LOGS ---
+    private final int MAX_LOG_LINES = 15;
 
     @FXML
     public void initialize() {
@@ -305,7 +307,7 @@ public class GameController {
         element.setStyle(UITheme.STYLE_LOG + " -fx-text-fill: " + toHexWebColor(col) + ";");
         element.setWrapText(true);
 
-        if (logContainer.getChildren().size() >= 8) logContainer.getChildren().removeFirst();
+        if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
         logContainer.getChildren().add(element);
     }
 

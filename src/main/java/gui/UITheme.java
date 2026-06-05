@@ -69,8 +69,7 @@ public class UITheme {
     public static final Color OVERLAY_MODAL    = Color.GOLD;
 
     public static final Color LOG_WORLD        = Color.LIGHTBLUE;
-    public static final Color LOG_PLAYER_ACTION= Color.YELLOW;
+    public static final Color LOG_PLAYER_ACTION = Color.YELLOW;
     public static final Color LOG_CRITICAL     = Color.RED;
     public static final Color LOG_MONSTER_ACTION     = Color.RED;
-    public static final Color LOG_PLAYER_KILLS     = Color.GREEN;
 }

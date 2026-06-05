@@ -20,7 +20,7 @@ public class Coin extends InteractableTile {
         if(entity instanceof Player p) {
             p.coins += amount;
             GUIManager.getInstance().setCoins(p.coins);
-            GUIManager.getInstance().printLog("+" + amount + " coins.", UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().printLog("[WORLD]: +" + amount + " coins.", UITheme.LOG_WORLD);
             EntityRoomManager.getInstance().removeInteractableTile(this);
         }
     }

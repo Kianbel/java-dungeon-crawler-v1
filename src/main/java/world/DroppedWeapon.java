@@ -23,7 +23,7 @@ public class DroppedWeapon extends InteractableTile {
             Weapon oldWeapon = p.weapon;
             Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
 
-            GUIManager.getInstance().printLog("You picked up " + weapon.name, UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("[WORLD]: You picked up " + weapon.name, UITheme.LOG_WORLD);
             p.setWeapon(weapon);
             EntityRoomManager.getInstance().removeInteractableTile(this);
 
