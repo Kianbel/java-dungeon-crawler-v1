@@ -47,7 +47,7 @@ public class GameController {
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
 
     // --- LOGS ---
-    private final int MAX_LOG_LINES = 15;
+    private final int MAX_LOG_LINES = 8;
 
     @FXML
     public void initialize() {

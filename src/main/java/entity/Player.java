@@ -57,8 +57,6 @@ public class Player extends Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
 
-        System.out.println("player at room: " + currentRoom);
-
         Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
         for(Entity e : entities) {
             if(e == this) continue;
