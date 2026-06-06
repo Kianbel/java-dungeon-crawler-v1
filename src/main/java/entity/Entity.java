@@ -50,6 +50,9 @@ public abstract class Entity {
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
                 EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
                 fixEntityPositionAfterTransferFromUnitPos(unitPos);
+                if(this instanceof Player) {
+                    GUIManager.getInstance().triggerRoomTransitionFlash();
+                }
             }
         }
     }

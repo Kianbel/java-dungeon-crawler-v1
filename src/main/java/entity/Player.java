@@ -112,6 +112,7 @@ public class Player extends Entity {
 
             GUIManager.getInstance().printLog("[MONSTER]: " + attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
             GUIManager.getInstance().setHP(health);
+//            GUIManager.getInstance().triggerHurtFlash();
 
             if(health == 0) die();
         }

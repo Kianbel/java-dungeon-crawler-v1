@@ -33,11 +33,15 @@ public class GUIManager {
     }
 
     public void triggerHurtFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED);
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED, 50);
     }
 
     public void triggerHealFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.web("#113311"));
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.GREEN, 200);
+    }
+
+    public void triggerRoomTransitionFlash() {
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500);
     }
 
     public void setHP(int current) { if (isPipelineOperational()) controller.updateHealth(current); }

@@ -1,10 +1,14 @@
 package gui;
 
 import entity.Entity;
+import entity.Monster;
 import entity.Player;
 import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.Room;
+import javafx.animation.FadeTransition;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import util.Position;
 import util.TILE;
 import weapon.Weapon;
@@ -33,12 +37,8 @@ public class GameController {
     @FXML private Label hungerBarText, hungerValText;
     @FXML private Label armorText, weaponText, coinsText, potionsText;
 
-    private GameCanvas monitorTerminal;
-    private Viewport cameraFrame;
-    private final List<OverlayComponent> runningOverlays = new ArrayList<>();
-
-    private TargetReticle targetSelector;
-    private MenuModal confirmationPrompt;
+    private GameCanvas gameCanvas;
+    private Viewport viewport;
 
     // --- TILES ---
     private double currentTileSize = 44.0;
@@ -55,14 +55,8 @@ public class GameController {
         renderCanvas.setManaged(false);
 
         // 2. Build Base Layout Frameworks
-        monitorTerminal = new GameCanvas(renderCanvas, currentTileSize);
-        cameraFrame = new Viewport(monitorTerminal.getGridColumns(), monitorTerminal.getGridRows(), 6);
-
-        targetSelector = new TargetReticle(monitorTerminal.getGridColumns(), monitorTerminal.getGridRows());
-        confirmationPrompt = new MenuModal("PROCEED INTO THE DARKNESS?");
-
-        runningOverlays.add(confirmationPrompt);
-        runningOverlays.add(targetSelector);
+        gameCanvas = new GameCanvas(renderCanvas, currentTileSize);
+        viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
 
         GUIManager.getInstance().registerController(this);
         DungeonManager.getInstance().generateDungeon();
@@ -129,9 +123,10 @@ public class GameController {
     private void buildControlsReferenceHud() {
         controlsBox.getChildren().clear();
         String[] mappings = {
-                "[WASD]  Move Explorer", "[SPACE] Rest / Skip Turn",
-                "[E]     Interact Structure", "[M]     Toggle Target Scope",
-                "[P]     Prompt Choice Menu", "[+ / -] Adjust Camera Zoom"
+                "[WASD]  Move Explorer",
+                "[SPACE] Rest / Skip Turn",
+                "[E]     Interact Structure",
+                "[+ / -] Adjust Camera Zoom"
         };
         for (String item : mappings) {
             Label element = new Label(item);
@@ -142,13 +137,12 @@ public class GameController {
     }
 
     private void handleWindowResize() {
-        if (monitorTerminal == null) return;
-        monitorTerminal.updateFontSize(currentTileSize);
-        int cols = monitorTerminal.getGridColumns();
-        int rows = monitorTerminal.getGridRows();
-        cameraFrame.updateScreenDimensions(cols, rows);
-        targetSelector.updateBounds(cols, rows);
-        confirmationPrompt.updateScreenDimensions(cols, rows);
+        if (gameCanvas == null) return;
+        gameCanvas.updateFontSize(currentTileSize);
+        int cols = gameCanvas.getGridColumns();
+        int rows = gameCanvas.getGridRows();
+        viewport.updateScreenDimensions(cols, rows);
+
         updateRenderingPipeline();
     }
 
@@ -171,19 +165,19 @@ public class GameController {
         int worldW = (worldH > 0) ? layout[0].length : 0;
 
         if (player != null) {
-            cameraFrame.updateCameraFocus(player.position, worldW, worldH);
+            viewport.updateCameraFocus(player.position, worldW, worldH);
         }
 
-        monitorTerminal.clearCanvas();
+        gameCanvas.clearCanvas();
         GlyphRegistry glyphs = GlyphRegistry.getInstance();
 
         List<Entity> entityList = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
         var itemTiles = activeRoom.getInteractableTiles();
 
-        for (int sy = 0; sy < cameraFrame.getScreenHeight(); sy++) {
-            for (int sx = 0; sx < cameraFrame.getScreenWidth(); sx++) {
+        for (int sy = 0; sy < viewport.getScreenHeight(); sy++) {
+            for (int sx = 0; sx < viewport.getScreenWidth(); sx++) {
 
-                Position worldLoc = cameraFrame.toWorldSpace(sx, sy);
+                Position worldLoc = viewport.toWorldSpace(sx, sy);
                 String activeChar = glyphs.getVoidStyle().glyph;
                 Color activeColor = UITheme.CANVAS_VOID;
 
@@ -225,15 +219,7 @@ public class GameController {
                     }
                 }
 
-                // Layer 4: Screen Interface Overlays (Menus / Cursors)
-                for (OverlayComponent overlay : runningOverlays) {
-                    if (overlay.isComponentActive() && overlay.interceptCellRendering(sx, sy)) {
-                        activeChar = overlay.getCustomGlyph(sx, sy, activeChar);
-                        activeColor = overlay.getCustomColor(sx, sy, activeColor);
-                    }
-                }
-
-                monitorTerminal.drawCharacter(sx, sy, activeChar, activeColor);
+                gameCanvas.drawCharacter(sx, sy, activeChar, activeColor);
             }
         }
     }
@@ -244,28 +230,10 @@ public class GameController {
                 newScene.setOnKeyPressed(e -> {
                     KeyCode code = e.getCode();
 
-                    for (OverlayComponent overlay : runningOverlays) {
-                        if (overlay.isComponentActive()) {
-                            if (overlay.interpretKeystroke(code)) {
-                                updateRenderingPipeline();
-                                return;
-                            }
-                        }
-                    }
-
                     if (code == KeyCode.EQUALS) { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
                     if (code == KeyCode.MINUS) { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
 
-                    if (code == KeyCode.M) { targetSelector.toggleState(); updateRenderingPipeline(); return; }
-                    if (code == KeyCode.P) {
-                        confirmationPrompt.invokePrompt(choice -> addLog((choice == 0 ? "EXOLORER VENTURES FORWARD" : "EXPLORER HESITATES"), UITheme.LOG_PLAYER_ACTION));
-                        updateRenderingPipeline();
-                        return;
-                    }
-
-                    Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
-                    Player player = (Player) EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom)
-                            .stream().filter(ent -> ent instanceof Player).findFirst().orElse(null);
+                    Player player = (Player) EntityRoomManager.getInstance().getPlayer();
 
                     if (player == null) return;
                     Position movementVector = new Position(0, 0);
@@ -284,9 +252,13 @@ public class GameController {
                         logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
                         player.handleMove(movementVector);
 
-                        EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom).stream()
-                                .filter(ent -> ent instanceof entity.Monster)
-                                .forEach(m -> ((entity.Monster)m).makeMove());
+                        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
+                        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
+                        for(Entity entity : entities) {
+                            if(entity instanceof Monster m) {
+                                m.makeMove();
+                            }
+                        }
 
                         updateRenderingPipeline();
                     }
@@ -320,7 +292,28 @@ public class GameController {
     }
 
     public void clearLogContainer() { logContainer.getChildren().clear(); }
-    public void flashScreenEffect(Color col) { updateRenderingPipeline(); }
+    public void flashScreenEffect(Color color, int durationInMilis) {
+        Rectangle flashOverlay = new Rectangle();
+        flashOverlay.widthProperty().bind(canvasContainer.widthProperty());
+        flashOverlay.heightProperty().bind(canvasContainer.heightProperty());
+        flashOverlay.setFill(color);
+        flashOverlay.setOpacity(1);
+        flashOverlay.setMouseTransparent(true);
+
+        canvasContainer.getChildren().add(flashOverlay);
+
+        FadeTransition transition = new FadeTransition(Duration.millis(durationInMilis), flashOverlay);
+        transition.setFromValue(1);
+        transition.setToValue(0);
+
+        transition.setOnFinished(event -> {
+            canvasContainer.getChildren().remove(flashOverlay);
+            updateRenderingPipeline(); // Final screen refresh
+        });
+        flashOverlay.setManaged(false);
+
+        transition.play();
+    }
 
     private String toHexWebColor(Color c) {
         return String.format("#%02X%02X%02X", (int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255));
