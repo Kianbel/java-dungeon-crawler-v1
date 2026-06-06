@@ -24,13 +24,13 @@ public abstract class Room {
         this.minimapPosition = minimapPosition;
         layout = new TILE[height][length];
         id = this.hashCode();
-    }
 
-    public void generateWithDoors(boolean north, boolean east, boolean south, boolean west) {
         for(TILE[] row : layout) {
             Arrays.fill(row, TILE.FLOOR);
         }
+    }
 
+    public void generateWithDoors(boolean north, boolean east, boolean south, boolean west) {
         for(int i = 0; i < height; i++) {
             layout[i][0] = TILE.WALL;
             layout[i][length-1] = TILE.WALL;
@@ -52,7 +52,9 @@ public abstract class Room {
         return layout;
     }
 
-    public abstract void populateWithEntities();
+    public void populateWithEntities() {
+        if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
+    }
 
     public List<Position> getSpawnablePositions() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot get spawnablePositions as room has not generated");
@@ -77,7 +79,7 @@ public abstract class Room {
         Position targetPosition = tile.roomLayoutPosition;
         if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
         if(targetPosition.y < 0 || targetPosition.y >= height) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
-        if(layout[targetPosition.y][targetPosition.x] != TILE.FLOOR) throw new RuntimeException("Cannot put interactable tile to room due to room tile is already there");
+        if(layout[targetPosition.y][targetPosition.x] != TILE.FLOOR) throw new RuntimeException("Cannot put " + tile + " to room due to " + layout[targetPosition.y][targetPosition.x] + " is already there");
 
         for(InteractableTile t : interactableTiles) {
             if(t.roomLayoutPosition.x == tile.roomLayoutPosition.x && t.roomLayoutPosition.y == tile.roomLayoutPosition.y) {
@@ -91,5 +93,10 @@ public abstract class Room {
     public boolean removeInteractableTile(InteractableTile tile) {
         if(!interactableTiles.contains(tile)) throw new RuntimeException("Cannot find interactable tile: " + tile);
         return interactableTiles.remove(tile);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
     }
 }

@@ -9,10 +9,4 @@ public enum TILE {
     WALL,
     FLOOR,
     DOOR,
-
-    // Map Layout tiles
-    EMPTY,
-    ROOM,
-    HCORRIDOR,
-    VCORRIDOR
 }

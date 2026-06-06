@@ -14,7 +14,7 @@ public class InfestedRoom extends  Room {
 
     @Override
     public void populateWithEntities() {
-        if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
+        super.populateWithEntities();
 
         final int MONSTER_AMOUNT = 4;
 

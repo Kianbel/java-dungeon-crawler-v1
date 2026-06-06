@@ -270,7 +270,7 @@ public class GameController {
     public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
     public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
     public void updateArmor(int arm) { armorText.setText("Armor: " + arm + "/10"); }
-    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w.name); }
+    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w); }
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
     public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
 

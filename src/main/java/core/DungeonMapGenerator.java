@@ -1,10 +1,11 @@
 package core;
 
+import util.MAP;
 import util.Position;
 import util.TILE;
 
 public class DungeonMapGenerator {
-    private TILE[][] mapLayout;
+    private MAP[][] mapLayout;
     private Generator generator;
 
     public DungeonMapGenerator(Generator generator) {
@@ -15,18 +16,18 @@ public class DungeonMapGenerator {
         mapLayout = generator.start(roomsAmount);
     }
 
-    public TILE[][] getMapLayout() {
+    public MAP[][] getMapLayout() {
         if(mapLayout == null) throw new RuntimeException("Dungeon map layout has not been generated");
         return mapLayout;
     }
 
-    public Position getFirstRoomMinimapPosition() {
-        if(generator.firstRoomPosition == null) throw new RuntimeException("cannot get firstRoomPosition, generate map first");
-        return generator.firstRoomPosition;
+    public Position getSpawnRoomMapPosition() {
+        if(generator.spawnRoomPosition == null) throw new RuntimeException("cannot get spawn room position, generate map first");
+        return generator.spawnRoomPosition;
     }
 
-    public Position getLastRoomMinimapPosition() {
-        if(generator.lastRoomPosition == null) throw new RuntimeException("cannot get lastRoomPosition, generate map first");
-        return generator.lastRoomPosition;
+    public Position getBossRoomMapPosition() {
+        if(generator.bossRoomPosition == null) throw new RuntimeException("cannot get last room position, generate map first");
+        return generator.bossRoomPosition;
     }
 }

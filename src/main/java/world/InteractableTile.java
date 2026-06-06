@@ -21,4 +21,9 @@ public abstract class InteractableTile {
     public void onInteract(Entity entity) {}
 
     public void onEntityBump(Entity entity) {}
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 }

@@ -31,4 +31,9 @@ public abstract class Weapon {
         }
         return attackDamage;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s (ATK: %d)", name, baseAttackDamage);
+    }
 }

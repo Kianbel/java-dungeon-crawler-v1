@@ -1,8 +1,7 @@
 package core;
 
-import core.room.InfestedRoom;
-import core.room.Room;
-import core.room.SpawnRoom;
+import core.room.*;
+import util.MAP;
 import util.Position;
 import util.TILE;
 
@@ -12,11 +11,8 @@ import java.util.List;
 public class DungeonManager {
     private static final DungeonManager instance = new DungeonManager();
 
-    private TILE[][] minimapOverviewLayout;
+    private MAP[][] mapLayout;
     private List<Room> roomList = new ArrayList<>();
-
-    private Position firstRoomMinimapPosition = null;
-    private Position lastRoomMinimapPosition = null;
 
     private DungeonManager() {}
     public static DungeonManager getInstance() {
@@ -28,9 +24,7 @@ public class DungeonManager {
 
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk());
         dungeonMapGenerator.generate(ROOM_AMOUNT);
-        minimapOverviewLayout = dungeonMapGenerator.getMapLayout();
-        firstRoomMinimapPosition = dungeonMapGenerator.getFirstRoomMinimapPosition();
-        lastRoomMinimapPosition = dungeonMapGenerator.getLastRoomMinimapPosition();
+        mapLayout = dungeonMapGenerator.getMapLayout();
 
         generateRooms();
 
@@ -42,42 +36,52 @@ public class DungeonManager {
 
     private void generateRooms() {
         roomList.clear();
-        if(minimapOverviewLayout == null) throw new RuntimeException("Cannot generate rooms as minimapLayout is not initialized");
+        if(mapLayout == null) throw new RuntimeException("Cannot generate rooms as minimapLayout is not initialized");
 
-        final int MAP_HEIGHT = minimapOverviewLayout.length;
-        final int MAP_LENGTH = minimapOverviewLayout[0].length;
+        final int MAP_HEIGHT = mapLayout.length;
+        final int MAP_LENGTH = mapLayout[0].length;
 
-        for(int y = 0; y < minimapOverviewLayout.length; y++) {
-            for(int x = 0; x < minimapOverviewLayout[0].length; x++) {
-                if(minimapOverviewLayout[y][x] == TILE.ROOM) {
-                    boolean northDoor = false, eastDoor = false, southDoor = false, westDoor = false;
+        for(int y = 0; y < mapLayout.length; y++) {
+            for(int x = 0; x < mapLayout[0].length; x++) {
+                MAP mapTile = mapLayout[y][x];
+                if(mapTile == null) continue;
+                if(mapTile == MAP.VCORRIDOR || mapTile == MAP.HCORRIDOR) continue;
 
-                    if(y-1 >= 0 && minimapOverviewLayout[y-1][x] == TILE.VCORRIDOR) northDoor = true;
-                    if(y+1 < MAP_HEIGHT && minimapOverviewLayout[y+1][x] == TILE.VCORRIDOR) southDoor = true;
-                    if(x-1 >= 0 && minimapOverviewLayout[y][x-1] == TILE.HCORRIDOR) westDoor = true;
-                    if(x+1 < MAP_LENGTH && minimapOverviewLayout[y][x+1] == TILE.HCORRIDOR) eastDoor = true;
+                boolean northDoor = false, eastDoor = false, southDoor = false, westDoor = false;
 
-                    final int ROOM_LENGTH = 15;
-                    final int ROOM_HEIGHT = 15;
+                if(y-1 >= 0 && mapLayout[y-1][x] == MAP.VCORRIDOR) northDoor = true;
+                if(y+1 < MAP_HEIGHT && mapLayout[y+1][x] == MAP.VCORRIDOR) southDoor = true;
+                if(x-1 >= 0 && mapLayout[y][x-1] == MAP.HCORRIDOR) westDoor = true;
+                if(x+1 < MAP_LENGTH && mapLayout[y][x+1] == MAP.HCORRIDOR) eastDoor = true;
 
-                    Room newRoom;
+                final int ROOM_LENGTH = 15;
+                final int ROOM_HEIGHT = 15;
 
-                    // TODO: IMPLEMENT OPEN-CLOSE PRINCIPLE
-                    if(x == firstRoomMinimapPosition.x && y == firstRoomMinimapPosition.y) {
-                        newRoom = new SpawnRoom(11, 11, new Position(x, y));
+                Room newRoom;
+
+                switch(mapLayout[y][x]) {
+                    case MAP.SPAWN -> newRoom = new SpawnRoom(11, 11, new Position(x, y));
+                    case MAP.INFESTED -> newRoom = new InfestedRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                    case MAP.TREASURE -> newRoom = new TreasureRoom(11, 11, new Position(x, y));
+                    case MAP.BOSS -> newRoom = new BossRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                    case MAP.CLEAR -> newRoom = new ClearRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
+                    default -> {
+                        continue;
                     }
-                    else {
-                        newRoom = new InfestedRoom(ROOM_HEIGHT, ROOM_LENGTH, new Position(x, y));
-                    }
-                    newRoom.generateWithDoors(northDoor,eastDoor,southDoor,westDoor);
-                    roomList.add(newRoom);
                 }
+
+                newRoom.generateWithDoors(northDoor,eastDoor,southDoor,westDoor);
+                roomList.add(newRoom);
             }
         }
-//        System.out.println("Rooms added to list: " + roomList.size());
+
+        int i = 1;
+        for(Room r : roomList) {
+            System.out.println((i++) + " " + r.getClass().getSimpleName());
+        }
     }
 
-    public TILE[][] getMinimapOverviewLayout() {
-        return minimapOverviewLayout;
+    public MAP[][] getMapLayout() {
+        return mapLayout;
     }
 }

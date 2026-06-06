@@ -9,27 +9,26 @@ import util.Position;
 import weapon.IronBlade;
 
 public class Chest extends InteractableTile {
-    private final double WEAPON_CHANCE = 0.9;
-    private final double COIN_CHANCE = 1 - WEAPON_CHANCE;
+    private final InteractableTile chestDrop;
 
-    public Chest(Position roomLayoutPosition) {
+    public Chest(Position roomLayoutPosition, InteractableTile chestDrop) {
         super(roomLayoutPosition, true);
+        this.chestDrop = chestDrop;
     }
 
     @Override
     public void onEntityBump(Entity entity) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
 
-        InteractableTile chestDrop;
-        if(Math.random() <= COIN_CHANCE) {
-            chestDrop = new Coin(roomLayoutPosition, 5);
+        if(chestDrop instanceof Coin) {
             GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped some coins", UITheme.LOG_WORLD);
         }
-        else {
-            chestDrop = new DroppedWeapon(roomLayoutPosition, new IronBlade());
-            GUIManager.getInstance().printLog(String.format("[WORLD]: You break open the chest and it dropped a %s (ATK: %d)", ((DroppedWeapon)chestDrop).weapon.name, ((DroppedWeapon)chestDrop).weapon.baseAttackDamage), UITheme.LOG_WORLD);
+        else if(chestDrop instanceof Heart) {
+            GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped a heart", UITheme.LOG_WORLD);
         }
-
+        else if(chestDrop instanceof DroppedWeapon w) {
+            GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped " + w.weapon, UITheme.LOG_WORLD);
+        }
 
         EntityRoomManager.getInstance().removeInteractableTile(this);
         currentRoom.addInteractableTile(chestDrop);
