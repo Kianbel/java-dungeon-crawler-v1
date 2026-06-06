@@ -4,11 +4,12 @@ import core.EntityRoomManager;
 import weapon.GiantSpiderFang;
 import util.Position;
 import core.room.Room;
-import world.InteractableTile;
-import world.Web;
+import world.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GiantSpider extends Monster implements RangeAttack {
     private final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 5;
@@ -60,6 +61,18 @@ public class GiantSpider extends Monster implements RangeAttack {
             }
         }
         handleWalk();
+    }
+
+    @Override
+    public void die() {
+        Map<InteractableTile, Double> drops = new HashMap<>(Map.of(
+                new DroppedWeapon(position, new GiantSpiderFang()), 0.05,
+                new Heart(position, 5), 0.4,
+                new Coin(position, 5), 0.8
+        ));
+        dropOnDeath(drops);
+
+        super.die();
     }
 
     private void handleWalk() {

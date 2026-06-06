@@ -33,11 +33,11 @@ public abstract class Room {
 
         for(int i = 0; i < height; i++) {
             layout[i][0] = TILE.WALL;
-            layout[i][height-1] = TILE.WALL;
+            layout[i][length-1] = TILE.WALL;
         }
         for(int i = 0; i < length; i++) {
             layout[0][i] = TILE.WALL;
-            layout[length-1][i] = TILE.WALL;
+            layout[height-1][i] = TILE.WALL;
         }
 
         if(north) layout[0][length/2] = TILE.DOOR;

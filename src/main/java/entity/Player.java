@@ -13,10 +13,10 @@ import java.util.List;
 
 public class Player extends Entity {
     public int coins = 0;
-    public int hpPotions = 0;
+    public int hpPotions = 100;
     public int hunger = 100;
 
-    final int HUNGER_DECREASE_MOVE_COOLDOWN = 10;
+    final int HUNGER_DECREASE_MOVE_COOLDOWN = 20;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     final int HUNGER_DECREASE_AMOUNT = 5;
 
@@ -126,13 +126,13 @@ public class Player extends Entity {
     }
 
     public void setHealth(int health) {
-        this.health = health;
-        GUIManager.getInstance().setHP(health);
+        this.health = Math.clamp(health, 0, 100);
+        GUIManager.getInstance().setHP(this.health);
     }
 
     public void setArmor(int armor) {
-        this.armor = armor;
-        GUIManager.getInstance().setArmor(armor);
+        this.armor = Math.clamp(armor, 0, 10);
+        GUIManager.getInstance().setArmor(this.armor);
     }
 
     public void setWeapon(Weapon weapon) {
@@ -161,7 +161,11 @@ public class Player extends Entity {
             return;
         }
         hunger -= HUNGER_DECREASE_AMOUNT;
-        if(hunger < 0) hunger = 0;
+        if(hunger < 0) {
+            hunger = 0;
+            setHealth(health - 5);
+            GUIManager.getInstance().printLog("[PLAYER]: You are starving", UITheme.LOG_CRITICAL);
+        }
         GUIManager.getInstance().setHunger(hunger);
 
         hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;

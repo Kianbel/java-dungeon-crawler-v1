@@ -52,6 +52,7 @@ public class GlyphRegistry {
         registerInteractableTile(Coin.class, "$", UITheme.STAT_GOLD);
         registerInteractableTile(Chest.class, "C", UITheme.LOOT_CHEST);
         registerInteractableTile(DroppedWeapon.class, "/", UITheme.LOOT_WEAPON);
+        registerInteractableTile(Heart.class, "♥", UITheme.STAT_HEALTH);
 
         // --- CHARACTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

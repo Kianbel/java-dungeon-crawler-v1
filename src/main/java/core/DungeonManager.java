@@ -57,8 +57,8 @@ public class DungeonManager {
                     if(x-1 >= 0 && minimapOverviewLayout[y][x-1] == TILE.HCORRIDOR) westDoor = true;
                     if(x+1 < MAP_LENGTH && minimapOverviewLayout[y][x+1] == TILE.HCORRIDOR) eastDoor = true;
 
-                    final int ROOM_LENGTH = 17;
-                    final int ROOM_HEIGHT = 17;
+                    final int ROOM_LENGTH = 15;
+                    final int ROOM_HEIGHT = 15;
 
                     Room newRoom;
 

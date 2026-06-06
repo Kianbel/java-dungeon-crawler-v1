@@ -10,7 +10,9 @@ import core.room.Room;
 import world.Coin;
 import world.InteractableTile;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Entity {
     public String name;
@@ -61,8 +63,22 @@ public abstract class Entity {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
+    }
 
-        currentRoom.addInteractableTile(new Coin(position, 5));
+    /** NOTE: THE VALUES MUST BE IN ASCENDING ORDER
+     *
+     * @param map a hashmap of all droppable tiles of an entity on death
+     *            where KEY: InteractableTile and VALUE: drop chance
+     */
+    protected void dropOnDeath(Map<InteractableTile, Double> map) {
+        double random = Math.random();
+        for(Map.Entry<InteractableTile, Double> set : map.entrySet()) {
+            if(random <= set.getValue()) {
+                Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+                currentRoom.addInteractableTile(set.getKey());
+                return;
+            }
+        }
     }
 
     public void attack(Entity targetEntity) {
