@@ -4,8 +4,7 @@ import core.EntityRoomManager;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
-import gui.GlyphRegistry;
-import javafx.scene.paint.Color;
+import gui.UITheme;
 import util.Position;
 
 public class Coin extends InteractableTile {
@@ -21,7 +20,7 @@ public class Coin extends InteractableTile {
         if(entity instanceof Player p) {
             p.coins += amount;
             GUIManager.getInstance().setCoins(p.coins);
-            GUIManager.getInstance().printLog("+" + amount + " coins.", GlyphRegistry.LOG_COLOR_PLAYER);
+            GUIManager.getInstance().printLog("[WORLD]: +" + amount + " coins.", UITheme.LOG_WORLD);
             EntityRoomManager.getInstance().removeInteractableTile(this);
         }
     }

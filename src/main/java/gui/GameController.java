@@ -1,347 +1,328 @@
 package gui;
 
-import core.EntityRoomManager;
 import entity.Entity;
-import entity.Monster;
 import entity.Player;
-import javafx.animation.FadeTransition;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.util.Duration;
+import core.DungeonManager;
+import core.EntityRoomManager;
+import core.room.Room;
 import util.Position;
 import util.TILE;
-import core.DungeonManager;
-import core.room.Room;
 import weapon.Weapon;
-import world.InteractableTile;
 
+import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.input.KeyCode;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
 
-    @FXML private ScrollPane mapScrollPane;
-    @FXML private GridPane dungeonGrid;
+    @FXML private HBox rootContainer;
+    @FXML private StackPane canvasContainer;
+    @FXML private Canvas renderCanvas;
     @FXML private VBox logContainer;
+    @FXML private VBox statsPanel, logsPanel, controlsPanel, controlsBox;
+    @FXML private Label statsHeader, logsHeader, controlsHeader;
+    @FXML private Label lblHealth, lblHunger, lblCoins, lblPotions;
+    @FXML private Label healthBarText, healthValText;
+    @FXML private Label hungerBarText, hungerValText;
+    @FXML private Label armorText, weaponText, coinsText, potionsText;
 
-    @FXML private Text healthBarText;
-    @FXML private Text healthValText;
-    @FXML private Text hungerBarText;
-    @FXML private Text hungerValText;
-    @FXML private Text armorText;
-    @FXML private Text weaponText;
-    @FXML private Text coinsText;
-    @FXML private Text potionsText;
+    private GameCanvas monitorTerminal;
+    private Viewport cameraFrame;
+    private final List<OverlayComponent> runningOverlays = new ArrayList<>();
 
-    private final int MAP_WIDTH = 118;
-    private final int MAP_HEIGHT = 30;
-    private final int MAX_LOG_LINES = 5;
-    private double mapFontSize;
-    private final String DEFAULT_FONT_STYLE = "Courier New";
-    private final int DEFAULT_FONT_SIZE = 22;
+    private TargetReticle targetSelector;
+    private MenuModal confirmationPrompt;
 
-    private final int SCREEN_FLASH_DURATION_MS = 100;
-    private final String ROOM_TRANSFER_TRANSITION_COLOR = "#000000";
-    private final int ROOM_TRANSFER_TRANSITION_DURATION_MS = 600;
+    // --- TILES ---
+    private double currentTileSize = 44.0;
+    private final double MIN_TILE_SIZE = 6.0;
+    private final double MAX_TILE_SIZE = 60.0;
+    private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
 
-    private boolean isControlsEnabled = true;
-
-    private Entity player = null;
-    private final Text[][] gridNodes = new Text[MAP_HEIGHT][MAP_WIDTH];
-
-    private Room lastRenderedRoom = null;
+    // --- LOGS ---
+    private final int MAX_LOG_LINES = 15;
 
     @FXML
     public void initialize() {
-        Font gameFont = Font.font(DEFAULT_FONT_STYLE, mapFontSize);
+        // 1. Unmanage the Canvas to protect against layout scaling loops
+        renderCanvas.setManaged(false);
 
-        // 1. Clear out any previous layout constraints to reset cleanly
-        dungeonGrid.getColumnConstraints().clear();
+        // 2. Build Base Layout Frameworks
+        monitorTerminal = new GameCanvas(renderCanvas, currentTileSize);
+        cameraFrame = new Viewport(monitorTerminal.getGridColumns(), monitorTerminal.getGridRows(), 6);
 
-        // 2. Populate the base matrix canvas nodes as usual
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                Text cell = new Text(" ");
-                cell.setFont(gameFont);
-                cell.setFill(Color.BLACK);
-                gridNodes[y][x] = cell;
-                dungeonGrid.add(cell, x, y);
-            }
-        }
+        targetSelector = new TargetReticle(monitorTerminal.getGridColumns(), monitorTerminal.getGridRows());
+        confirmationPrompt = new MenuModal("PROCEED INTO THE DARKNESS?");
 
-        // Connect this view container to our clean global business model manager
+        runningOverlays.add(confirmationPrompt);
+        runningOverlays.add(targetSelector);
+
         GUIManager.getInstance().registerController(this);
-
-        // System Startup
         DungeonManager.getInstance().generateDungeon();
-        Room playerRoom = EntityRoomManager.getInstance().getPlayerRoom();
 
-        drawToScreen(playerRoom);
-        setMapFontSize(DEFAULT_FONT_SIZE);
+        // 3. Apply Unified Dynamic Theme Injection across all HUD Containers
+        applyInterfaceTheme();
 
-        handleControls();
-
-        // to not make screen go up when pressing space bar
-        mapScrollPane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.SPACE) {
-                event.consume();
-            }
+        // 4. Bind window resize handlers
+        canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
+            renderCanvas.setWidth(newVal.doubleValue());
+            handleWindowResize();
         });
+        canvasContainer.heightProperty().addListener((obs, oldVal, newVal) -> {
+            renderCanvas.setHeight(newVal.doubleValue());
+            handleWindowResize();
+        });
+
+        attachKeyboardHandlers();
     }
 
-    public void drawToScreen(Room playerRoom) {
-        if (playerRoom == null) return;
+    /**
+     * Programmatically styles layout cards to ensure UI settings remain centralized.
+     */
+    private void applyInterfaceTheme() {
+        // Root Container Node Context
+        rootContainer.setStyle("-fx-background-color: " + UITheme.BG_ROOT + "; " + UITheme.CSS_FONT_FAMILY);
+        canvasContainer.setStyle("-fx-border-color: " + UITheme.BORDER_HIGHLIGHT + "; -fx-border-width: 2; -fx-background-color: #000000;");
 
-        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
-        List<InteractableTile> interactableTiles = playerRoom.getInteractableTiles();
-        TILE[][] layout = playerRoom.getLayout();
+        // Sidebar Dashboard Panel Containers
+        String subPanelStyle = "-fx-border-color: " + UITheme.BORDER_NORMAL + "; -fx-border-width: 2; -fx-background-color: " + UITheme.BG_CARD + ";";
+        statsPanel.setStyle(subPanelStyle);
+        logsPanel.setStyle(subPanelStyle);
+        controlsPanel.setStyle(subPanelStyle);
 
-        int roomHeight = layout.length;
-        int roomWidth = (roomHeight > 0) ? layout[0].length : 0;
+        // Header Captions Style bindings using centralized font definitions
+        String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: " + toHexWebColor(UITheme.OVERLAY_MODAL) + ";";
+        statsHeader.setStyle(headerStyle);
+        logsHeader.setStyle(headerStyle);
+        controlsHeader.setStyle(headerStyle);
 
-        int offsetX = (MAP_WIDTH - roomWidth) / 2;
-        int offsetY = (MAP_HEIGHT - roomHeight) / 2;
+        // Descriptive Static Label Elements Font Paints
+        String labelStaticStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";";
+        lblHealth.setStyle(labelStaticStyle);
+        lblHunger.setStyle(labelStaticStyle);
+        lblCoins.setStyle(labelStaticStyle);
+        lblPotions.setStyle(labelStaticStyle);
 
+        // Dynamic Text Metric Value Fields Style updates
+        String activeMetricStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + "; -fx-font-weight: bold;";
+        healthValText.setStyle(activeMetricStyle);
+        hungerValText.setStyle(activeMetricStyle);
+        coinsText.setStyle(activeMetricStyle);
+        potionsText.setStyle(activeMetricStyle);
+
+        // Custom Visual Colors for specific UI Components
+        healthBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
+        hungerBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
+        armorText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + "; -fx-font-weight: bold;");
+        weaponText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_WEAPON) + "; -fx-font-weight: bold;");
+
+        buildControlsReferenceHud();
+    }
+
+    private void buildControlsReferenceHud() {
+        controlsBox.getChildren().clear();
+        String[] mappings = {
+                "[WASD]  Move Explorer", "[SPACE] Rest / Skip Turn",
+                "[E]     Interact Structure", "[M]     Toggle Target Scope",
+                "[P]     Prompt Choice Menu", "[+ / -] Adjust Camera Zoom"
+        };
+        for (String item : mappings) {
+            Label element = new Label(item);
+            // Apply centralized style layout variables
+            element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
+            controlsBox.getChildren().add(element);
+        }
+    }
+
+    private void handleWindowResize() {
+        if (monitorTerminal == null) return;
+        monitorTerminal.updateFontSize(currentTileSize);
+        int cols = monitorTerminal.getGridColumns();
+        int rows = monitorTerminal.getGridRows();
+        cameraFrame.updateScreenDimensions(cols, rows);
+        targetSelector.updateBounds(cols, rows);
+        confirmationPrompt.updateScreenDimensions(cols, rows);
+        updateRenderingPipeline();
+    }
+
+    public void adjustTileSize(double delta) {
+        double newSize = currentTileSize + delta;
+        if (newSize < MIN_TILE_SIZE || newSize > MAX_TILE_SIZE) return;
+        this.currentTileSize = newSize;
+        handleWindowResize();
+    }
+
+    public void updateRenderingPipeline() {
+        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        if (activeRoom == null) return;
+
+        Player player = (Player) EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom)
+                .stream().filter(e -> e instanceof Player).findFirst().orElse(null);
+
+        TILE[][] layout = activeRoom.getLayout();
+        int worldH = layout.length;
+        int worldW = (worldH > 0) ? layout[0].length : 0;
+
+        if (player != null) {
+            cameraFrame.updateCameraFocus(player.position, worldW, worldH);
+        }
+
+        monitorTerminal.clearCanvas();
         GlyphRegistry glyphs = GlyphRegistry.getInstance();
 
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                int roomX = x - offsetX;
-                int roomY = y - offsetY;
+        List<Entity> entityList = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
+        var itemTiles = activeRoom.getInteractableTiles();
 
-                if (roomX >= 0 && roomX < roomWidth && roomY >= 0 && roomY < roomHeight) {
-                    // 1. Draw Entities
-                    Entity occupyingEntity = null;
-                    for (Entity e : entities) {
-                        if (e.position.x == roomX && e.position.y == roomY) {
-                            occupyingEntity = e;
+        for (int sy = 0; sy < cameraFrame.getScreenHeight(); sy++) {
+            for (int sx = 0; sx < cameraFrame.getScreenWidth(); sx++) {
+
+                Position worldLoc = cameraFrame.toWorldSpace(sx, sy);
+                String activeChar = glyphs.getVoidStyle().glyph;
+                Color activeColor = UITheme.CANVAS_VOID;
+
+                if (worldLoc.x >= 0 && worldLoc.x < worldW && worldLoc.y >= 0 && worldLoc.y < worldH) {
+                    // Layer 1: Base Floor/Wall Structures
+                    TILE structuralTile = layout[worldLoc.y][worldLoc.x];
+                    if (structuralTile != null) {
+                        var style = glyphs.getStyle(structuralTile, worldLoc.x, worldLoc.y, activeRoom.id);
+                        activeChar = style.glyph;
+                        activeColor = style.color; // Pulls directly from your registry config
+                    }
+
+                    // Layer 2: Interactable Map Loot Objects
+                    for (var item : itemTiles) {
+                        if (item.roomLayoutPosition.x == worldLoc.x && item.roomLayoutPosition.y == worldLoc.y) {
+                            var style = glyphs.getStyle(item);
+                            activeChar = style.glyph;
+                            activeColor = style.color;
                             break;
                         }
                     }
 
-                    if (occupyingEntity != null) {
-                        GlyphRegistry.GlyphStyle style = glyphs.getStyle(occupyingEntity);
-                        if (occupyingEntity instanceof Player) {
-                            player = occupyingEntity;
-                            updateCell(x, y, style.glyph, style.color);
-                        }
-                        else {
-                            double outputSaturation = ((occupyingEntity.id * 13 + 17) % 113) % 100;
-                            Color outputColor = Color.hsb(style.color.getHue(), Math.abs(outputSaturation)/100, style.color.getBrightness());
-                            updateCell(x, y, style.glyph, outputColor);
-                        }
-                        continue;
-                    }
-
-                    // 2. Draw Interactable Tiles
-                    InteractableTile interactableTile = null;
-                    for(InteractableTile it : interactableTiles) {
-                        if(it.roomLayoutPosition.x == roomX && it.roomLayoutPosition.y == roomY) {
-                            interactableTile = it;
+                    // Layer 3: Living Entities (Player & Monsters)
+                    for (Entity ent : entityList) {
+                        if (ent.position.x == worldLoc.x && ent.position.y == worldLoc.y) {
+                            var style = glyphs.getStyle(ent);
+                            activeChar = style.glyph;
+                            if(ent instanceof Player) {
+                                activeColor = style.color;
+                            }
+                            else {
+                                double hue = style.color.getHue();
+                                double saturation = Math.abs((double) (ent.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                                double brightness = Math.abs((double) (ent.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                                activeColor = Color.hsb(hue, saturation, brightness);
+                            }
                             break;
                         }
                     }
-                    if(interactableTile != null) {
-                        GlyphRegistry.GlyphStyle style = glyphs.getStyle(interactableTile);
-                        updateCell(x, y, style.glyph, style.color);
-                        continue;
-                    }
-
-                    // 3. Draw Room Tiles
-                    TILE tile = layout[roomY][roomX];
-                    GlyphRegistry.GlyphStyle style = (tile != null) ? glyphs.getStyle(tile, roomX, roomY, playerRoom.id) : glyphs.getVoidStyle();
-                    updateCell(x, y, style.glyph, style.color);
-                } else {
-                    updateCell(x, y, glyphs.getVoidStyle().glyph, glyphs.getVoidStyle().color);
                 }
+
+                // Layer 4: Screen Interface Overlays (Menus / Cursors)
+                for (OverlayComponent overlay : runningOverlays) {
+                    if (overlay.isComponentActive() && overlay.interceptCellRendering(sx, sy)) {
+                        activeChar = overlay.getCustomGlyph(sx, sy, activeChar);
+                        activeColor = overlay.getCustomColor(sx, sy, activeColor);
+                    }
+                }
+
+                monitorTerminal.drawCharacter(sx, sy, activeChar, activeColor);
             }
         }
     }
 
-    private void updateCell(int x, int y, String character, Color color) {
-        if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT) {
-            Text cell = gridNodes[y][x];
-            cell.setText(character);
-            cell.setFill(color);
-        }
-    }
-
-    public void setMapFontSize(double newSize) {
-        if (newSize < 6.0 || newSize > 30.0) return;
-        this.mapFontSize = newSize;
-        Font updatedFont = Font.font(DEFAULT_FONT_STYLE, mapFontSize);
-
-        // Recalculate and update the column width constraint rules dynamically
-        double lockedColumnWidth = mapFontSize * 0.62;
-        for (javafx.scene.layout.ColumnConstraints colRule : dungeonGrid.getColumnConstraints()) {
-            colRule.setPrefWidth(lockedColumnWidth);
-            colRule.setMinWidth(lockedColumnWidth);
-            colRule.setMaxWidth(lockedColumnWidth);
-        }
-
-        // Update the entire matrix font profile
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                gridNodes[y][x].setFont(updatedFont);
-            }
-        }
-
-        dungeonGrid.requestLayout();
-        javafx.application.Platform.runLater(() -> {
-            mapScrollPane.setHvalue(0.5);
-            mapScrollPane.setVvalue(0.5);
-        });
-    }
-
-    public void adjustMapFontSize(double delta) { setMapFontSize(this.mapFontSize + delta); }
-
-    /**
-     * Smart rendering pipeline that automatically detects room transitions
-     * and applies the appropriate visual effects.
-     */
-    public void updateRenderingPipeline() {
-        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
-
-        if (lastRenderedRoom == null) {
-            lastRenderedRoom = currentRoom;
-            drawToScreen(currentRoom);
-            return;
-        }
-        if (lastRenderedRoom != currentRoom) {
-            lastRenderedRoom = currentRoom;
-            roomTransferFlashScreenEffect(Color.web(ROOM_TRANSFER_TRANSITION_COLOR), currentRoom);
-            return;
-        }
-        drawToScreen(currentRoom);
-    }
-
-    /**
-     * Triggers a momentary screen overlay flash, then renders the destination room.
-     */
-    public void roomTransferFlashScreenEffect(Color flashColor, Room targetRoom) {
-        isControlsEnabled = false;
-        // Fill the grid with the flash color
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                gridNodes[y][x].setFill(flashColor);
-            }
-        }
-
-        FadeTransition flashDelay = new FadeTransition(Duration.millis(ROOM_TRANSFER_TRANSITION_DURATION_MS), dungeonGrid);
-        flashDelay.setOnFinished(event -> {
-            drawToScreen(targetRoom);
-            isControlsEnabled = true;
-        });
-        flashDelay.play();
-    }
-
-    public void flashScreenEffect(Color flashColor) {
-        Color[][] originalColors = new Color[MAP_HEIGHT][MAP_WIDTH];
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                originalColors[y][x] = (Color) gridNodes[y][x].getFill();
-                gridNodes[y][x].setFill(flashColor);
-            }
-        }
-        FadeTransition flashDelay = new FadeTransition(Duration.millis(SCREEN_FLASH_DURATION_MS), dungeonGrid);
-        flashDelay.setOnFinished(event -> drawToScreen(EntityRoomManager.getInstance().getPlayerRoom()));
-        flashDelay.play();
-    }
-
-    // --- HUD RENDERERS ---
-    public void updateHealth(int health) {
-        final int MAX_HP = 100;
-        healthValText.setText(health + "/" + MAX_HP);
-        healthBarText.setText(generateAsciiMeter(health, MAX_HP));
-    }
-
-    public void updateHunger(int hunger) {
-        final int MAX_HUNGER = 100;
-        hungerValText.setText(hunger + "/" + MAX_HUNGER);
-        hungerBarText.setText(generateAsciiMeter(hunger, MAX_HUNGER));
-    }
-
-    public void updateArmor(int armor) {
-        final int MAX_ARMOR = 10;
-        armorText.setText(armor + "/" + MAX_ARMOR);
-    }
-    public void updateWeapon(Weapon weapon) { weaponText.setText(String.format("%s (ATK: %d)", weapon.name, weapon.baseAttackDamage)); }
-    public void updateCoins(int amount) { coinsText.setText(String.valueOf(amount)); }
-    public void updatePotions(int amount) { potionsText.setText(String.valueOf(amount)); }
-
-    private String generateAsciiMeter(int current, int max) {
-        int totalBlocks = 15;
-        int filledCount = (int) Math.round(Math.min(1.0, Math.max(0.0, (double) current / max)) * totalBlocks);
-        StringBuilder meter = new StringBuilder("[");
-        for (int i = 0; i < totalBlocks; i++) meter.append(i < filledCount ? "■" : "·");
-        return meter.append("]").toString();
-    }
-
-    // --- LOGGING RENDERERS ---
-    public void addLog(String message, Color color) {
-        Text logEntry = new Text(message);
-        logEntry.setFont(Font.font(DEFAULT_FONT_STYLE, 14));
-        logEntry.setFill(color);
-        logEntry.setWrappingWidth(580);
-        if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
-        logContainer.getChildren().add(logEntry);
-    }
-
-    public void clearLogContainer() { logContainer.getChildren().clear(); }
-
-    private void grayOutOldLogs() {
-        for(int i = 0; i < logContainer.getChildren().size(); i++) {
-            Node prevLog = logContainer.getChildren().get(i);
-            ((Text)prevLog).setFill(Color.GRAY);
-        }
-    }
-
-    // --- PLAYER CONTROL HANDLER ---
-    private void handleControls() {
-        dungeonGrid.sceneProperty().addListener((observable, oldScene, newScene) -> {
+    private void attachKeyboardHandlers() {
+        renderCanvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(e -> {
-                    if(!isControlsEnabled) return;
+                    KeyCode code = e.getCode();
 
-                    Position unitPos = new Position(0,0);
-                    boolean skipPlayerMove = false;
-                    switch (e.getCode()) {
-                        case KeyCode.W -> unitPos.y--;
-                        case KeyCode.A -> unitPos.x--;
-                        case KeyCode.S -> unitPos.y++;
-                        case KeyCode.D -> unitPos.x++;
-                        case KeyCode.SPACE -> { skipPlayerMove = true; e.consume(); }
-                        case KeyCode.EQUALS -> { adjustMapFontSize(1.0); return; }
-                        case KeyCode.MINUS  -> { adjustMapFontSize(-1.0); return; }
-                        default -> { return; }
+                    for (OverlayComponent overlay : runningOverlays) {
+                        if (overlay.isComponentActive()) {
+                            if (overlay.interpretKeystroke(code)) {
+                                updateRenderingPipeline();
+                                return;
+                            }
+                        }
                     }
-                    grayOutOldLogs();
 
-                    if(!skipPlayerMove) ((Player)player).handleMove(unitPos);
-                    handleMonstersMove();
+                    if (code == KeyCode.EQUALS) { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
+                    if (code == KeyCode.MINUS) { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
 
-                    updateRenderingPipeline();
+                    if (code == KeyCode.M) { targetSelector.toggleState(); updateRenderingPipeline(); return; }
+                    if (code == KeyCode.P) {
+                        confirmationPrompt.invokePrompt(choice -> addLog((choice == 0 ? "EXOLORER VENTURES FORWARD" : "EXPLORER HESITATES"), UITheme.LOG_PLAYER_ACTION));
+                        updateRenderingPipeline();
+                        return;
+                    }
+
+                    Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+                    Player player = (Player) EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom)
+                            .stream().filter(ent -> ent instanceof Player).findFirst().orElse(null);
+
+                    if (player == null) return;
+                    Position movementVector = new Position(0, 0);
+                    boolean isTickAction = true;
+
+                    switch (code) {
+                        case W -> movementVector.y--;
+                        case A -> movementVector.x--;
+                        case S -> movementVector.y++;
+                        case D -> movementVector.x++;
+                        case SPACE -> movementVector = new Position(0,0);
+                        default -> isTickAction = false;
+                    }
+
+                    if (isTickAction) {
+                        logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
+                        player.handleMove(movementVector);
+
+                        EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom).stream()
+                                .filter(ent -> ent instanceof entity.Monster)
+                                .forEach(m -> ((entity.Monster)m).makeMove());
+
+                        updateRenderingPipeline();
+                    }
                 });
             }
         });
     }
 
-    // --- MONSTER MOVEMENT HANDLER ---
-    private void handleMonstersMove() {
-        Room playerRoom = EntityRoomManager.getInstance().getPlayerRoom();
-        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(playerRoom);
+    public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
+    public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
+    public void updateArmor(int arm) { armorText.setText("Armor: " + arm + "/10"); }
+    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w.name); }
+    public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
+    public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
 
-        for(Entity e : entities) {
-            if(e instanceof Monster m) {
-                m.makeMove();
-            }
-        }
+    private String buildBarMeter(int val) {
+        int fill = (int) Math.round((Math.max(0, Math.min(100, val)) / 100.0) * 15);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < 15; i++) sb.append(i < fill ? "■" : "·");
+        return sb.append("]").toString();
+    }
+
+    public void addLog(String txt, Color col) {
+        Label element = new Label(txt);
+        // Inject font parameters safely straight from theme file definitions
+        element.setStyle(UITheme.STYLE_LOG + " -fx-text-fill: " + toHexWebColor(col) + ";");
+        element.setWrapText(true);
+
+        if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
+        logContainer.getChildren().add(element);
+    }
+
+    public void clearLogContainer() { logContainer.getChildren().clear(); }
+    public void flashScreenEffect(Color col) { updateRenderingPipeline(); }
+
+    private String toHexWebColor(Color c) {
+        return String.format("#%02X%02X%02X", (int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255));
     }
 }
