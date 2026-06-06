@@ -72,4 +72,5 @@ public class UITheme {
     public static final Color LOG_PLAYER_ACTION = Color.YELLOW;
     public static final Color LOG_CRITICAL     = Color.RED;
     public static final Color LOG_MONSTER_ACTION     = Color.RED;
+    public static final Color LOG_DEV     = Color.HOTPINK;
 }

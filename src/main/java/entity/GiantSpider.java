@@ -6,10 +6,7 @@ import util.Position;
 import core.room.Room;
 import world.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GiantSpider extends Monster implements RangeAttack {
     private final int WEBBING_DISTANCE_TO_PLAYER_THRESHOLD = 5;
@@ -121,7 +118,8 @@ public class GiantSpider extends Monster implements RangeAttack {
             }
         }
 
-        Position webPosition = validWebPositions.get((int) (Math.random() * 100 % validWebPositions.size()));
+        Random random = new Random();
+        Position webPosition = validWebPositions.get(random.nextInt(validWebPositions.size()));
         InteractableTile web = new Web(webPosition);
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;

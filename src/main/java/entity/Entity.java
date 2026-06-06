@@ -54,6 +54,7 @@ public abstract class Entity {
                 fixEntityPositionAfterTransferFromUnitPos(unitPos);
                 if(this instanceof Player) {
                     GUIManager.getInstance().triggerRoomTransitionFlash();
+                    GUIManager.getInstance().printLog("player entered " + targetRoom.getClass().getSimpleName(), UITheme.LOG_DEV);
                 }
             }
         }

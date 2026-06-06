@@ -5,6 +5,7 @@ import util.MAP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DrunkardWalk extends Generator {
 
@@ -65,13 +66,15 @@ public class DrunkardWalk extends Generator {
         }
 
         // --- TREASURE ROOM ---
-        Position treasureRoomPos = transformableRooms.remove((int) (Math.random() * 100 % transformableRooms.size()));
+        Random random = new Random();
+        Position treasureRoomPos = transformableRooms.remove(random.nextInt(transformableRooms.size()));
         mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
 
         // --- CLEAR ROOMS (HALF OF TOTAL ROOMS) ---
         int clearRoomAmount = transformableRooms.size()/2;
         for(int i = 0; i < clearRoomAmount; i++) {
-            Position clearRoomPos = transformableRooms.remove((int) (Math.random() * 100 % transformableRooms.size()));
+            random = new Random();
+            Position clearRoomPos = transformableRooms.remove(random.nextInt(transformableRooms.size()));
             mapLayout[clearRoomPos.y][clearRoomPos.x] = MAP.CLEAR;
         }
     }
