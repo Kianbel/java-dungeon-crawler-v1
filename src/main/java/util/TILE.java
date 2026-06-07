@@ -6,8 +6,8 @@ public enum TILE {
     WALL,
     FLOOR,
     DOOR,
-    WATER,
+    PUDDLE,
     GRASS,
-    POSSIBLE_DOOR,
-    BARREL
+    BARREL,
+    COBWEB,
 }

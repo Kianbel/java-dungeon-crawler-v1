@@ -1,6 +1,7 @@
 package core;
 
 import core.room.*;
+import core.room.loader.RoomLoader;
 import util.MAP;
 import util.Position;
 
@@ -25,6 +26,8 @@ public class DungeonManager {
         dungeonMapGenerator.generate(ROOM_AMOUNT);
         mapLayout = dungeonMapGenerator.getMapLayout();
 
+        RoomLoader roomLoader = new RoomLoader();
+        roomLoader.loadRawRoomLayouts("src/main/java/core/room/layout");
         generateRooms();
 
         for(Room r : roomList) {
