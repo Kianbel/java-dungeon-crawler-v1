@@ -1,12 +1,13 @@
 package util;
 
 public enum TILE {
-    // Entity tiles
-    PLAYER,
-    MONSTER,
-
     // Room tiles
+    EMPTY,
     WALL,
     FLOOR,
     DOOR,
+    WATER,
+    GRASS,
+    POSSIBLE_DOOR,
+    BARREL
 }

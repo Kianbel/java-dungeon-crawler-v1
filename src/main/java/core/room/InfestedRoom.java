@@ -6,7 +6,7 @@ import util.Position;
 
 import java.util.List;
 
-public class InfestedRoom extends  Room {
+public class InfestedRoom extends Room {
 
     public InfestedRoom(int height, int length, Position minimapPosition) {
         super(height, length, minimapPosition);

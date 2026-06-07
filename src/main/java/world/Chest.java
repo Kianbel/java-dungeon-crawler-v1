@@ -21,13 +21,13 @@ public class Chest extends InteractableTile {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
 
         if(chestDrop instanceof Coin) {
-            GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped some coins", UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("You break open the chest and it dropped some coins", UITheme.LOG_WORLD);
         }
         else if(chestDrop instanceof Heart) {
-            GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped a heart", UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("You break open the chest and it dropped a heart", UITheme.LOG_WORLD);
         }
         else if(chestDrop instanceof DroppedWeapon w) {
-            GUIManager.getInstance().printLog("[WORLD]: You break open the chest and it dropped " + w.weapon, UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("You break open the chest and it dropped " + w.weapon, UITheme.LOG_WORLD);
         }
 
         EntityRoomManager.getInstance().removeInteractableTile(this);

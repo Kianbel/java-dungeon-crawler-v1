@@ -3,7 +3,6 @@ package core;
 import core.room.*;
 import util.MAP;
 import util.Position;
-import util.TILE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,7 @@ public class DungeonManager {
                     }
                 }
 
-                newRoom.generateWithDoors(northDoor,eastDoor,southDoor,westDoor);
+                newRoom.generate(northDoor,eastDoor,southDoor,westDoor);
                 roomList.add(newRoom);
             }
         }

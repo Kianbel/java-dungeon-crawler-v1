@@ -19,7 +19,7 @@ public class Heart extends InteractableTile {
     public void onEntityEnter(Entity entity) {
         if(entity instanceof Player p) {
             p.setHealth(p.health + healAmount);
-            GUIManager.getInstance().printLog("[WORLD]: +" + healAmount + " HP", UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("+" + healAmount + " HP", UITheme.LOG_WORLD);
             EntityRoomManager.getInstance().removeInteractableTile(this);
         }
     }

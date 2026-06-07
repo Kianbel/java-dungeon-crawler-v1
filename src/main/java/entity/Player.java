@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Player extends Entity {
     public int coins = 0;
-    public int hpPotions = 100;
+    public int hpPotions = 0;
     public int hunger = 100;
 
     final int HUNGER_DECREASE_MOVE_COOLDOWN = 20;
@@ -21,21 +21,16 @@ public class Player extends Entity {
     final int HUNGER_DECREASE_AMOUNT = 5;
 
     public Player(Position position) {
-        final String NAME = "Player";
-        final int HEALTH = 100;
-        final int ARMOR = 0;
-        final Weapon WEAPON = new AncientSword();
+        super("Player", 100, 0, new AncientSword(), position);
 
-        super(NAME, HEALTH, ARMOR, WEAPON, position);
+//        activateGodMode();
 
-        activateGodMode();
-
-        GUIManager.getInstance().setHP(HEALTH);
-        GUIManager.getInstance().setHunger(hunger);
-        GUIManager.getInstance().setArmor(ARMOR);
-        GUIManager.getInstance().setWeapon(WEAPON);
-        GUIManager.getInstance().setCoins(0);
-        GUIManager.getInstance().setPotions(0);
+        setHealth(health);
+        setHunger(hunger);
+        setArmor(armor);
+        setWeapon(weapon);
+        setCoins(coins);
+        setHpPotions(hpPotions);
     }
 
     public void activateGodMode() {
@@ -47,7 +42,7 @@ public class Player extends Entity {
 
     public void handleMove(Position unitPos) {
         if(stunCounter > 0) {
-            GUIManager.getInstance().printLog("[PLAYER]: Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
             stunCounter--;
             return;
         }
@@ -83,10 +78,10 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog(String.format("[PLAYER]: You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
 
             if(!targetEntity.isAlive()) {
-                GUIManager.getInstance().printLog("[PLAYER]: You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
+                GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
             }
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
@@ -98,7 +93,7 @@ public class Player extends Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
 
-        GUIManager.getInstance().printLog("[PLAYER]: You died!", UITheme.LOG_MONSTER_ACTION);
+        GUIManager.getInstance().printLog("You died!", UITheme.LOG_MONSTER_ACTION);
     }
 
     @Override
@@ -110,7 +105,7 @@ public class Player extends Entity {
             health -= damage;
             if(health < 0) health = 0;
 
-            GUIManager.getInstance().printLog("[MONSTER]: " + attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
+            GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
             GUIManager.getInstance().setHP(health);
 //            GUIManager.getInstance().triggerHurtFlash();
 
@@ -122,7 +117,7 @@ public class Player extends Entity {
     public void stun(int moveCount) {
         if(stunCounter > 0) return;
         stunCounter = moveCount;
-        GUIManager.getInstance().printLog("[PLAYER]: You got stunned!", UITheme.LOG_PLAYER_ACTION);
+        GUIManager.getInstance().printLog("You got stunned!", UITheme.LOG_PLAYER_ACTION);
     }
 
     public void setHealth(int health) {
@@ -164,7 +159,7 @@ public class Player extends Entity {
         if(hunger < 0) {
             hunger = 0;
             setHealth(health - 5);
-            GUIManager.getInstance().printLog("[PLAYER]: You are starving", UITheme.LOG_CRITICAL);
+            GUIManager.getInstance().printLog("You are starving", UITheme.LOG_CRITICAL);
         }
         GUIManager.getInstance().setHunger(hunger);
 

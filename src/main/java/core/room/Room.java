@@ -30,7 +30,7 @@ public abstract class Room {
         }
     }
 
-    public void generateWithDoors(boolean north, boolean east, boolean south, boolean west) {
+    public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
         for(int i = 0; i < height; i++) {
             layout[i][0] = TILE.WALL;
             layout[i][length-1] = TILE.WALL;
@@ -40,10 +40,10 @@ public abstract class Room {
             layout[height-1][i] = TILE.WALL;
         }
 
-        if(north) layout[0][length/2] = TILE.DOOR;
-        if(south) layout[height-1][length/2] = TILE.DOOR;
-        if(west) layout[height/2][0] = TILE.DOOR;
-        if(east) layout[height/2][length-1] = TILE.DOOR;
+        if(hasDoorNorth) layout[0][length/2] = TILE.DOOR;
+        if(hasDoorSouth) layout[height-1][length/2] = TILE.DOOR;
+        if(hasDoorWest) layout[height/2][0] = TILE.DOOR;
+        if(hasDoorEast) layout[height/2][length-1] = TILE.DOOR;
         isRoomGenerated = true;
     }
 
