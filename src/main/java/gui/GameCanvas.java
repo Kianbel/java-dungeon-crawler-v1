@@ -39,15 +39,38 @@ public class GameCanvas {
         gc.fillRect(0, 0, nativeCanvas.getWidth(), nativeCanvas.getHeight());
     }
 
-    public void drawCharacter(int gridX, int gridY, String character, Color textColor) {
+    public void drawCharacter(int gridX, int gridY, String character, Color textColor, double offsetX, double offsetY) {
         if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;
 
-        double renderPixelX = gridX * cellWidth;
-        double renderPixelY = gridY * cellHeight;
+        // Add the pixel offsets directly to the layout position
+        double renderPixelX = (gridX * cellWidth) + offsetX;
+        double renderPixelY = (gridY * cellHeight) + offsetY;
 
         gc.setFont(this.font);
         gc.setFill(textColor);
         gc.fillText(character, renderPixelX, renderPixelY + fontAscent);
+    }
+
+    // Update your health bar method too so it glides along with the monster!
+    public void drawHealthBar(int gridX, int gridY, double hpPercent, double offsetX, double offsetY) {
+        if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;
+
+        double renderPixelX = (gridX * cellWidth) + offsetX;
+        double renderPixelY = (gridY * cellHeight) + offsetY;
+
+        double barWidth = cellWidth;
+        double barHeight = cellHeight * 0.15;
+        double barY = renderPixelY + cellHeight - barHeight;
+
+        gc.setFill(Color.CRIMSON);
+        gc.fillRect(renderPixelX, barY, barWidth, barHeight);
+
+        gc.setFill(Color.LIMEGREEN);
+        gc.fillRect(renderPixelX, barY, barWidth * hpPercent, barHeight);
+
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(1.0);
+        gc.strokeRect(renderPixelX, barY, barWidth, barHeight);
     }
 
     public int getGridColumns() { return gridColumns; }

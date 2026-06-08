@@ -1,5 +1,6 @@
 package gui;
 
+import entity.Entity;
 import javafx.scene.paint.Color;
 import core.room.type.Room;
 import weapon.Weapon;
@@ -42,6 +43,10 @@ public class GUIManager {
 
     public void triggerRoomTransitionFlash() {
         if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500);
+    }
+
+    public void triggerAttackAnimation(Entity attacker, Entity target) {
+        if (isPipelineOperational()) controller.triggerAttackAnimation(attacker, target);
     }
 
     public void setHP(int current) { if (isPipelineOperational()) controller.updateHealth(current); }

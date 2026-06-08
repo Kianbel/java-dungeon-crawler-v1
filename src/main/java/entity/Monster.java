@@ -40,7 +40,11 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
 
         if(targetPosition.x < 0 || targetPosition.x >= roomLayout[0].length) return false;
         if(targetPosition.y < 0 || targetPosition.y >= roomLayout.length) return false;
-        if(roomLayout[targetPosition.y][targetPosition.x] != TILE.FLOOR) return false;
+        TILE tile = roomLayout[targetPosition.y][targetPosition.x];
+        switch(tile) {
+            case TILE.FLOOR, GRASS, PASSABLE_OBSTACLE: break;
+            default: return false;
+        }
 
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
         for(Entity e : entities) {

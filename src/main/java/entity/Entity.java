@@ -15,6 +15,7 @@ import java.util.Map;
 public abstract class Entity {
     public String name;
     public int health;
+    public int maxHealth;
     public int armor;
     public Weapon weapon;
     public Position position;
@@ -25,6 +26,7 @@ public abstract class Entity {
         this.name = name;
         this.armor = armor;
         this.health = health;
+        this.maxHealth = health;
         this.weapon = weapon;
         this.position = position;
         id = this.hashCode();
@@ -47,7 +49,6 @@ public abstract class Entity {
                 handleOnEntityEnterInteractableTiles();
             }
             case TILE.DOOR -> {
-
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
                 EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
                 fixEntityPositionAfterTransferFromUnitPos(unitPos);
@@ -83,6 +84,8 @@ public abstract class Entity {
     public void attack(Entity targetEntity) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(targetEntity, currentRoom)) {
+            GUIManager.getInstance().triggerAttackAnimation(this, targetEntity);
+
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
         }

@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
+import world.InteractableTile;
 
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class GameController {
 
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
+
+    // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
+    // Tracks temporary visual displacements for animating entities
+    private final java.util.Map<Entity, RenderOffset> transientOffsets = new java.util.HashMap<>();
 
     @FXML
     public void initialize() {
@@ -158,74 +163,106 @@ public class GameController {
         if (activeRoom == null) return;
 
         Player player = (Player) EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom)
-                .stream().filter(e -> e instanceof Player).findFirst().orElse(null);
+                .stream()
+                .filter(entity -> entity instanceof Player)
+                .findFirst()
+                .orElse(null);
 
-        TILE[][] layout = activeRoom.getLayout();
-        int worldH = layout.length;
-        int worldW = (worldH > 0) ? layout[0].length : 0;
+        TILE[][] roomLayout = activeRoom.getLayout();
+        int roomHeight = roomLayout.length;
+        int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
 
         if (player != null) {
-            viewport.updateCameraFocus(player.position, worldW, worldH);
+            viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
         }
 
         gameCanvas.clearCanvas();
         GlyphRegistry glyphs = GlyphRegistry.getInstance();
 
-        List<Entity> entityList = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
-        var itemTiles = activeRoom.getInteractableTiles();
+        List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
+        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
 
-        for (int sy = 0; sy < viewport.getScreenHeight(); sy++) {
-            for (int sx = 0; sx < viewport.getScreenWidth(); sx++) {
+        // Iterate through every cell on the visible screen viewport
+        for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
+            for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
 
-                Position worldLoc = viewport.toWorldSpace(sx, sy);
-                String activeChar = glyphs.getVoidStyle().glyph;
+                Position worldPosition = viewport.toWorldSpace(screenX, screenY);
+
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < roomWidth && worldPosition.y >= 0 && worldPosition.y < roomHeight;
+                if (!isWithinRoomBounds) {
+                    // draw void character
+                    gameCanvas.drawCharacter(screenX, screenY, glyphs.getVoidStyle().glyph, UITheme.CANVAS_VOID, 0.0, 0.0);
+                    continue;
+                }
+
+                // --- INLINE LAYERING PIPELINE ---
+                String activeGlyph = glyphs.getVoidStyle().glyph;
                 Color activeColor = UITheme.CANVAS_VOID;
 
-                if (worldLoc.x >= 0 && worldLoc.x < worldW && worldLoc.y >= 0 && worldLoc.y < worldH) {
-                    // Layer 1: Base Floor/Wall Structures
-                    TILE structuralTile = layout[worldLoc.y][worldLoc.x];
-                    if (structuralTile != null) {
-                        GlyphRegistry.GlyphStyle style;
-                        if(structuralTile == TILE.WATER) {
-                            style = glyphs.getStyle(structuralTile);
-                        }
-                        else {
-                            style = glyphs.getStyle(structuralTile, worldLoc.x, worldLoc.y, activeRoom.id);
-                        }
-                        activeChar = style.glyph;
-                        activeColor = style.color;
+                // Layer 1: Base Floor/Wall Structures
+                TILE structuralTile = roomLayout[worldPosition.y][worldPosition.x];
+                if (structuralTile != null) {
+                    GlyphRegistry.GlyphStyle structuralStyle;
+                    if (structuralTile == TILE.WATER) {
+                        structuralStyle = glyphs.getStyle(structuralTile);
+                    } else {
+                        structuralStyle = glyphs.getStyle(structuralTile, worldPosition.x, worldPosition.y, activeRoom.id);
                     }
+                    activeGlyph = structuralStyle.glyph;
+                    activeColor = structuralStyle.color;
+                }
 
-                    // Layer 2: Interactable Map Loot Objects
-                    for (var item : itemTiles) {
-                        if (item.roomLayoutPosition.x == worldLoc.x && item.roomLayoutPosition.y == worldLoc.y) {
-                            var style = glyphs.getStyle(item);
-                            activeChar = style.glyph;
-                            activeColor = style.color;
-                            break;
-                        }
-                    }
-
-                    // Layer 3: Living Entities (Player & Monsters)
-                    for (Entity ent : entityList) {
-                        if (ent.position.x == worldLoc.x && ent.position.y == worldLoc.y) {
-                            var style = glyphs.getStyle(ent);
-                            activeChar = style.glyph;
-                            if(ent instanceof Player) {
-                                activeColor = style.color;
-                            }
-                            else {
-                                double hue = style.color.getHue();
-                                double saturation = Math.abs((double) (ent.id * 13 % 7 * 19 % 50) / 100) + 0.5;
-                                double brightness = Math.abs((double) (ent.id * 19 % 13 * 23 % 50) / 100) + 0.5;
-                                activeColor = Color.hsb(hue, saturation, brightness);
-                            }
-                            break;
-                        }
+                // Layer 2: Interactable Map Loot Objects
+                for (InteractableTile item : interactableTiles) {
+                    if (item.roomLayoutPosition.x == worldPosition.x && item.roomLayoutPosition.y == worldPosition.y) {
+                        GlyphRegistry.GlyphStyle itemStyle = glyphs.getStyle(item);
+                        activeGlyph = itemStyle.glyph;
+                        activeColor = itemStyle.color;
+                        break;
                     }
                 }
 
-                gameCanvas.drawCharacter(sx, sy, activeChar, activeColor);
+                // Layer 3: Living Entities
+                Monster damagedMonsterOverlayTarget = null;
+                double entityPixelOffsetX = 0.0;
+                double entityPixelOffsetY = 0.0;
+
+                for (Entity entity : entitiesInRoom) {
+                    if (entity.position.x == worldPosition.x && entity.position.y == worldPosition.y) {
+                        GlyphRegistry.GlyphStyle entityStyle = glyphs.getStyle(entity);
+                        activeGlyph = entityStyle.glyph;
+
+                        // Fetch dynamic presentation offsets from the UI mapping
+                        if (transientOffsets.containsKey(entity)) {
+                            RenderOffset animationOffset = transientOffsets.get(entity);
+                            entityPixelOffsetX = animationOffset.x;
+                            entityPixelOffsetY = animationOffset.y;
+                        }
+
+                        if (entity instanceof Player) {
+                            activeColor = entityStyle.color;
+                        } else {
+                            // Generate unique color variations dynamically based on Monster identity hashes
+                            double hue = entityStyle.color.getHue();
+                            double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                            double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                            activeColor = Color.hsb(hue, saturation, brightness);
+
+                            if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
+                                damagedMonsterOverlayTarget = (Monster) entity;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                // Final rendering execution pass
+                gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
+
+                if (damagedMonsterOverlayTarget != null) {
+                    double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
+                    gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
+                }
             }
         }
     }
@@ -319,6 +356,44 @@ public class GameController {
         flashOverlay.setManaged(false);
 
         transition.play();
+    }
+
+    public void triggerAttackAnimation(Entity attacker, Entity target) {
+        int dx = target.position.x - attacker.position.x;
+        int dy = target.position.y - attacker.position.y;
+
+        double targetPixelX = dx * (gameCanvas.getGridColumns() > 0 ? (renderCanvas.getWidth() / gameCanvas.getGridColumns()) : currentTileSize) * 0.5;
+        double targetPixelY = dy * currentTileSize * 0.5;
+
+        javafx.animation.Timeline timeline = new javafx.animation.Timeline();
+        int totalFrames = 10;
+        double durationMs = 120.0;
+
+        for (int i = 0; i <= totalFrames; i++) {
+            final int frame = i;
+            javafx.animation.KeyFrame keyFrame = new javafx.animation.KeyFrame(
+                    javafx.util.Duration.millis((durationMs / totalFrames) * frame),
+                    event -> {
+                        double progress = (double) frame / totalFrames;
+                        double scale = 1.0 - Math.abs(2.0 * progress - 1.0); // Curve math
+
+                        double currentX = targetPixelX * scale;
+                        double currentY = targetPixelY * scale;
+
+                        // Update or clear the transient UI state mapping
+                        if (frame == totalFrames) {
+                            transientOffsets.remove(attacker); // Animation finished, clear memory!
+                        } else {
+                            transientOffsets.put(attacker, new RenderOffset(currentX, currentY));
+                        }
+
+                        updateRenderingPipeline();
+                    }
+            );
+            timeline.getKeyFrames().add(keyFrame);
+        }
+
+        timeline.play();
     }
 
     private String toHexWebColor(Color c) {

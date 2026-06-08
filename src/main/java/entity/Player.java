@@ -79,6 +79,7 @@ public class Player extends Entity {
             targetEntity.hurt(inflictedDamage, this);
 
             GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
+            GUIManager.getInstance().triggerAttackAnimation(this, targetEntity);
 
             if(!targetEntity.isAlive()) {
                 GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
@@ -104,6 +105,8 @@ public class Player extends Entity {
             if(damage < 0) damage = 0;
             health -= damage;
             if(health < 0) health = 0;
+
+            if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
 
             GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
             GUIManager.getInstance().setHP(health);
