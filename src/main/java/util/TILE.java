@@ -5,4 +5,8 @@ public enum TILE {
     WALL,
     FLOOR,
     DOOR,
+    GRASS,
+    WATER,
+    SOLID_OBSTACLE,
+    PASSABLE_OBSTACLE,
 }

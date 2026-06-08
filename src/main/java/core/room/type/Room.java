@@ -12,6 +12,12 @@ public abstract class Room {
     public Position minimapPosition;
     public int id = this.hashCode();
 
+    protected static final int MAX_ROOM_LENGTH = 30;
+    protected static final int MAX_ROOM_HEIGHT = 25;
+    protected static final int MIN_ROOM_LENGTH = 15;
+    protected static final int MIN_ROOM_HEIGHT = 15;
+
+
     private List<InteractableTile> interactableTiles = new ArrayList<>();
 
     protected TILE[][] layout;

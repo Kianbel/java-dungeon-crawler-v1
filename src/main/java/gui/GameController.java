@@ -3,7 +3,7 @@ package gui;
 import entity.Entity;
 import entity.Monster;
 import entity.Player;
-import core.room.DungeonManager;
+import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import javafx.animation.FadeTransition;

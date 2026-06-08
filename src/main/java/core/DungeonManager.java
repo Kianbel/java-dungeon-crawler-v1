@@ -1,6 +1,5 @@
-package core.room;
+package core;
 
-import core.EntityRoomManager;
 import core.room.generator.DrunkardWalk;
 import core.room.generator.DungeonMapGenerator;
 import core.room.type.*;
@@ -64,7 +63,7 @@ public class DungeonManager {
 
                 switch(mapLayout[y][x]) {
                     case MAP.SPAWN -> newRoom = new SpawnRoom(11, 11, minimapPosition);
-                    case MAP.INFESTED -> newRoom = new InfestedRoom(ROOM_HEIGHT, ROOM_LENGTH, minimapPosition);
+                    case MAP.INFESTED -> newRoom = new InfestedRoom(minimapPosition);
                     case MAP.TREASURE -> newRoom = new TreasureRoom(11, 11, minimapPosition);
                     case MAP.BOSS -> newRoom = new BossRoom(ROOM_HEIGHT, ROOM_LENGTH, minimapPosition);
                     case MAP.CLEAR -> newRoom = new ClearRoom(ROOM_HEIGHT, ROOM_LENGTH, minimapPosition);

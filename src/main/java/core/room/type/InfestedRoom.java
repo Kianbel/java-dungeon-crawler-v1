@@ -1,14 +1,19 @@
 package core.room.type;
 
-import core.EntityRoomManager;
+import core.EntitySpawner;
 import entity.GiantSpider;
+import entity.Zombie;
 import util.Position;
 
-import java.util.List;
+import java.util.Random;
+
 
 public class InfestedRoom extends Room {
 
-    public InfestedRoom(int height, int length, Position minimapPosition) {
+    public InfestedRoom(Position minimapPosition) {
+        Random rand = new Random();
+        int height = Math.clamp(rand.nextInt(MAX_ROOM_HEIGHT), MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
+        int length = Math.clamp(rand.nextInt(MAX_ROOM_LENGTH), MIN_ROOM_LENGTH, MAX_ROOM_LENGTH);
         super(height, length, minimapPosition);
     }
 
@@ -16,12 +21,8 @@ public class InfestedRoom extends Room {
     public void populateWithEntities() {
         super.populateWithEntities();
 
-        final int MONSTER_AMOUNT = 4;
-
-        List<Position> spawnablePositions = getSpawnablePositions();
-        for(int i = 0; i < MONSTER_AMOUNT; i++) {
-            Position randomSpawnPosition = spawnablePositions.remove((int) (Math.random() * 100 % (spawnablePositions.size())));
-            EntityRoomManager.getInstance().addEntityToRoom(new GiantSpider(randomSpawnPosition), this);
-        }
+        EntitySpawner entitySpawner = new EntitySpawner(this);
+//        entitySpawner.spawnMonstersAmount(GiantSpider::new, 5);
+        entitySpawner.spawnMonstersAmount(Zombie::new, 5);
     }
 }

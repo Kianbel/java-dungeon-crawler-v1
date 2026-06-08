@@ -16,7 +16,7 @@ public class Player extends Entity {
     public int hpPotions = 0;
     public int hunger = 100;
 
-    final int HUNGER_DECREASE_MOVE_COOLDOWN = 20;
+    final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     final int HUNGER_DECREASE_AMOUNT = 5;
 
