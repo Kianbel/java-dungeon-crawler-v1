@@ -1,6 +1,6 @@
 package core.room.loader;
 
-import core.room.type.ClearRoom;
+import core.room.type.*;
 import util.TILE;
 
 import javax.imageio.ImageIO;
@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RoomLayoutLoader {
     private static final RoomLayoutLoader instance = new RoomLayoutLoader();
@@ -38,8 +40,26 @@ public class RoomLayoutLoader {
                     }
                 }
 
-                // TODO: get class based on file name
-                RoomLayoutRegistry.getInstance().addLayout(ClearRoom.class, layout);
+                String fileName = file.getName();
+                int i;
+                for(i = 0; i < fileName.length(); i++) {
+                    if(Character.isDigit(fileName.charAt(i))) break;
+                }
+                String classString = fileName.substring(0, i);
+                Class<? extends Room> roomClass;
+                switch(classString) {
+                    case "boss" -> roomClass = BossRoom.class;
+                    case "clear" -> roomClass = ClearRoom.class;
+                    case "infested" -> roomClass = InfestedRoom.class;
+                    case "spawn" -> roomClass = SpawnRoom.class;
+                    case "treasure" -> roomClass = TreasureRoom.class;
+                    default -> {
+                        System.out.println("Invalid class string: " + classString);
+                        return;
+                    }
+                }
+
+                RoomLayoutRegistry.getInstance().addLayout(roomClass, layout);
             }
             catch (IOException _) {}
         }

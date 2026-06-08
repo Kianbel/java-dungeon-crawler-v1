@@ -185,9 +185,15 @@ public class GameController {
                     // Layer 1: Base Floor/Wall Structures
                     TILE structuralTile = layout[worldLoc.y][worldLoc.x];
                     if (structuralTile != null) {
-                        var style = glyphs.getStyle(structuralTile, worldLoc.x, worldLoc.y, activeRoom.id);
+                        GlyphRegistry.GlyphStyle style;
+                        if(structuralTile == TILE.WATER) {
+                            style = glyphs.getStyle(structuralTile);
+                        }
+                        else {
+                            style = glyphs.getStyle(structuralTile, worldLoc.x, worldLoc.y, activeRoom.id);
+                        }
                         activeChar = style.glyph;
-                        activeColor = style.color; // Pulls directly from your registry config
+                        activeColor = style.color;
                     }
 
                     // Layer 2: Interactable Map Loot Objects

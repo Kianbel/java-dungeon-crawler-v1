@@ -29,7 +29,7 @@ public class DungeonManager {
         mapLayout = dungeonMapGenerator.getMapLayout();
 
         RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
-        dungeonMapGenerator.printMapLayout();
+//        dungeonMapGenerator.printMapLayout();
 
         generateRooms();
 
@@ -79,11 +79,6 @@ public class DungeonManager {
                 newRoom.generate(northDoor,eastDoor,southDoor,westDoor);
                 roomList.add(newRoom);
             }
-        }
-
-        int i = 1;
-        for(Room r : roomList) {
-            System.out.println((i++) + " " + r.getClass().getSimpleName());
         }
     }
 

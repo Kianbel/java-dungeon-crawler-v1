@@ -34,16 +34,26 @@ public abstract class Room {
         }
     }
 
-    public Room(TILE[][] layout, Position minimapPosition) {
-        this.height = layout.length;
-        this.length = layout[0].length;
+    public Room(TILE[][] layout, Position minimapPosition, int height, int length) {
         this.minimapPosition = minimapPosition;
-        this.layout = layout;
+
+        if(layout != null) {
+            this.height = layout.length;
+            this.length = layout[0].length;
+            this.layout = layout;
+        }
+        else {
+            this.height = height;
+            this.length = length;
+            this.layout = new TILE[height][length];
+
+            for(TILE[] row : this.layout) {
+                Arrays.fill(row, TILE.FLOOR);
+            }
+        }
     }
 
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
-        System.out.printf("%s: n:%b,e:%b,s:%b,w:%b%n", this, hasDoorNorth, hasDoorEast, hasDoorSouth, hasDoorWest);
-
         for(int i = 0; i < height; i++) {
             layout[i][0] = TILE.WALL;
             layout[i][length-1] = TILE.WALL;
@@ -51,6 +61,14 @@ public abstract class Room {
         for(int i = 0; i < length; i++) {
             layout[0][i] = TILE.WALL;
             layout[height-1][i] = TILE.WALL;
+        }
+
+        // --- RANDOM PASSABLE_OBSTACLES (FOR DECORATIONS) ---
+        final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.05);
+        for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
+            final int x = new Random().nextInt(1, length-1);
+            final int y = new Random().nextInt(1, height-1);
+            if(layout[y][x] == TILE.FLOOR) layout[y][x] = TILE.PASSABLE_OBSTACLE;
         }
 
         if(hasDoorNorth) layout[0][length/2] = TILE.DOOR;

@@ -31,6 +31,12 @@ public class RoomLayoutRegistry {
             return null;
         }
         TILE[][] layout = layouts.get(new Random().nextInt(layouts.size()));
-        return layout;
+
+        TILE[][] clonedLayout = new TILE[layout.length][layout[0].length];
+        for(int i = 0; i < layout.length; i++) {
+            clonedLayout[i] = layout[i].clone();
+        }
+
+        return clonedLayout;
     }
 }

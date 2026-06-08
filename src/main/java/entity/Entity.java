@@ -47,14 +47,12 @@ public abstract class Entity {
                 handleOnEntityEnterInteractableTiles();
             }
             case TILE.DOOR -> {
-                System.out.println(EntityRoomManager.getInstance().getPlayerRoom());
 
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
                 EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
                 fixEntityPositionAfterTransferFromUnitPos(unitPos);
                 if(this instanceof Player) {
                     GUIManager.getInstance().triggerRoomTransitionFlash();
-                    GUIManager.getInstance().printLog("player entered " + targetRoom.getClass().getSimpleName(), UITheme.LOG_DEV);
                 }
             }
         }
