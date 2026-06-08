@@ -1,4 +1,4 @@
-package core.room;
+package core.room.type;
 
 import util.Position;
 import weapon.IronBlade;

@@ -1,12 +1,11 @@
 package world;
 
 import core.EntityRoomManager;
-import core.room.Room;
+import core.room.type.Room;
 import entity.Entity;
 import gui.GUIManager;
 import gui.UITheme;
 import util.Position;
-import weapon.IronBlade;
 
 public class Chest extends InteractableTile {
     private final InteractableTile chestDrop;

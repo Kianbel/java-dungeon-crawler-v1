@@ -3,9 +3,9 @@ package gui;
 import entity.Entity;
 import entity.Monster;
 import entity.Player;
-import core.DungeonManager;
+import core.room.DungeonManager;
 import core.EntityRoomManager;
-import core.room.Room;
+import core.room.type.Room;
 import javafx.animation.FadeTransition;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -21,7 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class GameController {
@@ -249,7 +249,7 @@ public class GameController {
                     }
 
                     if (isTickAction) {
-                        logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
+//                        logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
                         player.handleMove(movementVector);
 
                         Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();

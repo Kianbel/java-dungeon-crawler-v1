@@ -1,4 +1,4 @@
-package core;
+package core.room.generator;
 
 import util.Position;
 import util.MAP;

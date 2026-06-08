@@ -1,8 +1,7 @@
-package core;
+package core.room.generator;
 
 import util.MAP;
 import util.Position;
-import util.TILE;
 
 public class DungeonMapGenerator {
     private MAP[][] mapLayout;

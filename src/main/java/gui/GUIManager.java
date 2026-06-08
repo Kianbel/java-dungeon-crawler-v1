@@ -1,7 +1,7 @@
 package gui;
 
 import javafx.scene.paint.Color;
-import core.room.Room;
+import core.room.type.Room;
 import weapon.Weapon;
 
 public class GUIManager {

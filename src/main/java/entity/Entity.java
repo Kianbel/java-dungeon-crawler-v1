@@ -6,11 +6,9 @@ import gui.UITheme;
 import weapon.Weapon;
 import util.Position;
 import util.TILE;
-import core.room.Room;
-import world.Coin;
+import core.room.type.Room;
 import world.InteractableTile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package entity;
 import core.EntityRoomManager;
 import weapon.GiantSpiderFang;
 import util.Position;
-import core.room.Room;
+import core.room.type.Room;
 import world.*;
 
 import java.util.*;

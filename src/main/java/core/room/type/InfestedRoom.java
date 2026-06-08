@@ -1,4 +1,4 @@
-package core.room;
+package core.room.type;
 
 import core.EntityRoomManager;
 import entity.GiantSpider;

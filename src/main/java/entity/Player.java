@@ -6,7 +6,7 @@ import gui.UITheme;
 import weapon.Weapon;
 import weapon.AncientSword;
 import util.Position;
-import core.room.Room;
+import core.room.type.Room;
 import world.InteractableTile;
 
 import java.util.List;

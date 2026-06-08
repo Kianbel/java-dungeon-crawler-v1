@@ -1,21 +1,20 @@
-package core.room;
+package core.room.type;
 
 import util.Position;
 import util.TILE;
 import world.InteractableTile;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public abstract class Room {
     public int height;
     public int length;
     public Position minimapPosition;
-    protected TILE[][] layout;
-    public int id;
+    public int id = this.hashCode();
+
     private List<InteractableTile> interactableTiles = new ArrayList<>();
 
+    protected TILE[][] layout;
     protected boolean isRoomGenerated = false;
 
     public Room(int height, int length, Position minimapPosition) {
@@ -23,7 +22,6 @@ public abstract class Room {
         this.length = length;
         this.minimapPosition = minimapPosition;
         layout = new TILE[height][length];
-        id = this.hashCode();
 
         for(TILE[] row : layout) {
             Arrays.fill(row, TILE.FLOOR);
@@ -64,7 +62,8 @@ public abstract class Room {
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
-                if(layout[y][x] == TILE.FLOOR) spawnablePositions.add(new Position(x, y));
+                TILE tile = layout[y][x];
+                if(tile == TILE.FLOOR) spawnablePositions.add(new Position(x, y));
             }
         }
         return spawnablePositions;
@@ -97,6 +96,6 @@ public abstract class Room {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName() + "(ID:" + id + ")";
     }
 }

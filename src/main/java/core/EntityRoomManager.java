@@ -1,6 +1,6 @@
 package core;
 
-import core.room.Room;
+import core.room.type.Room;
 import entity.Entity;
 import entity.Player;
 import world.InteractableTile;

@@ -1,10 +1,8 @@
-package core.room;
+package core.room.type;
 
 import core.EntityRoomManager;
-import entity.Entity;
 import entity.Player;
 import util.Position;
-import world.Chest;
 
 public class SpawnRoom extends Room {
 
