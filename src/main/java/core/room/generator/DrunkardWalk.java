@@ -71,7 +71,7 @@ public class DrunkardWalk extends Generator {
         mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
 
         // --- CLEAR ROOMS (1/3 OF TOTAL ROOMS) ---
-        int clearRoomAmount = transformableRooms.size()/3;
+        int clearRoomAmount = transformableRooms.size(); // TODO: revert to 1/3
         for(int i = 0; i < clearRoomAmount; i++) {
             random = new Random();
             Position clearRoomPos = transformableRooms.remove(random.nextInt(transformableRooms.size()));

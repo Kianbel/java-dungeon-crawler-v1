@@ -42,11 +42,13 @@ public abstract class Entity {
         TILE[][] currentRoomLayout = currentRoom.getLayout();
 
         switch(currentRoomLayout[dPos.y][dPos.x]) {
-            case TILE.FLOOR -> {
+            case TILE.FLOOR, PASSABLE_OBSTACLE, GRASS -> {
                 position = dPos;
                 handleOnEntityEnterInteractableTiles();
             }
             case TILE.DOOR -> {
+                System.out.println(EntityRoomManager.getInstance().getPlayerRoom());
+
                 Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
                 EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
                 fixEntityPositionAfterTransferFromUnitPos(unitPos);
@@ -135,6 +137,7 @@ public abstract class Entity {
                     r != currentRoom
             ) return r;
         }
+        System.out.println("Cannot find target room at pos: " + targetRoomPos);
         return null;
     }
 

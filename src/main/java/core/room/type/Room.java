@@ -34,7 +34,16 @@ public abstract class Room {
         }
     }
 
+    public Room(TILE[][] layout, Position minimapPosition) {
+        this.height = layout.length;
+        this.length = layout[0].length;
+        this.minimapPosition = minimapPosition;
+        this.layout = layout;
+    }
+
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
+        System.out.printf("%s: n:%b,e:%b,s:%b,w:%b%n", this, hasDoorNorth, hasDoorEast, hasDoorSouth, hasDoorWest);
+
         for(int i = 0; i < height; i++) {
             layout[i][0] = TILE.WALL;
             layout[i][length-1] = TILE.WALL;

@@ -46,6 +46,22 @@ public class GlyphRegistry {
         tileRegistry.put(TILE.DOOR, new GlyphStyle[]{
                 new GlyphStyle("⌸", UITheme.WORLD_DOOR)
         });
+        tileRegistry.put(TILE.GRASS, new GlyphStyle[] {
+                new GlyphStyle("w", Color.DARKGREEN),
+                new GlyphStyle("w", Color.DARKSEAGREEN),
+                new GlyphStyle("\"", Color.GREEN),
+        });
+        tileRegistry.put(TILE.WATER, new GlyphStyle[] {
+                new GlyphStyle("░", Color.LIGHTBLUE),
+                new GlyphStyle("░", Color.LIGHTSKYBLUE),
+                new GlyphStyle("░", Color.LIGHTSKYBLUE),
+        });
+        tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
+                new GlyphStyle("#", Color.BROWN),
+        });
+        tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
+                new GlyphStyle("*", Color.WHITE),
+        });
 
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "#", UITheme.LOOT_WEB);

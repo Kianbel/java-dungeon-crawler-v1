@@ -20,13 +20,36 @@ public class DungeonMapGenerator {
         return mapLayout;
     }
 
-    public Position getSpawnRoomMapPosition() {
-        if(generator.spawnRoomPosition == null) throw new RuntimeException("cannot get spawn room position, generate map first");
-        return generator.spawnRoomPosition;
-    }
+    public void printMapLayout() {
+        StringBuilder stringBuilder = new StringBuilder();
 
-    public Position getBossRoomMapPosition() {
-        if(generator.bossRoomPosition == null) throw new RuntimeException("cannot get last room position, generate map first");
-        return generator.bossRoomPosition;
+        stringBuilder.append('\t');
+        for(int i = 0; i < mapLayout[0].length; i++) {
+            stringBuilder.append(Integer.toHexString(i));
+        }
+        stringBuilder.append('\n');
+        for(int i = 0; i < mapLayout.length; i++) {
+            stringBuilder.append(i);
+            stringBuilder.append('\t');
+            for(int j = 0; j < mapLayout[0].length; j++) {
+                MAP tile = mapLayout[i][j];
+                if(tile == null) {
+                    stringBuilder.append('.');
+                    continue;
+                }
+                switch(tile) {
+                    case SPAWN -> stringBuilder.append('s');
+                    case BOSS -> stringBuilder.append('b');
+                    case TREASURE -> stringBuilder.append('t');
+                    case INFESTED -> stringBuilder.append('i');
+                    case CLEAR -> stringBuilder.append('#');
+                    case VCORRIDOR -> stringBuilder.append('|');
+                    case HCORRIDOR -> stringBuilder.append('-');
+                    default -> stringBuilder.append('.');
+                }
+            }
+            stringBuilder.append('\n');
+        }
+        System.out.println(stringBuilder);
     }
 }

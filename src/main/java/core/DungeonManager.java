@@ -2,6 +2,7 @@ package core;
 
 import core.room.generator.DrunkardWalk;
 import core.room.generator.DungeonMapGenerator;
+import core.room.loader.RoomLayoutLoader;
 import core.room.type.*;
 import util.MAP;
 import util.Position;
@@ -27,6 +28,9 @@ public class DungeonManager {
         dungeonMapGenerator.generate(ROOM_AMOUNT);
         mapLayout = dungeonMapGenerator.getMapLayout();
 
+        RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
+        dungeonMapGenerator.printMapLayout();
+
         generateRooms();
 
         for(Room r : roomList) {
@@ -42,8 +46,8 @@ public class DungeonManager {
         final int MAP_HEIGHT = mapLayout.length;
         final int MAP_LENGTH = mapLayout[0].length;
 
-        for(int y = 0; y < mapLayout.length; y++) {
-            for(int x = 0; x < mapLayout[0].length; x++) {
+        for(int y = 0; y < MAP_HEIGHT; y++) {
+            for(int x = 0; x < MAP_LENGTH; x++) {
                 MAP mapTile = mapLayout[y][x];
                 if(mapTile == null) continue;
                 if(mapTile == MAP.VCORRIDOR || mapTile == MAP.HCORRIDOR) continue;

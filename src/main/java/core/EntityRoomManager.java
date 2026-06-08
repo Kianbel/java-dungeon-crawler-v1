@@ -55,8 +55,8 @@ public class EntityRoomManager {
     }
 
     public boolean transferEntityFromToRoom(Entity entity, Room fromRoom, Room toRoom) {
-        if(hashmap.get(fromRoom) == null) throw new RuntimeException("fromRoom: " + fromRoom + " is null");
-        if(hashmap.get(toRoom) == null) throw new RuntimeException("toRoom: " + fromRoom + " is null");
+        if(hashmap.get(fromRoom) == null) throw new RuntimeException("fromRoom is null");
+        if(hashmap.get(toRoom) == null) throw new RuntimeException("toRoom is null");
 
         List<Entity> entities = hashmap.get(fromRoom);
         if(!entities.remove(entity)) throw new RuntimeException("Entity: " + entity + " cant be found");
