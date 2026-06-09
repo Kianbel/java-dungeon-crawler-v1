@@ -64,6 +64,7 @@ public class Player extends Entity {
         List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
         for(InteractableTile tile: interactableTiles) {
             if(tile.roomLayoutPosition.equals(targetPosition) && tile.isSolid) {
+                GUIManager.getInstance().triggerAttackAnimation(this, tile.roomLayoutPosition);
                 tile.onEntityBump(this);
                 return;
             }

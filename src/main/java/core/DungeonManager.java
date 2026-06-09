@@ -29,7 +29,7 @@ public class DungeonManager {
         mapLayout = dungeonMapGenerator.getMapLayout();
 
         RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
-//        dungeonMapGenerator.printMapLayout();
+        dungeonMapGenerator.printMapLayout();
 
         generateRooms();
 

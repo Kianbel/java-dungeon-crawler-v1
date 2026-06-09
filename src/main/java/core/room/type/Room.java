@@ -111,7 +111,6 @@ public abstract class Room {
         Position targetPosition = tile.roomLayoutPosition;
         if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
         if(targetPosition.y < 0 || targetPosition.y >= height) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
-        if(layout[targetPosition.y][targetPosition.x] != TILE.FLOOR) throw new RuntimeException("Cannot put " + tile + " to room due to " + layout[targetPosition.y][targetPosition.x] + " is already there");
 
         for(InteractableTile t : interactableTiles) {
             if(t.roomLayoutPosition.x == tile.roomLayoutPosition.x && t.roomLayoutPosition.y == tile.roomLayoutPosition.y) {

@@ -49,6 +49,7 @@ public class GameController {
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 60.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
+    private final int DARKNESS_DISTANCE = 3;
 
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
@@ -255,6 +256,13 @@ public class GameController {
                 }
 
                 // Final rendering execution pass
+                // --- PUT DARKNESS ---
+                int dx = player.position.x - worldPosition.x;
+                int dy = player.position.y - worldPosition.y;
+                int distance = (int) Math.sqrt(dx*dx + dy*dy);
+                if(distance > DARKNESS_DISTANCE) activeColor = Color.BLACK.brighter();
+                if(distance > DARKNESS_DISTANCE*2) activeColor = Color.BLACK;
+
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 
                 if (damagedMonsterOverlayTarget != null) {
@@ -356,20 +364,20 @@ public class GameController {
         transition.play();
     }
 
-    public Timeline triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
-        return triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
+    public void triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
+        triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
     }
 
-    public Timeline triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
-        return triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
+    public void triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
+        triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
     }
 
-    private Timeline triggerEntitySlideAnimation(Entity entity,
-                                            Position targetPosition,
-                                            double slidePixelMultiplier,
-                                            double animationDurationMs,
-                                            ANIMATION_CURVE animationCurve,
-                                            boolean isReverse) {
+    private void triggerEntitySlideAnimation(Entity entity,
+                                             Position targetPosition,
+                                             double slidePixelMultiplier,
+                                             double animationDurationMs,
+                                             ANIMATION_CURVE animationCurve,
+                                             boolean isReverse) {
         int dx = targetPosition.x - entity.position.x;
         int dy = targetPosition.y - entity.position.y;
 
@@ -395,7 +403,6 @@ public class GameController {
                             default -> curve = progress;
                         }
                         if(isReverse) curve = Math.abs(curve - 1.0);
-                        System.out.println(curve);
 
                         double entityAnimationPosX = targetPixelX * curve;
                         double entityAnimationPosY = targetPixelY * curve;
@@ -413,7 +420,6 @@ public class GameController {
             timeline.getKeyFrames().add(keyframe);
         }
         timeline.play();
-        return timeline;
     }
 
 

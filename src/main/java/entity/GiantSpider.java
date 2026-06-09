@@ -102,7 +102,6 @@ public class GiantSpider extends Monster implements RangeAttack {
             return true;
         }
 
-//        System.out.println(this + " cannot back off to " + targetPosition);
         return false;
     }
 

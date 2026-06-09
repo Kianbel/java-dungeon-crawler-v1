@@ -55,7 +55,7 @@ public class GUIManager {
     }
 
     public void triggerAttackAnimation(Entity attacker, Entity target) {
-        triggerMoveAnimation(attacker, target.position);
+        triggerAttackAnimation(attacker, target.position);
     }
 
 

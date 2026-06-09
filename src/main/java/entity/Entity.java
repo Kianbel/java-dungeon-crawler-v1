@@ -173,7 +173,6 @@ public abstract class Entity {
         for(int i = 0; i < interactableTiles.size(); i++) {
             InteractableTile tile = interactableTiles.get(i);
             if(tile.roomLayoutPosition.equals(this.position)) {
-                GUIManager.getInstance().triggerAttackAnimation(this, tile.roomLayoutPosition); // TODO: fix no animation for breaking interactable tiles
                 tile.onEntityEnter(this);
                 return;
             }

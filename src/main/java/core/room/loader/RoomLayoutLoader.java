@@ -54,8 +54,7 @@ public class RoomLayoutLoader {
                     case "spawn" -> roomClass = SpawnRoom.class;
                     case "treasure" -> roomClass = TreasureRoom.class;
                     default -> {
-                        System.out.println("Invalid class string: " + classString);
-                        return;
+                        throw new RuntimeException("Invalid class string: " + classString + ", filename: " + fileName);
                     }
                 }
 
