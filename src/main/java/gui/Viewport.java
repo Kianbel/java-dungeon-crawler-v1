@@ -49,7 +49,7 @@ public class Viewport {
         }
     }
 
-    public Position toWorldSpace(int screenX, int screenY) {
+    public Position toWorldPosition(int screenX, int screenY) {
         return new Position(cameraOffset.x + screenX, cameraOffset.y + screenY);
     }
 

@@ -7,8 +7,11 @@ import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import util.ANIMATION_CURVE;
 import util.Position;
 import util.TILE;
 import weapon.Weapon;
@@ -29,7 +32,7 @@ public class GameController {
 
     @FXML private HBox rootContainer;
     @FXML private StackPane canvasContainer;
-    @FXML private Canvas renderCanvas;
+    @FXML private Canvas canvas;
     @FXML private VBox logContainer;
     @FXML private VBox statsPanel, logsPanel, controlsPanel, controlsBox;
     @FXML private Label statsHeader, logsHeader, controlsHeader;
@@ -52,15 +55,15 @@ public class GameController {
 
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
     // Tracks temporary visual displacements for animating entities
-    private final java.util.Map<Entity, RenderOffset> transientOffsets = new java.util.HashMap<>();
+    private final java.util.Map<Entity, RenderOffset> entityRenderOffsetHashMap = new java.util.HashMap<>();
 
     @FXML
     public void initialize() {
         // 1. Unmanage the Canvas to protect against layout scaling loops
-        renderCanvas.setManaged(false);
+        canvas.setManaged(false);
 
         // 2. Build Base Layout Frameworks
-        gameCanvas = new GameCanvas(renderCanvas, currentTileSize);
+        gameCanvas = new GameCanvas(canvas, currentTileSize);
         viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
 
         GUIManager.getInstance().registerController(this);
@@ -71,11 +74,11 @@ public class GameController {
 
         // 4. Bind window resize handlers
         canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
-            renderCanvas.setWidth(newVal.doubleValue());
+            canvas.setWidth(newVal.doubleValue());
             handleWindowResize();
         });
         canvasContainer.heightProperty().addListener((obs, oldVal, newVal) -> {
-            renderCanvas.setHeight(newVal.doubleValue());
+            canvas.setHeight(newVal.doubleValue());
             handleWindowResize();
         });
 
@@ -159,65 +162,58 @@ public class GameController {
     }
 
     public void updateRenderingPipeline() {
-        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if (activeRoom == null) return;
 
-        Player player = (Player) EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom)
-                .stream()
-                .filter(entity -> entity instanceof Player)
-                .findFirst()
-                .orElse(null);
+        final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
 
-        TILE[][] roomLayout = activeRoom.getLayout();
-        int roomHeight = roomLayout.length;
-        int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
+        final TILE[][] roomLayout = activeRoom.getLayout();
 
+        final int ROOM_HEIGHT = roomLayout.length;
+        final int ROOM_WIDTH = (ROOM_HEIGHT > 0) ? roomLayout[0].length : 0;
         if (player != null) {
-            viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
+            viewport.updateCameraFocus(player.position, ROOM_WIDTH, ROOM_HEIGHT);
         }
 
         gameCanvas.clearCanvas();
-        GlyphRegistry glyphs = GlyphRegistry.getInstance();
+        GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
 
-        List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
-        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
 
-        // Iterate through every cell on the visible screen viewport
         for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
             for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
 
-                Position worldPosition = viewport.toWorldSpace(screenX, screenY);
+                Position worldPosition = viewport.toWorldPosition(screenX, screenY);
 
-                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < roomWidth && worldPosition.y >= 0 && worldPosition.y < roomHeight;
-                if (!isWithinRoomBounds) {
-                    // draw void character
-                    gameCanvas.drawCharacter(screenX, screenY, glyphs.getVoidStyle().glyph, UITheme.CANVAS_VOID, 0.0, 0.0);
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < ROOM_WIDTH && worldPosition.y >= 0 && worldPosition.y < ROOM_HEIGHT;
+                if (!isWithinRoomBounds) { // draw void character
+                    gameCanvas.drawCharacter(screenX, screenY, glyphRegistry.getVoidStyle().glyph(), UITheme.CANVAS_VOID, 0.0, 0.0);
                     continue;
                 }
 
                 // --- INLINE LAYERING PIPELINE ---
-                String activeGlyph = glyphs.getVoidStyle().glyph;
+                String activeGlyph = glyphRegistry.getVoidStyle().glyph();
                 Color activeColor = UITheme.CANVAS_VOID;
 
                 // Layer 1: Base Floor/Wall Structures
-                TILE structuralTile = roomLayout[worldPosition.y][worldPosition.x];
-                if (structuralTile != null) {
-                    GlyphRegistry.GlyphStyle structuralStyle;
-                    if (structuralTile == TILE.WATER) {
-                        structuralStyle = glyphs.getStyle(structuralTile);
+                TILE tile = roomLayout[worldPosition.y][worldPosition.x];
+                if (tile != null) {
+                    GlyphStyle tileStyle;
+                    if (tile == TILE.WATER) {
+                        tileStyle = glyphRegistry.getStyle(tile);
                     } else {
-                        structuralStyle = glyphs.getStyle(structuralTile, worldPosition.x, worldPosition.y, activeRoom.id);
+                        tileStyle = glyphRegistry.getStyle(tile, worldPosition.x, worldPosition.y, activeRoom.id);
                     }
-                    activeGlyph = structuralStyle.glyph;
-                    activeColor = structuralStyle.color;
+                    activeGlyph = tileStyle.glyph();
+                    activeColor = tileStyle.color();
                 }
 
                 // Layer 2: Interactable Map Loot Objects
-                for (InteractableTile item : interactableTiles) {
-                    if (item.roomLayoutPosition.x == worldPosition.x && item.roomLayoutPosition.y == worldPosition.y) {
-                        GlyphRegistry.GlyphStyle itemStyle = glyphs.getStyle(item);
-                        activeGlyph = itemStyle.glyph;
-                        activeColor = itemStyle.color;
+                List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
+                for (InteractableTile interactableTile : interactableTiles) {
+                    if (interactableTile.roomLayoutPosition.equals(worldPosition)) {
+                        GlyphStyle interactableTileStyle = glyphRegistry.getStyle(interactableTile);
+                        activeGlyph = interactableTileStyle.glyph();
+                        activeColor = interactableTileStyle.color();
                         break;
                     }
                 }
@@ -226,24 +222,26 @@ public class GameController {
                 Monster damagedMonsterOverlayTarget = null;
                 double entityPixelOffsetX = 0.0;
                 double entityPixelOffsetY = 0.0;
+                List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
 
                 for (Entity entity : entitiesInRoom) {
-                    if (entity.position.x == worldPosition.x && entity.position.y == worldPosition.y) {
-                        GlyphRegistry.GlyphStyle entityStyle = glyphs.getStyle(entity);
-                        activeGlyph = entityStyle.glyph;
+                    if (entity.position.equals(worldPosition)) {
+                        GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
+                        activeGlyph = entityStyle.glyph();
 
                         // Fetch dynamic presentation offsets from the UI mapping
-                        if (transientOffsets.containsKey(entity)) {
-                            RenderOffset animationOffset = transientOffsets.get(entity);
+                        if (entityRenderOffsetHashMap.containsKey(entity)) {
+                            RenderOffset animationOffset = entityRenderOffsetHashMap.get(entity);
                             entityPixelOffsetX = animationOffset.x;
                             entityPixelOffsetY = animationOffset.y;
                         }
 
                         if (entity instanceof Player) {
-                            activeColor = entityStyle.color;
-                        } else {
+                            activeColor = entityStyle.color();
+                        }
+                        else {
                             // Generate unique color variations dynamically based on Monster identity hashes
-                            double hue = entityStyle.color.getHue();
+                            double hue = entityStyle.color().getHue();
                             double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
                             double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
                             activeColor = Color.hsb(hue, saturation, brightness);
@@ -268,7 +266,7 @@ public class GameController {
     }
 
     private void attachKeyboardHandlers() {
-        renderCanvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(e -> {
                     KeyCode code = e.getCode();
@@ -358,43 +356,66 @@ public class GameController {
         transition.play();
     }
 
-    public void triggerAttackAnimation(Entity attacker, Entity target) {
-        int dx = target.position.x - attacker.position.x;
-        int dy = target.position.y - attacker.position.y;
+    public Timeline triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
+        return triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
+    }
 
-        double targetPixelX = dx * (gameCanvas.getGridColumns() > 0 ? (renderCanvas.getWidth() / gameCanvas.getGridColumns()) : currentTileSize) * 0.5;
-        double targetPixelY = dy * currentTileSize * 0.5;
+    public Timeline triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
+        return triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
+    }
 
-        javafx.animation.Timeline timeline = new javafx.animation.Timeline();
-        int totalFrames = 10;
-        double durationMs = 120.0;
+    private Timeline triggerEntitySlideAnimation(Entity entity,
+                                            Position targetPosition,
+                                            double slidePixelMultiplier,
+                                            double animationDurationMs,
+                                            ANIMATION_CURVE animationCurve,
+                                            boolean isReverse) {
+        int dx = targetPosition.x - entity.position.x;
+        int dy = targetPosition.y - entity.position.y;
 
-        for (int i = 0; i <= totalFrames; i++) {
-            final int frame = i;
-            javafx.animation.KeyFrame keyFrame = new javafx.animation.KeyFrame(
-                    javafx.util.Duration.millis((durationMs / totalFrames) * frame),
+        double targetPixelX;
+        if (gameCanvas.getGridColumns() > 0)
+            targetPixelX = dx * (canvas.getWidth() / gameCanvas.getGridColumns()) * slidePixelMultiplier;
+        else targetPixelX = dx * currentTileSize * slidePixelMultiplier;
+        double targetPixelY = dy * currentTileSize * slidePixelMultiplier;
+
+        Timeline timeline = new Timeline();
+        final int TOTAL_FRAMES = 10;
+
+        for(int i = 0; i <= TOTAL_FRAMES; i++) {
+            final int frame = i; // needs to be final for lambda expressions
+            KeyFrame keyframe = new KeyFrame(
+                    Duration.millis(animationDurationMs / TOTAL_FRAMES * frame),
                     event -> {
-                        double progress = (double) frame / totalFrames;
-                        double scale = 1.0 - Math.abs(2.0 * progress - 1.0); // Curve math
+                        double progress = (double) frame / TOTAL_FRAMES;
+                        double curve;
+                        switch(animationCurve) {
+                            case TRIANGLE -> curve = 1.0 - Math.abs(2.0 * progress - 1.0);
+                            case EASE_OUT -> curve = 1.0 - (1 - progress) * (1 - progress);
+                            default -> curve = progress;
+                        }
+                        if(isReverse) curve = Math.abs(curve - 1.0);
+                        System.out.println(curve);
 
-                        double currentX = targetPixelX * scale;
-                        double currentY = targetPixelY * scale;
+                        double entityAnimationPosX = targetPixelX * curve;
+                        double entityAnimationPosY = targetPixelY * curve;
 
-                        // Update or clear the transient UI state mapping
-                        if (frame == totalFrames) {
-                            transientOffsets.remove(attacker); // Animation finished, clear memory!
-                        } else {
-                            transientOffsets.put(attacker, new RenderOffset(currentX, currentY));
+                        if(frame == TOTAL_FRAMES) {
+                            entityRenderOffsetHashMap.remove(entity);
+                        }
+                        else {
+                            entityRenderOffsetHashMap.put(entity, new RenderOffset(entityAnimationPosX, entityAnimationPosY));
                         }
 
                         updateRenderingPipeline();
                     }
             );
-            timeline.getKeyFrames().add(keyFrame);
+            timeline.getKeyFrames().add(keyframe);
         }
-
         timeline.play();
+        return timeline;
     }
+
 
     private String toHexWebColor(Color c) {
         return String.format("#%02X%02X%02X", (int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255));

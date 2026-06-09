@@ -45,7 +45,9 @@ public abstract class Entity {
 
         switch(currentRoomLayout[dPos.y][dPos.x]) {
             case TILE.FLOOR, PASSABLE_OBSTACLE, GRASS -> {
+                Position oldPos = position;
                 position = dPos;
+                GUIManager.getInstance().triggerMoveAnimation(this, oldPos);
                 handleOnEntityEnterInteractableTiles();
             }
             case TILE.DOOR -> {
@@ -171,10 +173,15 @@ public abstract class Entity {
         for(int i = 0; i < interactableTiles.size(); i++) {
             InteractableTile tile = interactableTiles.get(i);
             if(tile.roomLayoutPosition.equals(this.position)) {
+                GUIManager.getInstance().triggerAttackAnimation(this, tile.roomLayoutPosition); // TODO: fix no animation for breaking interactable tiles
                 tile.onEntityEnter(this);
                 return;
             }
         }
+    }
+
+    public void goToPosition(Position targetPosition) {
+        position = targetPosition;
     }
 
     @Override

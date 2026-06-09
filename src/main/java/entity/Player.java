@@ -23,7 +23,7 @@ public class Player extends Entity {
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
 
-//        activateGodMode();
+        activateGodMode();
 
         setHealth(health);
         setHunger(hunger);

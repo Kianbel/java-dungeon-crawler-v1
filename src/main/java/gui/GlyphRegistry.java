@@ -19,16 +19,6 @@ public class GlyphRegistry {
     private final GlyphStyle voidStyle = new GlyphStyle(" ", UITheme.CANVAS_VOID);
     private final GlyphStyle defaultStyle = new GlyphStyle("?", Color.MAGENTA);
 
-    public static class GlyphStyle {
-        public final String glyph;
-        public final Color color;
-
-        public GlyphStyle(String glyph, Color color) {
-            this.glyph = glyph;
-            this.color = color;
-        }
-    }
-
     private GlyphRegistry() {
         // --- MULTI-TEXTURE STRUCTURAL REGISTRY ---
         // Pulls color values seamlessly from UITheme roles

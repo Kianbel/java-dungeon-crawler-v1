@@ -18,7 +18,7 @@
     </padding>
 
     <StackPane fx:id="canvasContainer" HBox.hgrow="ALWAYS">
-        <Canvas fx:id="renderCanvas" />
+        <Canvas fx:id="canvas" />
     </StackPane>
 
     <VBox prefWidth="360.0" minWidth="360.0" maxWidth="360.0" spacing="15.0" HBox.hgrow="NEVER">
