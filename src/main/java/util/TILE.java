@@ -9,4 +9,5 @@ public enum TILE {
     WATER,
     SOLID_OBSTACLE,
     PASSABLE_OBSTACLE,
+    BOOKSHELF,
 }

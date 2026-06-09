@@ -1,5 +1,6 @@
 package core.room.type;
 
+import util.DIRECTION;
 import util.Position;
 import util.TILE;
 import world.InteractableTile;
@@ -12,11 +13,7 @@ public abstract class Room {
     public Position minimapPosition;
     public int id = this.hashCode();
 
-    protected static final int MAX_ROOM_LENGTH = 30;
-    protected static final int MAX_ROOM_HEIGHT = 25;
-    protected static final int MIN_ROOM_LENGTH = 15;
-    protected static final int MIN_ROOM_HEIGHT = 15;
-
+    Map<DIRECTION, Position> doorPositions = new HashMap<>();
 
     private List<InteractableTile> interactableTiles = new ArrayList<>();
 
@@ -34,48 +31,85 @@ public abstract class Room {
         }
     }
 
-    public Room(TILE[][] layout, Position minimapPosition, int height, int length) {
+    public Room(TILE[][] layout, Position minimapPosition) {
+        this.layout = layout;
         this.minimapPosition = minimapPosition;
-
-        if(layout != null) {
-            this.height = layout.length;
-            this.length = layout[0].length;
-            this.layout = layout;
-        }
-        else {
-            this.height = height;
-            this.length = length;
-            this.layout = new TILE[height][length];
-
-            for(TILE[] row : this.layout) {
-                Arrays.fill(row, TILE.FLOOR);
-            }
-        }
+        this.height = layout.length;
+        this.length = layout[0].length;
     }
 
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
-        for(int i = 0; i < height; i++) {
-            layout[i][0] = TILE.WALL;
-            layout[i][length-1] = TILE.WALL;
-        }
-        for(int i = 0; i < length; i++) {
-            layout[0][i] = TILE.WALL;
-            layout[height-1][i] = TILE.WALL;
-        }
-
         // --- RANDOM PASSABLE_OBSTACLES (FOR DECORATIONS) ---
+        final Random rand = new Random();
+
         final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.05);
         for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
-            final int x = new Random().nextInt(1, length-1);
-            final int y = new Random().nextInt(1, height-1);
+            final int x = rand.nextInt(1, length-1);
+            final int y = rand.nextInt(1, height-1);
             if(layout[y][x] == TILE.FLOOR) layout[y][x] = TILE.PASSABLE_OBSTACLE;
         }
 
-        if(hasDoorNorth) layout[0][length/2] = TILE.DOOR;
-        if(hasDoorSouth) layout[height-1][length/2] = TILE.DOOR;
-        if(hasDoorWest) layout[height/2][0] = TILE.DOOR;
-        if(hasDoorEast) layout[height/2][length-1] = TILE.DOOR;
+        // --- GENERATE DOORS ---
+        boolean stop = false;
+        for(int i = 0; i < height; i++) {
+            if(stop) break;
+            for(int j = 0; j < length; j++) {
+                if(layout[i][j] == TILE.DOOR) {
+                    if(!hasDoorNorth) layout[i][j] = TILE.WALL;
+                    else doorPositions.put(DIRECTION.NORTH, new Position(i, j));
+                    stop = true;
+                    break;
+                }
+            }
+        }
+        stop = false;
+        for(int i = height-1; i >= 0; i--) {
+            if(stop) break;
+            for(int j = 0; j < length; j++) {
+                if(layout[i][j] == TILE.DOOR) {
+                    if(!hasDoorSouth) layout[i][j] = TILE.WALL;
+                    else doorPositions.put(DIRECTION.SOUTH, new Position(i, j));
+                    stop = true;
+                    break;
+                }
+            }
+        }
+        stop = false;
+        for(int i = 0; i < length; i++) {
+            if(stop) break;
+            for(int j = 0; j < height; j++) {
+                if(layout[j][i] == TILE.DOOR) {
+                    if(!hasDoorWest) layout[j][i] = TILE.WALL;
+                    else doorPositions.put(DIRECTION.WEST, new Position(j, i));
+                    stop = true;
+                    break;
+                }
+            }
+        }
+        stop = false;
+        for(int i = length-1; i >= 0; i--) {
+            if(stop) break;
+            for(int j = 0; j < height; j++) {
+                if(layout[j][i] == TILE.DOOR) {
+                    if(!hasDoorEast) layout[j][i] = TILE.WALL;
+                    else doorPositions.put(DIRECTION.EAST, new Position(j, i));
+                    stop = true;
+                    break;
+                }
+            }
+        }
         isRoomGenerated = true;
+    }
+
+    // TODO: fix room enter wrong door teleport
+    public Position getEnterDoorPositionFromUnitPos(Position unitPos) {
+        if(unitPos.x > 1 || unitPos.x < -1) throw new RuntimeException("Invalid unitPos: " + unitPos);
+        if(unitPos.y > 1 || unitPos.y < -1) throw new RuntimeException("Invalid unitPos: " + unitPos);
+
+        if(unitPos.x == 0 && unitPos.y == 1) return doorPositions.get(DIRECTION.NORTH);
+        else if(unitPos.x == 0 && unitPos.y == -1) return doorPositions.get(DIRECTION.SOUTH);
+        else if(unitPos.x == -1 && unitPos.y == 0) return doorPositions.get(DIRECTION.WEST);
+        else return doorPositions.get(DIRECTION.EAST);
     }
 
     public TILE[][] getLayout() {

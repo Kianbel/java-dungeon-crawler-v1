@@ -49,7 +49,8 @@ public class GameController {
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 60.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
-    private final int DARKNESS_DISTANCE = 3;
+    private final int DARKNESS_DISTANCE = 100; // TODO: revert to 4
+    private final int TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 2;
 
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
@@ -261,7 +262,7 @@ public class GameController {
                 int dy = player.position.y - worldPosition.y;
                 int distance = (int) Math.sqrt(dx*dx + dy*dy);
                 if(distance > DARKNESS_DISTANCE) activeColor = Color.BLACK.brighter();
-                if(distance > DARKNESS_DISTANCE*2) activeColor = Color.BLACK;
+                if(distance > DARKNESS_DISTANCE* TOTAL_DARKNESS_DISTANCE_MULTIPLIER) activeColor = Color.BLACK;
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 

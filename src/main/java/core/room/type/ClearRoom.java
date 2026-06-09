@@ -5,14 +5,9 @@ import util.Position;
 import util.TILE;
 
 public class ClearRoom extends Room {
-    public ClearRoom(int height, int length, Position minimapPosition) {
-        final double DECORATED_ROOM_CHANCE = 0.4;
+    public ClearRoom(Position minimapPosition) {
+        TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(ClearRoom.class);
 
-        TILE[][] layout = null;
-        if(Math.random() <= DECORATED_ROOM_CHANCE) {
-            layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(ClearRoom.class);
-        }
-
-        super(layout, minimapPosition, height, length);
+        super(layout, minimapPosition);
     }
 }

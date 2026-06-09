@@ -1,10 +1,13 @@
 package core.room.type;
 
+import core.room.loader.RoomLayoutRegistry;
 import util.Position;
+import util.TILE;
 
 public class BossRoom extends Room {
-    public BossRoom(int height, int length, Position minimapPosition) {
-        super(height, length, minimapPosition);
+    public BossRoom(Position minimapPosition) {
+        TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(BossRoom.class);
+        super(layout, minimapPosition);
     }
 
     @Override

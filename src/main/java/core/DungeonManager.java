@@ -59,18 +59,15 @@ public class DungeonManager {
                 if(x-1 >= 0 && mapLayout[y][x-1] == MAP.HCORRIDOR) westDoor = true;
                 if(x+1 < MAP_LENGTH && mapLayout[y][x+1] == MAP.HCORRIDOR) eastDoor = true;
 
-                final int ROOM_LENGTH = 15;
-                final int ROOM_HEIGHT = 15;
-
                 Room newRoom;
                 Position minimapPosition = new Position(x, y);
 
                 switch(mapLayout[y][x]) {
-                    case MAP.SPAWN -> newRoom = new SpawnRoom(11, 11, minimapPosition);
+                    case MAP.SPAWN -> newRoom = new SpawnRoom(minimapPosition);
                     case MAP.INFESTED -> newRoom = new InfestedRoom(minimapPosition);
-                    case MAP.TREASURE -> newRoom = new TreasureRoom(11, 11, minimapPosition);
-                    case MAP.BOSS -> newRoom = new BossRoom(ROOM_HEIGHT, ROOM_LENGTH, minimapPosition);
-                    case MAP.CLEAR -> newRoom = new ClearRoom(ROOM_HEIGHT, ROOM_LENGTH, minimapPosition);
+                    case MAP.TREASURE -> newRoom = new TreasureRoom(minimapPosition);
+                    case MAP.BOSS -> newRoom = new BossRoom(minimapPosition);
+                    case MAP.CLEAR -> newRoom = new ClearRoom(minimapPosition);
                     default -> {
                         continue;
                     }

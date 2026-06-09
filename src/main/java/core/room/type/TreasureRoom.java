@@ -7,14 +7,9 @@ import weapon.IronBlade;
 import world.*;
 
 public class TreasureRoom extends Room {
-    public TreasureRoom(int height, int length, Position minimapPosition) {
-        final double DECORATED_ROOM_CHANCE = 0.4;
-
-        TILE[][] layout = null;
-        if(Math.random() <= DECORATED_ROOM_CHANCE) {
-            layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(TreasureRoom.class);
-        }
-        super(layout, minimapPosition, height, length);
+    public TreasureRoom(Position minimapPosition) {
+        TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(TreasureRoom.class);
+        super(layout, minimapPosition);
 
         Position chestPosition;
         if(layout == null) {

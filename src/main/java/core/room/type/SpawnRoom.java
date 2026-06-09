@@ -1,13 +1,16 @@
 package core.room.type;
 
 import core.EntityRoomManager;
+import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
 import util.Position;
+import util.TILE;
 
 public class SpawnRoom extends Room {
 
-    public SpawnRoom(int height, int length, Position minimapPosition) {
-        super(height, length, minimapPosition);
+    public SpawnRoom(Position minimapPosition) {
+        TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(SpawnRoom.class);
+        super(layout, minimapPosition);
     }
 
     @Override

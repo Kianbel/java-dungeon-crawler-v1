@@ -73,17 +73,19 @@ public class RoomLayoutLoader {
             WATER, = 0x00FFFF
             SOLID_OBSTACLE, = 0xFF00FF
             PASSABLE_OBSTACLE, = 0xffff00
+
+            BOOKSHELF = 0x7f1dff
          */
 
         switch (pixel & 0x00FFFFFF) {
             case 0x000000 -> { return TILE.WALL; }
-            case 0x808080 -> { return TILE.FLOOR; }
-//            case 0x682700 -> { return TILE.DOOR; }
+            case 0x682700 -> { return TILE.DOOR; }
             case 0x00FF00 -> { return TILE.GRASS; }
             case 0x00FFFF -> { return TILE.WATER; }
             case 0xFF00FF -> { return TILE.SOLID_OBSTACLE; }
             case 0xffff00 -> { return TILE.PASSABLE_OBSTACLE; }
-            default -> { return TILE.WALL; }
+            case 0x7f1dff -> { return TILE.BOOKSHELF; }
+            default -> { return TILE.FLOOR; }
         }
     }
 }
