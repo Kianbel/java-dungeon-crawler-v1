@@ -5,6 +5,7 @@ import weapon.Weapon;
 import util.Position;
 import util.TILE;
 import core.room.type.Room;
+import world.InteractableTile;
 
 import java.util.List;
 
@@ -46,11 +47,16 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             default: return false;
         }
 
+        List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
+        for(InteractableTile interactableTile : interactableTiles) {
+            if(interactableTile.roomLayoutPosition.equals(targetPosition) && interactableTile.isSolid) return false;
+        }
+
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
         for(Entity e : entities) {
             if(e == this) continue;
             if(e instanceof Player) continue;
-            if(e.position.x == targetPosition.x && e.position.y == targetPosition.y) return false;
+            if(e.position.equals(targetPosition)) return false;
         }
         return true;
     }

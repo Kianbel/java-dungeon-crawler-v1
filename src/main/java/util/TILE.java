@@ -2,6 +2,7 @@ package util;
 
 public enum TILE {
     // Room tiles
+    EMPTY,
     WALL,
     FLOOR,
     DOOR,
@@ -10,4 +11,5 @@ public enum TILE {
     SOLID_OBSTACLE,
     PASSABLE_OBSTACLE,
     BOOKSHELF,
+    BOX,
 }

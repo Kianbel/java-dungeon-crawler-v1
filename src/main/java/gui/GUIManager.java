@@ -58,7 +58,6 @@ public class GUIManager {
         triggerAttackAnimation(attacker, target.position);
     }
 
-
     public void triggerMoveAnimation(Entity entity, Position targetPosition) {
         if (isPipelineOperational()) {
             controller.triggerEntitySlideReverse(entity, targetPosition, 1, 100, ANIMATION_CURVE.EASE_OUT);

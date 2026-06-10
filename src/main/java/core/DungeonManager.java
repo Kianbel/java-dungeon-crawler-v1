@@ -9,6 +9,7 @@ import util.Position;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DungeonManager {
     private static final DungeonManager instance = new DungeonManager();

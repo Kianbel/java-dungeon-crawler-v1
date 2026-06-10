@@ -3,6 +3,7 @@ package entity;
 import core.EntityRoomManager;
 import gui.GUIManager;
 import gui.UITheme;
+import util.DIRECTION;
 import weapon.Weapon;
 import util.Position;
 import util.TILE;
@@ -147,25 +148,24 @@ public abstract class Entity {
 
     protected void fixEntityPositionAfterTransferFromUnitPos(Position unitPos) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        position = currentRoom.getEnterDoorPositionFromUnitPos(unitPos);
-//        final int roomHeight = currentRoom.getLayout().length;
-//        final int roomLength = currentRoom.getLayout()[0].length;
-//        if(unitPos.x < 0) {
-//            position.x = roomLength-2;
-//            position.y = roomHeight/2;
-//        }
-//        else if(unitPos.x > 0) {
-//            position.x = 1;
-//            position.y = roomHeight/2;
-//        }
-//        else if(unitPos.y < 0) {
-//            position.x = roomLength/2;
-//            position.y = roomHeight-2;
-//        }
-//        else if(unitPos.y > 0) {
-//            position.x = roomLength/2;
-//            position.y = 1;
-//        }
+        DIRECTION fromDirection;
+        System.out.println(unitPos);
+        if(unitPos.x == 0 && unitPos.y == 1) {
+            fromDirection = DIRECTION.SOUTH;
+        }
+        else if(unitPos.x == 0 && unitPos.y == -1) {
+            fromDirection = DIRECTION.NORTH;
+        }
+        else if(unitPos.x == 1 && unitPos.y == 0) {
+            fromDirection = DIRECTION.EAST;
+        }
+        else if(unitPos.x == -1 && unitPos.y == 0) {
+            fromDirection = DIRECTION.WEST;
+        }
+        else {
+            throw new RuntimeException("Invalid unit pos: " + unitPos);
+        }
+        position = currentRoom.getEnteringPositionFromDirection(fromDirection);
     }
 
     private void handleOnEntityEnterInteractableTiles() {

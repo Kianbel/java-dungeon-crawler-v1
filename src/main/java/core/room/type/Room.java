@@ -3,6 +3,7 @@ package core.room.type;
 import util.DIRECTION;
 import util.Position;
 import util.TILE;
+import world.Box;
 import world.InteractableTile;
 
 import java.util.*;
@@ -13,9 +14,9 @@ public abstract class Room {
     public Position minimapPosition;
     public int id = this.hashCode();
 
-    Map<DIRECTION, Position> doorPositions = new HashMap<>();
-
+    private Map<DIRECTION, Position> doorPositionsHashmap = new HashMap<>();
     private List<InteractableTile> interactableTiles = new ArrayList<>();
+    private List<Position> playerTravelledPositions = new ArrayList<>();
 
     protected TILE[][] layout;
     protected boolean isRoomGenerated = false;
@@ -41,7 +42,6 @@ public abstract class Room {
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
         // --- RANDOM PASSABLE_OBSTACLES (FOR DECORATIONS) ---
         final Random rand = new Random();
-
         final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.05);
         for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
             final int x = rand.nextInt(1, length-1);
@@ -49,67 +49,40 @@ public abstract class Room {
             if(layout[y][x] == TILE.FLOOR) layout[y][x] = TILE.PASSABLE_OBSTACLE;
         }
 
-        // --- GENERATE DOORS ---
-        boolean stop = false;
-        for(int i = 0; i < height; i++) {
-            if(stop) break;
-            for(int j = 0; j < length; j++) {
-                if(layout[i][j] == TILE.DOOR) {
-                    if(!hasDoorNorth) layout[i][j] = TILE.WALL;
-                    else doorPositions.put(DIRECTION.NORTH, new Position(i, j));
-                    stop = true;
-                    break;
+        // --- HANDLE BOX/DOOR GENERATION ---
+        final double BOX_SPAWN_CHANCE = 0.6;
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < length; x++) {
+                if(layout[y][x] == TILE.BOX) {
+                    layout[y][x] = TILE.FLOOR;
+                    if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Box(new Position(x,y)));
                 }
-            }
-        }
-        stop = false;
-        for(int i = height-1; i >= 0; i--) {
-            if(stop) break;
-            for(int j = 0; j < length; j++) {
-                if(layout[i][j] == TILE.DOOR) {
-                    if(!hasDoorSouth) layout[i][j] = TILE.WALL;
-                    else doorPositions.put(DIRECTION.SOUTH, new Position(i, j));
-                    stop = true;
-                    break;
-                }
-            }
-        }
-        stop = false;
-        for(int i = 0; i < length; i++) {
-            if(stop) break;
-            for(int j = 0; j < height; j++) {
-                if(layout[j][i] == TILE.DOOR) {
-                    if(!hasDoorWest) layout[j][i] = TILE.WALL;
-                    else doorPositions.put(DIRECTION.WEST, new Position(j, i));
-                    stop = true;
-                    break;
-                }
-            }
-        }
-        stop = false;
-        for(int i = length-1; i >= 0; i--) {
-            if(stop) break;
-            for(int j = 0; j < height; j++) {
-                if(layout[j][i] == TILE.DOOR) {
-                    if(!hasDoorEast) layout[j][i] = TILE.WALL;
-                    else doorPositions.put(DIRECTION.EAST, new Position(j, i));
-                    stop = true;
-                    break;
+                else if(layout[y][x] == TILE.DOOR) {
+                    // if tile above door is not wall, door is south door
+                    if(y-1 >= 0 && layout[y-1][x] != TILE.WALL && layout[y-1][x] != TILE.EMPTY) {
+                        if(!hasDoorSouth) layout[y][x] = TILE.WALL;
+                        else doorPositionsHashmap.put(DIRECTION.SOUTH, new Position(x,y-1));
+                    }
+                    // if tile below door is not wall, door is north door
+                    if(y+1 < height && layout[y+1][x] != TILE.WALL && layout[y+1][x] != TILE.EMPTY) {
+                        if(!hasDoorNorth) layout[y][x] = TILE.WALL;
+                        else doorPositionsHashmap.put(DIRECTION.NORTH, new Position(x,y+1));
+                    }
+                    // if tile left of door is not wall, door is east door
+                    if(x-1 >= 0 && layout[y][x-1] != TILE.WALL && layout[y][x-1] != TILE.EMPTY) {
+                        if(!hasDoorEast) layout[y][x] = TILE.WALL;
+                        else doorPositionsHashmap.put(DIRECTION.EAST, new Position(x-1, y));
+                    }
+                    // if tile right of door is not wall, door is west door
+                    if(x+1 < length && layout[y][x+1] != TILE.WALL && layout[y][x+1] != TILE.EMPTY) {
+                        if(!hasDoorWest) layout[y][x] = TILE.WALL;
+                        else doorPositionsHashmap.put(DIRECTION.WEST, new Position(x+1, y));
+                    }
                 }
             }
         }
         isRoomGenerated = true;
-    }
-
-    // TODO: fix room enter wrong door teleport
-    public Position getEnterDoorPositionFromUnitPos(Position unitPos) {
-        if(unitPos.x > 1 || unitPos.x < -1) throw new RuntimeException("Invalid unitPos: " + unitPos);
-        if(unitPos.y > 1 || unitPos.y < -1) throw new RuntimeException("Invalid unitPos: " + unitPos);
-
-        if(unitPos.x == 0 && unitPos.y == 1) return doorPositions.get(DIRECTION.NORTH);
-        else if(unitPos.x == 0 && unitPos.y == -1) return doorPositions.get(DIRECTION.SOUTH);
-        else if(unitPos.x == -1 && unitPos.y == 0) return doorPositions.get(DIRECTION.WEST);
-        else return doorPositions.get(DIRECTION.EAST);
     }
 
     public TILE[][] getLayout() {
@@ -160,8 +133,35 @@ public abstract class Room {
         return interactableTiles.remove(tile);
     }
 
+    public void addPlayerTravelledPosition(Position position) {
+        playerTravelledPositions.add(position);
+    }
+
+    public List<Position> getPlayerTravelledPositions() {
+        return playerTravelledPositions;
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "(ID:" + id + ")";
+    }
+
+    public Position getEnteringPositionFromDirection(DIRECTION fromDirection) {
+        System.out.println(fromDirection);
+        switch (fromDirection) {
+            case NORTH -> {
+                return doorPositionsHashmap.get(DIRECTION.SOUTH);
+            }
+            case SOUTH -> {
+                return doorPositionsHashmap.get(DIRECTION.NORTH);
+            }
+            case EAST -> {
+                return doorPositionsHashmap.get(DIRECTION.WEST);
+            }
+            case WEST -> {
+                return doorPositionsHashmap.get(DIRECTION.EAST);
+            }
+            default -> throw new RuntimeException("Invalid fromDirection: " + fromDirection);
+        }
     }
 }

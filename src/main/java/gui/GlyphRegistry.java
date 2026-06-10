@@ -56,9 +56,13 @@ public class GlyphRegistry {
                 new GlyphStyle("▓", Color.DARKBLUE.darker()),
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker().darker()),
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker()),
                 new GlyphStyle("⮽", Color.SADDLEBROWN),
+                new GlyphStyle("⮽", Color.SADDLEBROWN.darker()),
+                new GlyphStyle("⮽", Color.SADDLEBROWN.darker().darker()),
+                new GlyphStyle("⮽", Color.SADDLEBROWN),
+                new GlyphStyle("⮽", Color.SADDLEBROWN.darker()),
+                new GlyphStyle("⮽", Color.SADDLEBROWN.darker().darker()),
+                new GlyphStyle("⛩", Color.SADDLEBROWN.darker()),
         });
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("ノ", UITheme.WORLD_FLOOR_DIM),
@@ -69,6 +73,11 @@ public class GlyphRegistry {
                 new GlyphStyle("\uD83D\uDDE1", UITheme.WORLD_FLOOR_DIM), // sword
                 new GlyphStyle("ᵕ", Color.GRAY.darker()),
         });
+        tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
+                new GlyphStyle("目", Color.PURPLE.darker()),
+                new GlyphStyle("目", Color.PURPLE.darker().darker()),
+                new GlyphStyle("目", Color.DARKVIOLET),
+        });
 
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "#", UITheme.LOOT_WEB);
@@ -76,6 +85,8 @@ public class GlyphRegistry {
         registerInteractableTile(Chest.class, "C", UITheme.LOOT_CHEST);
         registerInteractableTile(DroppedWeapon.class, "/", UITheme.LOOT_WEAPON);
         registerInteractableTile(Heart.class, "♥", UITheme.STAT_HEALTH);
+        registerInteractableTile(Box.class, "⮽", Color.SADDLEBROWN);
+        registerInteractableTile(BrokenBox.class, "%", Color.SADDLEBROWN);
 
         // --- CHARACTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

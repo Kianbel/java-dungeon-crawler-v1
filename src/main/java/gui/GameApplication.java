@@ -15,6 +15,7 @@ public class GameApplication extends Application {
         stage.setTitle("dungeon crawler 1.0");
         stage.setScene(scene);
         stage.setMaximized(true);
+        stage.setFullScreenExitHint("");
         stage.show();
     }
 }

@@ -16,14 +16,16 @@ public class Player extends Entity {
     public int hpPotions = 0;
     public int hunger = 100;
 
-    final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
+    private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
-    final int HUNGER_DECREASE_AMOUNT = 5;
+    private final int HUNGER_DECREASE_AMOUNT = 5;
+
+    private int putTravelledPositionCtr = 0;
 
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
 
-        activateGodMode();
+//        activateGodMode();
 
         setHealth(health);
         setHunger(hunger);
@@ -70,6 +72,12 @@ public class Player extends Entity {
             }
         }
 
+        // for handling darkness (refer GameController)
+        putTravelledPositionCtr++;
+        if(putTravelledPositionCtr > 3) {
+            currentRoom.addPlayerTravelledPosition(position);
+            putTravelledPositionCtr = 0;
+        }
         walk(unitPos);
     }
 

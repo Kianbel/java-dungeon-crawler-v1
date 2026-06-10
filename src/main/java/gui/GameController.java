@@ -10,6 +10,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import util.ANIMATION_CURVE;
 import util.Position;
@@ -45,12 +46,12 @@ public class GameController {
     private Viewport viewport;
 
     // --- TILES ---
-    private double currentTileSize = 44.0;
+    private double currentTileSize = 70;
     private final double MIN_TILE_SIZE = 6.0;
-    private final double MAX_TILE_SIZE = 60.0;
+    private final double MAX_TILE_SIZE = 70.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
-    private final int DARKNESS_DISTANCE = 100; // TODO: revert to 4
-    private final int TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 2;
+    private final double DARKNESS_DISTANCE = 4; // default: 4
+    private final double TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 1.5;
 
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
@@ -258,11 +259,31 @@ public class GameController {
 
                 // Final rendering execution pass
                 // --- PUT DARKNESS ---
-                int dx = player.position.x - worldPosition.x;
-                int dy = player.position.y - worldPosition.y;
-                int distance = (int) Math.sqrt(dx*dx + dy*dy);
+
+                // player previously travelled positions darkness
+                boolean isTravelled = false;
+                List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
+                int dx;
+                int dy;
+                int distance;
+                for(Position previousTravelledPos : previousTravelledPositions) {
+                    dx = previousTravelledPos.x - worldPosition.x;
+                    dy = previousTravelledPos.y - worldPosition.y;
+                    distance = (int) Math.sqrt(dx*dx + dy*dy);
+                    if(distance < DARKNESS_DISTANCE) {
+                        isTravelled = true;
+                        break;
+                    }
+                }
+
+                // player darkness
+                dx = player.position.x - worldPosition.x;
+                dy = player.position.y - worldPosition.y;
+                distance = (int) Math.sqrt(dx*dx + dy*dy);
+
+
                 if(distance > DARKNESS_DISTANCE) activeColor = Color.BLACK.brighter();
-                if(distance > DARKNESS_DISTANCE* TOTAL_DARKNESS_DISTANCE_MULTIPLIER) activeColor = Color.BLACK;
+                if(distance > DARKNESS_DISTANCE * TOTAL_DARKNESS_DISTANCE_MULTIPLIER && !isTravelled) activeColor = Color.BLACK;
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 
@@ -295,6 +316,11 @@ public class GameController {
                         case S -> movementVector.y++;
                         case D -> movementVector.x++;
                         case SPACE -> movementVector = new Position(0,0);
+                        case F11 -> {
+                            Stage stage = (Stage) rootContainer.getScene().getWindow();
+                            stage.setFullScreen(!stage.isFullScreen());
+                            isTickAction = false;
+                        }
                         default -> isTickAction = false;
                     }
 

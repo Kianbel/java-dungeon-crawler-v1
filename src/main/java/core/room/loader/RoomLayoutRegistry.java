@@ -26,7 +26,7 @@ public class RoomLayoutRegistry {
 
     public TILE[][] getRandomLayoutFromRoomClass(Class<? extends Room> roomClass) {
         List<TILE[][]> layouts = hashmap.get(roomClass);
-        if(layouts.isEmpty()) {
+        if(layouts == null) {
             System.out.println("No layouts exists for " + roomClass.getSimpleName());
             return null;
         }

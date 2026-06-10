@@ -5,7 +5,7 @@ public abstract class Weapon {
     public int baseAttackDamage;
     public double critRate;
     public final int CRIT_MULTIPLIER = 2;
-    private final int ATTACK_DAMAGE_ERROR_RANGE = 2;
+    private final int ATTACK_DAMAGE_ERROR_RANGE = 1;
 
     public Weapon(String name, int baseAttackDamage, double critRate) {
         this.name = name;
