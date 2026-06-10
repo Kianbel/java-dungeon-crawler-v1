@@ -373,13 +373,13 @@ public class GameController {
         flashOverlay.widthProperty().bind(canvasContainer.widthProperty());
         flashOverlay.heightProperty().bind(canvasContainer.heightProperty());
         flashOverlay.setFill(color);
-        flashOverlay.setOpacity(1);
+        flashOverlay.setOpacity(0.5);
         flashOverlay.setMouseTransparent(true);
 
         canvasContainer.getChildren().add(flashOverlay);
 
         FadeTransition transition = new FadeTransition(Duration.millis(durationInMilis), flashOverlay);
-        transition.setFromValue(1);
+        transition.setFromValue(0.3);
         transition.setToValue(0);
 
         transition.setOnFinished(event -> {
