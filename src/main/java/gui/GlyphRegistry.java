@@ -1,6 +1,8 @@
 package gui;
 
 import entity.*;
+import entity.monster.GiantSpider;
+import entity.monster.Zombie;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;

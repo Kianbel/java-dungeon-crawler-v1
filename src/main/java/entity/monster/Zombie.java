@@ -1,11 +1,10 @@
-package entity;
+package entity.monster;
 
 import core.EntityRoomManager;
+import entity.Entity;
 import weapon.Fist;
 import util.Position;
-import weapon.GiantSpiderFang;
 import world.Coin;
-import world.DroppedWeapon;
 import world.Heart;
 import world.InteractableTile;
 

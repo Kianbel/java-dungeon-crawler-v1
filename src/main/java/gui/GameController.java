@@ -1,11 +1,12 @@
 package gui;
 
 import entity.Entity;
-import entity.Monster;
+import entity.monster.Monster;
 import entity.Player;
 import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
+import entity.projectile.Projectile;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -28,7 +29,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
 import world.InteractableTile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameController {
 
@@ -54,14 +57,14 @@ public class GameController {
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 70.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
-    private final double DARKNESS_DISTANCE = 4; // default: 4
+    private final double DARKNESS_DISTANCE = 100; // default: 4
     private final double TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 1.5;
 
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
 
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
-    private final java.util.Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new java.util.HashMap<>();
+    private final Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -340,9 +343,13 @@ public class GameController {
 
                         Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
                         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-                        for(Entity entity : entities) {
+                        for(int i = 0; i < entities.size(); i++) {
+                            Entity entity = entities.get(i);
                             if(entity instanceof Monster m) {
                                 m.makeMove();
+                            }
+                            if(entity instanceof Projectile p) {
+                                p.makeMove();
                             }
                         }
 

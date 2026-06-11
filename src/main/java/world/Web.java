@@ -2,7 +2,7 @@ package world;
 
 import core.EntityRoomManager;
 import entity.Entity;
-import entity.GiantSpider;
+import entity.monster.GiantSpider;
 import util.Position;
 
 public class Web extends InteractableTile {

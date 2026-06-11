@@ -1,6 +1,9 @@
-package entity;
+package entity.monster;
 
 import core.EntityRoomManager;
+import entity.Entity;
+import entity.MoveAfterPlayer;
+import entity.Player;
 import weapon.Weapon;
 import util.Position;
 import util.TILE;
@@ -18,6 +21,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
      *
      * @return Position(unitX, unitY)
      */
+    // TODO: rework so unit pos can give diagonal
     protected Position pathfindToPlayerPosition() {
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
@@ -59,5 +63,12 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             if(e.position.equals(targetPosition)) return false;
         }
         return true;
+    }
+
+    protected int getDistanceFromPlayer() {
+        Entity player = EntityRoomManager.getInstance().getPlayer();
+        int dx = player.position.x - position.x;
+        int dy = player.position.y - position.y;
+        return (int) Math.sqrt(dx*dx + dy*dy);
     }
 }

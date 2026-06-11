@@ -22,9 +22,9 @@ public class DungeonManager {
         return instance;
     }
 
-    public void generateDungeon() {
-        int ROOM_AMOUNT = 10;
+    private final int ROOM_AMOUNT = 3;
 
+    public void generateDungeon() {
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk());
         dungeonMapGenerator.generate(ROOM_AMOUNT);
         mapLayout = dungeonMapGenerator.getMapLayout();

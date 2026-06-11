@@ -21,4 +21,12 @@ public class Position {
         }
         else throw new IllegalArgumentException("Argument must be of class Position");
     }
+
+    public Position add(Position otherPos) {
+        return new Position(x+otherPos.x, y+otherPos.y);
+    }
+
+    public Position reverse() {
+        return new Position(-x, -y);
+    }
 }

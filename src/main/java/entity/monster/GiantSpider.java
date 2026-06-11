@@ -1,6 +1,8 @@
-package entity;
+package entity.monster;
 
 import core.EntityRoomManager;
+import entity.Entity;
+import entity.RangeAttack;
 import weapon.GiantSpiderFang;
 import util.Position;
 import core.room.type.Room;

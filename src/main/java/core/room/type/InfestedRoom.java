@@ -2,8 +2,8 @@ package core.room.type;
 
 import core.EntitySpawner;
 import core.room.loader.RoomLayoutRegistry;
-import entity.GiantSpider;
-import entity.Zombie;
+import entity.monster.GiantSpider;
+import entity.monster.Zombie;
 import util.Position;
 import util.TILE;
 
