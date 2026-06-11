@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import util.ANIMATION_CURVE;
+import util.MAP;
 import util.Position;
 import util.TILE;
 import weapon.Weapon;
@@ -45,8 +46,11 @@ public class GameController {
     private GameCanvas gameCanvas;
     private Viewport viewport;
 
+    // --- BOOLEANS ---
+    private boolean isMapOpen = false;
+
     // --- TILES ---
-    private double currentTileSize = 70;
+    private double currentTileSize = 50;
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 70.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
@@ -57,8 +61,7 @@ public class GameController {
     private final int MAX_LOG_LINES = 8;
 
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
-    // Tracks temporary visual displacements for animating entities
-    private final java.util.Map<Entity, RenderOffset> entityRenderOffsetHashMap = new java.util.HashMap<>();
+    private final java.util.Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new java.util.HashMap<>();
 
     @FXML
     public void initialize() {
@@ -233,8 +236,8 @@ public class GameController {
                         activeGlyph = entityStyle.glyph();
 
                         // Fetch dynamic presentation offsets from the UI mapping
-                        if (entityRenderOffsetHashMap.containsKey(entity)) {
-                            RenderOffset animationOffset = entityRenderOffsetHashMap.get(entity);
+                        if (entityAnimationPixelDrawOffsets.containsKey(entity)) {
+                            RenderOffset animationOffset = entityAnimationPixelDrawOffsets.get(entity);
                             entityPixelOffsetX = animationOffset.x;
                             entityPixelOffsetY = animationOffset.y;
                         }
@@ -316,6 +319,10 @@ public class GameController {
                         case S -> movementVector.y++;
                         case D -> movementVector.x++;
                         case SPACE -> movementVector = new Position(0,0);
+                        case M -> {
+                            if(!isMapOpen) isTickAction = false;
+                            isMapOpen = !isMapOpen;
+                        }
                         case F11 -> {
                             Stage stage = (Stage) rootContainer.getScene().getWindow();
                             stage.setFullScreen(!stage.isFullScreen());
@@ -323,8 +330,11 @@ public class GameController {
                         }
                         default -> isTickAction = false;
                     }
-
+                    if(isMapOpen) {
+                        openMap();
+                    }
                     if (isTickAction) {
+                        isMapOpen = false;
 //                        logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
                         player.handleMove(movementVector);
 
@@ -342,6 +352,51 @@ public class GameController {
             }
         });
     }
+
+    private void openMap() {
+        final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        if(activeRoom == null) return;
+
+        final MAP[][] mapLayout = DungeonManager.getInstance().getMapLayout();
+
+        final int MAP_HEIGHT = mapLayout.length;
+        final int MAP_LENGTH = mapLayout[0].length;
+        viewport.updateCameraFocus(activeRoom.minimapPosition, MAP_LENGTH, MAP_HEIGHT);
+
+        gameCanvas.clearCanvas();
+
+        for(int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
+            for(int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
+                Position worldPosition = viewport.toWorldPosition(screenX, screenY);
+
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < MAP_LENGTH && worldPosition.y >= 0 && worldPosition.y < MAP_HEIGHT;
+                if (!isWithinRoomBounds) {
+                    gameCanvas.drawCharacter(screenX, screenY, " ", Color.BLACK, 0.0, 0.0);
+                    continue;
+                }
+
+                MAP mapTile = mapLayout[worldPosition.y][worldPosition.x];
+                String c = "?";
+                Color color = Color.GRAY;
+                if(activeRoom.minimapPosition.equals(worldPosition)) color = Color.YELLOW;
+                if(mapTile != null) {
+                    switch(mapTile) {
+                        case SPAWN, CLEAR, INFESTED, TREASURE -> c = "□";
+                        case BOSS -> {
+                            c = "□";
+                            color = Color.RED;
+                        }
+                        case VCORRIDOR -> c = "|";
+                        case HCORRIDOR -> c = "-";
+                    }
+                }
+                else color = Color.BLACK;
+
+                gameCanvas.drawCharacter(screenX, screenY, c, color, 0,0);
+            }
+        }
+    }
+
 
     public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
     public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
@@ -368,19 +423,19 @@ public class GameController {
     }
 
     public void clearLogContainer() { logContainer.getChildren().clear(); }
-    public void flashScreenEffect(Color color, int durationInMilis) {
+    public void flashScreenEffect(Color color, int durationInMilis, double fromOpacity, double toOpacity) {
         Rectangle flashOverlay = new Rectangle();
         flashOverlay.widthProperty().bind(canvasContainer.widthProperty());
         flashOverlay.heightProperty().bind(canvasContainer.heightProperty());
         flashOverlay.setFill(color);
-        flashOverlay.setOpacity(0.5);
+        flashOverlay.setOpacity(1);
         flashOverlay.setMouseTransparent(true);
 
         canvasContainer.getChildren().add(flashOverlay);
 
         FadeTransition transition = new FadeTransition(Duration.millis(durationInMilis), flashOverlay);
-        transition.setFromValue(0.3);
-        transition.setToValue(0);
+        transition.setFromValue(fromOpacity);
+        transition.setToValue(toOpacity);
 
         transition.setOnFinished(event -> {
             canvasContainer.getChildren().remove(flashOverlay);
@@ -435,10 +490,10 @@ public class GameController {
                         double entityAnimationPosY = targetPixelY * curve;
 
                         if(frame == TOTAL_FRAMES) {
-                            entityRenderOffsetHashMap.remove(entity);
+                            entityAnimationPixelDrawOffsets.remove(entity);
                         }
                         else {
-                            entityRenderOffsetHashMap.put(entity, new RenderOffset(entityAnimationPosX, entityAnimationPosY));
+                            entityAnimationPixelDrawOffsets.put(entity, new RenderOffset(entityAnimationPosX, entityAnimationPosY));
                         }
 
                         updateRenderingPipeline();

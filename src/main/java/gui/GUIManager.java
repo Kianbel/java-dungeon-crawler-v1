@@ -37,15 +37,15 @@ public class GUIManager {
     }
 
     public void triggerHurtFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED, 50);
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED, 50, 0.3, 0);
     }
 
     public void triggerHealFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.GREEN, 200);
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.GREEN, 200, 0.3, 0);
     }
 
     public void triggerRoomTransitionFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500);
+        if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500, 0.8, 0);
     }
 
     public void triggerAttackAnimation(Entity attacker, Position targetPosition) {
