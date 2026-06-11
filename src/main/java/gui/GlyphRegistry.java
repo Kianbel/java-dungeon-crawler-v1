@@ -1,8 +1,10 @@
 package gui;
 
 import entity.*;
+import entity.boss.FlareWitch;
 import entity.monster.GiantSpider;
 import entity.monster.Zombie;
+import entity.projectile.Fireball;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;
@@ -90,10 +92,14 @@ public class GlyphRegistry {
         registerInteractableTile(Box.class, "⮽", Color.SADDLEBROWN);
         registerInteractableTile(BrokenBox.class, "%", Color.SADDLEBROWN);
 
-        // --- CHARACTER ENTITY REGISTRY ---
+        // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);
         registerEntity(Zombie.class, "Z", UITheme.ENTITY_ZOMBIE);
         registerEntity(GiantSpider.class, "S", UITheme.ENTITY_SPIDER);
+        registerEntity(FlareWitch.class, "༒", Color.PURPLE);
+
+        // --- PROJECTILE ENTITY REGISTRY ---
+        registerEntity(Fireball.class, "\uD83D\uDD25", Color.ORANGE);
     }
 
     public static GlyphRegistry getInstance() { return instance; }

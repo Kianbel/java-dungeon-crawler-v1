@@ -1,5 +1,10 @@
 package entity.projectile;
 
+import core.EntityRoomManager;
+import core.room.type.Room;
+import entity.Entity;
+import gui.GUIManager;
+import javafx.scene.paint.Color;
 import util.Position;
 
 public class Fireball extends Projectile {
@@ -9,7 +14,12 @@ public class Fireball extends Projectile {
 
     @Override
     public void makeMove() {
-        System.out.println(this + " moving to " + movementUnitPos);
         move();
+    }
+
+    @Override
+    public void attack(Entity targetEntity) {
+        super.attack(targetEntity);
+        GUIManager.getInstance().triggerColorFlash(Color.ORANGE, 100);
     }
 }

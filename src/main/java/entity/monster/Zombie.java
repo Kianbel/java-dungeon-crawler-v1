@@ -20,11 +20,10 @@ public class Zombie extends Monster {
         Position unitPos = pathfindToPlayerPosition();
         if(unitPos.x == 0 && unitPos.y == 0) return;
 
-        Position targetPosition = new Position(position.x+unitPos.x, position.y+unitPos.y);
+        Position targetPosition = position.add(unitPos);
         Entity player = EntityRoomManager.getInstance().getPlayer();
-        Position playerPosition = player.position;
 
-        if(playerPosition.x == targetPosition.x && playerPosition.y == targetPosition.y) {
+        if(player.position.equals(targetPosition)) {
             attack(player);
         }
         else if(isValidTargetPosition(targetPosition)){

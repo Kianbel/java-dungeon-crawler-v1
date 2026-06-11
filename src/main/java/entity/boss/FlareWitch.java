@@ -8,9 +8,11 @@ import entity.projectile.Fireball;
 import util.Position;
 import weapon.Fist;
 
+import java.util.Random;
+
 public class FlareWitch extends Monster {
-    private final int MAX_CAST_COOLDOWN = 5;
     private int castCooldown = 0;
+    private final Random random = new Random();
 
     public FlareWitch(Position position) {
         super("Flare Witch", 100, 2, new Fist(), position);
@@ -18,28 +20,39 @@ public class FlareWitch extends Monster {
 
     @Override
     public void makeMove() {
-        Position unitPosToPlayer = pathfindToPlayerPosition();
-        int playerDistance = getDistanceFromPlayer();
         Entity player = EntityRoomManager.getInstance().getPlayer();
+        Position unitPos = pathfindToPlayerPosition();
 
-        final double WALK_CHANCE = 0.5;
+        final int MIN_CAST_COOLDOWN = 1;
+        final int MAX_CAST_COOLDOWN = 1;
 
-        if(playerDistance == 1) attack(player);
-        else {
-            if(Math.random() <= WALK_CHANCE) {
-                walk(unitPosToPlayer);
-            }
-            else {
-                if(castCooldown == 0) {
-                    cast(unitPosToPlayer);
-                    castCooldown = MAX_CAST_COOLDOWN;
-                }
-            }
+        if(castCooldown <= 0) {
+            castSingleFireball(pathfindToPlayerPosition(true));
+            castCooldown = random.nextInt(MIN_CAST_COOLDOWN,MAX_CAST_COOLDOWN+1);
         }
-        if(castCooldown > 0) castCooldown--;
+        castCooldown--;
+
+        handleWalk();
     }
 
-    private void cast(Position unitPos) {
+    private void handleWalk() {
+        Entity player = EntityRoomManager.getInstance().getPlayer();
+        Position playerPosition = player.position;
+        Position unitPos = pathfindToPlayerPosition();
+        if(unitPos.x == 0 && unitPos.y == 0) return;
+
+        Position targetPosition = new Position(position.x+unitPos.x, position.y+unitPos.y);
+
+        if(playerPosition.x == targetPosition.x && playerPosition.y == targetPosition.y) {
+            attack(player);
+        }
+        else if(isValidTargetPosition(targetPosition)){
+            final double WALK_CHANCE = 0.5;
+            if(Math.random() <= WALK_CHANCE) walk(unitPos);
+        }
+    }
+
+    private void castSingleFireball(Position unitPos) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         Position fireballSpawnPosition = position.add(unitPos);
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPos, fireballSpawnPosition), currentRoom);

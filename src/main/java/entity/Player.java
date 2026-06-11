@@ -1,6 +1,7 @@
 package entity;
 
 import core.EntityRoomManager;
+import entity.monster.Monster;
 import gui.GUIManager;
 import gui.UITheme;
 import weapon.Weapon;
@@ -54,12 +55,16 @@ public class Player extends Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
 
-        Position targetPosition = new Position(position.x+unitPos.x, position.y+ unitPos.y);
-        for(Entity e : entities) {
+        Position targetPosition = position.add(unitPos);
+        for(int i = 0; i < entities.size(); i++) {
+            Entity e = entities.get(i);
             if(e == this) continue;
+
             if(e.position.equals(targetPosition)) {
-                attack(e);
-                return;
+                if(e instanceof Monster m) {
+                    attack(m);
+                    return;
+                }
             }
         }
 
@@ -119,7 +124,6 @@ public class Player extends Entity {
 
             GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
             GUIManager.getInstance().setHP(health);
-//            GUIManager.getInstance().triggerHurtFlash();
 
             if(health == 0) die();
         }

@@ -44,6 +44,10 @@ public class GUIManager {
         if (isPipelineOperational()) controller.flashScreenEffect(Color.GREEN, 200, 0.3, 0);
     }
 
+    public void triggerColorFlash(Color color, int durationMilis) {
+        if (isPipelineOperational()) controller.flashScreenEffect(color, durationMilis, 0.3, 0);
+    }
+
     public void triggerRoomTransitionFlash() {
         if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500, 0.8, 0);
     }
