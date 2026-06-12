@@ -36,7 +36,12 @@ public class EntityRoomManager {
                 if(e instanceof Player) return e;
             }
         }
-        throw new RuntimeException("Player cannot be found");
+        System.out.println(StackWalker.getInstance()
+                .walk(s -> s.skip(0).findFirst())
+                .get()
+                .getMethodName() + ": player is null");
+        return null;
+//        throw new RuntimeException("Player cannot be found");
     }
 
     public boolean addEntityToRoom(Entity entity, Room room) {

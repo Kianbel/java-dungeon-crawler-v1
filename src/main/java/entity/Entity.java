@@ -36,8 +36,8 @@ public abstract class Entity {
 
 
     public void walk(Position unitPos) {
-        if(unitPos.x > 1 || unitPos.x < -1) throw new RuntimeException("unitPos.x must be in range -1 to 1");
-        if(unitPos.y > 1 || unitPos.y < -1) throw new RuntimeException("unitPos.y must be in range -1 to 1");
+        if(unitPos.x > 1 || unitPos.x < -1) throw new RuntimeException("Invalid unit pos: " + unitPos);
+        if(unitPos.y > 1 || unitPos.y < -1) throw new RuntimeException("Invalid unit pos: " + unitPos);
 
         Position dPos = new Position(position.x + unitPos.x, position.y + unitPos.y);
 

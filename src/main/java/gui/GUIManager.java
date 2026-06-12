@@ -32,6 +32,10 @@ public class GUIManager {
         if (isPipelineOperational()) controller.addLog(message, color);
     }
 
+    public void printDevLog(String message) {
+        printLog(message, Color.PINK);
+    }
+
     public void wipeLogs() {
         if (isPipelineOperational()) controller.clearLogContainer();
     }

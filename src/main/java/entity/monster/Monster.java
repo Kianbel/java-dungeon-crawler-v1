@@ -42,7 +42,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         double angleToPlayer = Math.abs(Math.atan2(unitY, unitX)) * (180.0 / Math.PI);
         double diagonalAngle = angleToPlayer % 90;
 
-        GUIManager.getInstance().printLog(String.format("%.3f", diagonalAngle), Color.PINK);
+//        GUIManager.getInstance().printLog(String.format("%.3f", diagonalAngle), Color.PINK);
 
         if(diagonalAngle >= 25 && diagonalAngle <= 65 && allowDiagonal) {
             return new Position((int) Math.signum(dx), (int) Math.signum(dy));
