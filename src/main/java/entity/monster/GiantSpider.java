@@ -3,6 +3,8 @@ package entity.monster;
 import core.EntityRoomManager;
 import entity.Entity;
 import entity.RangeAttack;
+import gui.GUIManager;
+import javafx.scene.paint.Color;
 import weapon.GiantSpiderFang;
 import util.Position;
 import core.room.type.Room;
@@ -88,6 +90,12 @@ public class GiantSpider extends Monster implements RangeAttack {
         else if(isValidTargetPosition(targetPosition)){
             if(Math.random() <= WALK_CHANCE) walk(unitPos);
         }
+    }
+
+    @Override
+    public void walk(Position unitPos) {
+        super.walk(unitPos);
+        if(Math.random() <= 0.2) GUIManager.getInstance().triggerTextPopup("tap tap", Color.WHITESMOKE, position);
     }
 
     public boolean backOff() {

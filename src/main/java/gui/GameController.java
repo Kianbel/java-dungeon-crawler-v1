@@ -29,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
 import world.InteractableTile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,14 +66,13 @@ public class GameController {
         PURE_DARKNESS,
     }
 
-    private final double DARKNESS_DISTANCE = 4; // default: 4
-    private final double TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 1.5;
-
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
 
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
     private final Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new HashMap<>();
+
+    private final List<TextPopupData> textPopupDataList = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -298,18 +298,9 @@ public class GameController {
 
                 // Apply the calculated lighting/fog-of-war states to the active color
                 switch (lightLevel) {
-                    case ILLUMINATED -> {
-                        // Fully illuminated: Leave activeColor exactly as its base Layer 1/2/3 color
-                    }
-                    case DIM -> {
-                        // Dimly lit: Tint or dim down the base color slightly
-                        activeColor = activeColor.darker();
-                    }
-                    default -> {
-                        // Pure Black Zone (lightLevel == 0)
-                        // If we've seen it before, show it as a uniform grey shadow shroud. Otherwise, pitch black.
-                        activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
-                    }
+                    case ILLUMINATED -> {}
+                    case DIM -> activeColor = activeColor.darker();
+                    default -> activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
                 }
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
@@ -318,6 +309,24 @@ public class GameController {
                     double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
                     gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
                 }
+
+            }
+        }
+
+        // 2. SCREEN OVERLAY RENDERING
+        for (TextPopupData textPopup : textPopupDataList) {
+            Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
+
+            if (screenPos != null) {
+                Color fadedColor = new Color(
+                        textPopup.color.getRed(),
+                        textPopup.color.getGreen(),
+                        textPopup.color.getBlue(),
+                        textPopup.opacity
+                );
+
+                // TODO: hardcoded x offset T^T
+                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 30, fadedColor, (double) -textPopup.text.length()*12.5 /2, (int)textPopup.pixelOffsetY);
             }
         }
     }
@@ -482,6 +491,42 @@ public class GameController {
     }
     public void clearLogContainer() { logContainer.getChildren().clear(); }
 
+    public void triggerTextPopup(TextPopupData textPopupData, double duration) {
+        Timeline timeline = new Timeline();
+        final int TOTAL_FRAMES = 10;
+
+        // Define how many total pixels you want the text to float upward over its life
+        final double MAX_FLOAT_DISTANCE_PIXELS = -30.0; // Negative moves UP on a screen canvas
+
+        // Add it to our active rendering registry exactly once
+        textPopupDataList.add(textPopupData);
+
+        for(int i = 0; i <= TOTAL_FRAMES; i++) {
+            final int frame = i;
+            KeyFrame keyframe = new KeyFrame(
+                    Duration.millis(duration / TOTAL_FRAMES * frame),
+                    event -> {
+                        double progress = (double) frame / TOTAL_FRAMES;
+                        // Ease-out calculation for smooth fading
+                        double curve = 1.0 - progress;
+                        textPopupData.opacity = Math.clamp(curve, 0.0, 1.0);
+
+                        // 2. Float calculation (Moves smoothly from 0 to MAX_FLOAT_DISTANCE_PIXELS)
+                        textPopupData.pixelOffsetY = progress * MAX_FLOAT_DISTANCE_PIXELS;
+
+                        // Clean up the object once the animation sequence wraps up
+                        if(frame == TOTAL_FRAMES) {
+                            textPopupDataList.remove(textPopupData);
+                        }
+
+                        updateRenderingPipeline();
+                    }
+            );
+            timeline.getKeyFrames().add(keyframe);
+        }
+        timeline.play();
+    }
+
     public void flashScreenEffect(Color color, int durationInMilis, double fromOpacity, double toOpacity) {
         Rectangle flashOverlay = new Rectangle();
         flashOverlay.widthProperty().bind(canvasContainer.widthProperty());
@@ -515,8 +560,9 @@ public class GameController {
         int dy = targetPosition.y - entity.position.y;
 
         double targetPixelX;
-        if (gameCanvas.getGridColumns() > 0)
+        if (gameCanvas.getGridColumns() > 0) {
             targetPixelX = dx * (canvas.getWidth() / gameCanvas.getGridColumns()) * slidePixelMultiplier;
+        }
         else targetPixelX = dx * currentTileSize * slidePixelMultiplier;
         double targetPixelY = dy * currentTileSize * slidePixelMultiplier;
 
@@ -547,7 +593,6 @@ public class GameController {
                         else {
                             entityAnimationPixelDrawOffsets.put(entity, new RenderOffset(entityAnimationPosX, entityAnimationPosY));
                         }
-
                         updateRenderingPipeline();
                     }
             );

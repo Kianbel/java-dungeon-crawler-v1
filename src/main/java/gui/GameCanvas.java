@@ -51,6 +51,18 @@ public class GameCanvas {
         gc.fillText(character, renderPixelX, renderPixelY + fontAscent);
     }
 
+    public void drawString(int x, int y, String text, double fontSize, Color color, double offsetX, double offsetY) {
+        if (x < 0 || x >= gridColumns || y < 0 || y >= gridRows) return;
+
+        final double renderPixelX = (x * cellWidth) + offsetX;
+        final double renderPixelY = (y * cellHeight) + offsetY;
+
+        Font font = Font.font(UITheme.FONT_FAMILY, fontSize);
+        gc.setFont(font);
+        gc.setFill(color);
+        gc.fillText(text, renderPixelX, renderPixelY + fontAscent);
+    }
+
     // Update your health bar method too so it glides along with the monster!
     public void drawHealthBar(int gridX, int gridY, double hpPercent, double offsetX, double offsetY) {
         if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;

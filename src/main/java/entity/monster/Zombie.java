@@ -2,6 +2,8 @@ package entity.monster;
 
 import core.EntityRoomManager;
 import entity.Entity;
+import gui.GUIManager;
+import javafx.scene.paint.Color;
 import weapon.Fist;
 import util.Position;
 import world.Coin;
@@ -14,6 +16,12 @@ import java.util.Map;
 public class Zombie extends Monster {
     public Zombie(Position position) {
         super("Zombie", 10, 0, new Fist(), position);
+    }
+
+    @Override
+    public void walk(Position unitPos) {
+        super.walk(unitPos);
+        if(Math.random() <= 0.1) GUIManager.getInstance().triggerTextPopup("grrr", Color.WHITESMOKE, position);
     }
 
     public void makeMove() {

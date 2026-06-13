@@ -221,6 +221,7 @@ public class FlareWitch extends Monster {
             currentState = STATE.ANGERED;
             return;
         }
+
         if(getDistanceFromPlayer() == 1) {
             currentState = STATE.ATTACK;
             return;

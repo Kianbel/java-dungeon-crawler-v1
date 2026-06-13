@@ -53,6 +53,10 @@ public class Viewport {
         return new Position(cameraOffset.x + screenX, cameraOffset.y + screenY);
     }
 
+    public Position toScreenPosition(int worldX, int worldY) {
+        return new Position(worldX - cameraOffset.x, worldY - cameraOffset.y);
+    }
+
     public int getOffsetX() { return cameraOffset.x; }
     public int getOffsetY() { return cameraOffset.y; }
     public int getScreenWidth() { return screenWidth; }
