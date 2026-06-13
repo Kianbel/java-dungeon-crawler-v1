@@ -72,7 +72,7 @@ public class FlareWitch extends Monster {
                 doCastBarrage();
             }
             case CAST_CIRCLE -> {
-//                doCastCircle();
+                doCastCircle();
             }
             case SUMMON -> {
 //                doSummon();
@@ -87,6 +87,25 @@ public class FlareWitch extends Monster {
             barrageCount = 0;
         }
         if(summonCooldown > 0) summonCooldown--;
+    }
+
+    private void doCastCircle() {
+        GUIManager.getInstance().printDevLog(name + " cast circle");
+        Position fireballPos1 = position.add(pathfindToPlayerPosition());
+        Position fireballPos2 = new Position(fireballPos1.x, fireballPos1.y-1);
+        Position fireballPos3 = new Position(fireballPos1.x, fireballPos1.y+1);
+        Position fireballPos4 = new Position(fireballPos1.x-1, fireballPos1.y);
+        Position fireballPos5 = new Position(fireballPos1.x+1, fireballPos1.y);
+
+        Position unitPosToPlayer = pathfindToPlayerPosition(true);
+
+        EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos1), currentRoom);
+        EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos2), currentRoom);
+        EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos3), currentRoom);
+        EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos4), currentRoom);
+        EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos5), currentRoom);
+        currentState = STATE.ANGERED;
+        castCooldown = random.nextInt(MIN_CAST_COOLDOWN, MAX_CAST_COOLDOWN+1);
     }
 
     private void doAttack() {
@@ -113,7 +132,6 @@ public class FlareWitch extends Monster {
         if(isValidTargetPosition(targetPosition)) {
             walk(unitPosToPlayer);
         }
-
     }
 
     private void doCastBarrage() {
@@ -162,7 +180,8 @@ public class FlareWitch extends Monster {
                 return;
             }
             else {
-                currentState = STATE.CAST_BARRAGE;
+                if(Math.random() <= 0.5) currentState = STATE.CAST_BARRAGE;
+                else currentState = STATE.CAST_CIRCLE;
                 return;
             }
         }

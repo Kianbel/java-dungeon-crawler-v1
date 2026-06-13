@@ -20,6 +20,19 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         super(name, health, armor, weapon, position);
     }
 
+    protected double getAngleToPlayer() {
+        Entity player = EntityRoomManager.getInstance().getPlayer();
+        Position playerPosition = player.position;
+        int dx = playerPosition.x - position.x;
+        int dy = playerPosition.y - position.y;
+        double distance = Math.sqrt(dx*dx + dy*dy);
+        double unitX = dx / distance;
+        double unitY = dy / distance;
+
+        double angleToPlayer = Math.abs(Math.atan2(unitY, unitX)) * (180.0 / Math.PI);
+        return angleToPlayer % 90;
+    }
+
     /** Returns the unit vector position towards player position.
      * diagonal direction is disabled by default
      * @return Position(unitX, unitY)
@@ -42,11 +55,10 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         double angleToPlayer = Math.abs(Math.atan2(unitY, unitX)) * (180.0 / Math.PI);
         double diagonalAngle = angleToPlayer % 90;
 
-//        GUIManager.getInstance().printLog(String.format("%.3f", diagonalAngle), Color.PINK);
-
         if(diagonalAngle >= 25 && diagonalAngle <= 65 && allowDiagonal) {
             return new Position((int) Math.signum(dx), (int) Math.signum(dy));
         }
+
         unitX = 0;
         unitY = 0;
         int absX = Math.abs(dx);

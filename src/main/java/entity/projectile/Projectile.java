@@ -32,7 +32,7 @@ public abstract class Projectile extends Entity implements MoveAfterPlayer {
         }
 
         Entity player = EntityRoomManager.getInstance().getPlayer();
-        if(player.position.equals(targetPosition)) {
+        if(player.position.equals(targetPosition) || player.position.equals(position)) {
             attack(player);
         }
         else walk(movementUnitPos);

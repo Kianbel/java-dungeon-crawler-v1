@@ -294,8 +294,8 @@ public class GameController {
 
                 // player darkness
                 distance = (int) getDistanceFromPositions(worldPosition, player.position);
-                if(distance > DARKNESS_DISTANCE && !isLighted) activeColor = Color.BLACK.brighter();
-                if(distance > DARKNESS_DISTANCE * TOTAL_DARKNESS_DISTANCE_MULTIPLIER && !isTravelled && !isLighted) activeColor = Color.BLACK;
+                if(distance > DARKNESS_DISTANCE && !isLighted) activeColor = Color.BLACK.brighter().brighter();
+                if(distance > DARKNESS_DISTANCE*TOTAL_DARKNESS_DISTANCE_MULTIPLIER && !isTravelled && !isLighted) activeColor = Color.BLACK;
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 
@@ -344,7 +344,6 @@ public class GameController {
                     }
                     if (isTickAction) {
                         isMapOpen = false;
-//                        logContainer.getChildren().forEach(n -> ((Label) n).setStyle("-fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";"));
                         player.handleMove(movementVector);
 
                         Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
