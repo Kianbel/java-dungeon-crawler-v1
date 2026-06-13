@@ -96,7 +96,7 @@ public class GlyphRegistry {
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);
         registerEntity(Zombie.class, "Z", UITheme.ENTITY_ZOMBIE);
         registerEntity(GiantSpider.class, "S", UITheme.ENTITY_SPIDER);
-        registerEntity(FlareWitch.class, "༒", Color.PURPLE);
+        registerEntity(FlareWitch.class, "༒", Color.ORANGE);
 
         // --- PROJECTILE ENTITY REGISTRY ---
         registerEntity(Fireball.class, "\uD83D\uDD25", Color.ORANGE);

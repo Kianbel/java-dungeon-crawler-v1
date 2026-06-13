@@ -3,15 +3,19 @@ package entity.boss;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import entity.monster.GiantSpider;
 import entity.monster.Monster;
+import entity.monster.Zombie;
 import entity.projectile.Fireball;
 import gui.GUIManager;
+import gui.Randomizer;
+import javafx.scene.paint.Color;
 import util.Position;
 import weapon.Fist;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
-
 
 public class FlareWitch extends Monster {
     private final Random random = new Random();
@@ -28,22 +32,50 @@ public class FlareWitch extends Monster {
         CAST_CIRCLE,
         SUMMON,
         ATTACK,
+        TELEPORT,
     }
     private STATE currentState;
 
+    private boolean isPhase2 = false;
+    private int distanceToPlayer = 0;
+
+    private int activeHintCooldown = 0;
     private int castCooldown = 0;
     private int summonCooldown = 0;
+
+    private double teleportChance = 0.1;
     private int barrageCount = 0;
 
-    private final double WALK_CHANCE = 0.5;
     private final int FOLLOW_DISTANCE_THRESHOLD = 10;
     private final int MIN_CAST_COOLDOWN = 3;
     private final int MAX_CAST_COOLDOWN = 6;
     private final int MAX_BARRAGE_COUNT = 10;
+    private final int SUMMON_DISTANCE = 10;
+    private final int MAX_SUMMON_COOLDOWN = 200;
+
+    private List<Entity> summonedEntities = new ArrayList<>();
 
     public FlareWitch(Position position) {
         super("Flare Witch", 100, 2, new Fist(), position);
         currentState = STATE.IDLE;
+        illuminationData.isIlluminated = true;
+    }
+
+    @Override
+    public void die() {
+        super.die();
+        for(Entity e : summonedEntities) {
+            e.die();
+        }
+    }
+
+    @Override
+    public void hurt(int damage, Entity attacker) {
+        super.hurt(damage, attacker);
+        if(Math.random() <= teleportChance && activeHintCooldown <= 0) {
+            currentState = STATE.TELEPORT;
+            activeHintCooldown = 5;
+        }
     }
 
     @Override
@@ -51,7 +83,12 @@ public class FlareWitch extends Monster {
         if(player == null) player = EntityRoomManager.getInstance().getPlayer();
         if(currentRoom == null) currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
 
-
+        if(health <= maxHealth/2 && !isPhase2) {
+            isPhase2 = true;
+            summonCooldown = 10;
+            teleportChance = 0.2;
+        }
+        distanceToPlayer = (int) position.getDistanceTo(player.position);
         switch(currentState) {
             case IDLE -> {
                 doIdle();
@@ -75,22 +112,88 @@ public class FlareWitch extends Monster {
                 doCastCircle();
             }
             case SUMMON -> {
-//                doSummon();
+                doSummon();
             }
             case ATTACK -> {
                 doAttack();
             }
+            case TELEPORT -> {
+                doTeleport();
+            }
         }
-
         if(castCooldown > 0) {
             castCooldown--;
             barrageCount = 0;
         }
+
+//        System.out.println(activeHintCooldown);
+
         if(summonCooldown > 0) summonCooldown--;
+        if(activeHintCooldown > 0) activeHintCooldown--;
+    }
+
+    private void doTeleport() {
+        if(activeHintCooldown > 0) {
+            currentState = STATE.TELEPORT;
+            return;
+        }
+
+        List<Position> availablePositions = currentRoom.getSpawnablePositions();
+        List<Position> teleportablePositions = new ArrayList<>();
+        for(Position p : availablePositions) {
+            if(p.getDistanceTo(this.position) < 10) {
+                teleportablePositions.add(p);
+            }
+        }
+
+        position = teleportablePositions.get(random.nextInt(teleportablePositions.size()));
+
+        currentState = STATE.CAST_CIRCLE;
+    }
+
+    private void doSummon() {
+        if(summonCooldown > 0) {
+            currentState = STATE.ANGERED;
+            return;
+        }
+
+        if(activeHintCooldown > 0) {
+            color = Color.RED;
+            return;
+        }
+
+        int summonCount = 5;
+        if(isPhase2) summonCount = 3;
+        color = Color.RED;
+
+        List<Position> spawnablePositions = currentRoom.getSpawnablePositions();
+        List<Position> summonPositions = new ArrayList<>();
+        for(int i = 0; i < spawnablePositions.size(); i++) {
+            Position spawnablePos = spawnablePositions.get(i);
+            if(spawnablePos.getDistanceTo(position) <= SUMMON_DISTANCE) {
+                summonPositions.add(spawnablePos);
+            }
+        }
+
+        if(summonPositions.isEmpty()) return;
+
+        for(int i = 0; i < summonCount; i++) {
+            Position summonPosition = summonPositions.remove(random.nextInt(summonPositions.size()));
+            Entity summon = new Zombie(summonPosition);
+            if(isPhase2) summon = new GiantSpider(summonPosition);
+
+            summon.illuminationData.isIlluminated = true;
+            summon.illuminationData.illuminationRange = 3;
+
+            EntityRoomManager.getInstance().addEntityToRoom(summon, currentRoom);
+            summonedEntities.add(summon);
+        }
+
+        currentState = STATE.ANGERED;
+        summonCooldown = MAX_SUMMON_COOLDOWN;
     }
 
     private void doCastCircle() {
-        GUIManager.getInstance().printDevLog(name + " cast circle");
         Position fireballPos1 = position.add(pathfindToPlayerPosition());
         Position fireballPos2 = new Position(fireballPos1.x, fireballPos1.y-1);
         Position fireballPos3 = new Position(fireballPos1.x, fireballPos1.y+1);
@@ -109,15 +212,11 @@ public class FlareWitch extends Monster {
     }
 
     private void doAttack() {
-        GUIManager.getInstance().printDevLog(name + " attack");
-
         attack(player);
         currentState = STATE.ADVANCE;
     }
 
     private void doAdvance() {
-        GUIManager.getInstance().printDevLog(name + " advance");
-
         if(Math.random() <= 0.3) {
             currentState = STATE.ANGERED;
             return;
@@ -135,10 +234,6 @@ public class FlareWitch extends Monster {
     }
 
     private void doCastBarrage() {
-        GUIManager.getInstance().printDevLog(name + " cast barrage");
-
-        GUIManager.getInstance().printDevLog(barrageCount + "");
-
         if(barrageCount >= MAX_BARRAGE_COUNT) {
             castCooldown = MAX_CAST_COOLDOWN;
             currentState = STATE.ANGERED;
@@ -151,8 +246,6 @@ public class FlareWitch extends Monster {
     }
 
     private void doCastSingle() {
-        GUIManager.getInstance().printDevLog(name + " cast single");
-
         Position fireballSpawnPosition = position.add(pathfindToPlayerPosition());
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(pathfindToPlayerPosition(true), fireballSpawnPosition), currentRoom);
 
@@ -161,11 +254,9 @@ public class FlareWitch extends Monster {
     }
 
     private void doAngered() {
-        GUIManager.getInstance().printDevLog(name + " angered");
+        color = null;
 
-        int distanceFromPlayer = getDistanceFromPlayer();
-
-        if(distanceFromPlayer >= FOLLOW_DISTANCE_THRESHOLD) {
+        if(distanceToPlayer >= FOLLOW_DISTANCE_THRESHOLD) {
             currentState = STATE.FOLLOW;
             return;
         }
@@ -174,23 +265,40 @@ public class FlareWitch extends Monster {
             return;
         }
 
+
         if(castCooldown <= 0) {
-            if(health >= maxHealth/2) {
-                currentState = STATE.CAST_SINGLE;
+            if(!isPhase2) {
+                Randomizer randomizer = new Randomizer();
+                switch(randomizer.pick(1, 2)) {
+                    case 1 -> currentState = STATE.CAST_SINGLE;
+                    case 2 -> {
+                        if(summonCooldown <= 0) {
+                            activeHintCooldown = 5;
+                            currentState = STATE.SUMMON;
+                        }
+                    }
+                }
                 return;
             }
             else {
-                if(Math.random() <= 0.5) currentState = STATE.CAST_BARRAGE;
-                else currentState = STATE.CAST_CIRCLE;
+                Randomizer randomizer = new Randomizer();
+                switch(randomizer.pick(1, 2, 3)) {
+                    case 1 -> currentState = STATE.CAST_BARRAGE;
+                    case 2 -> currentState = STATE.CAST_CIRCLE;
+                    case 3 -> {
+                        if(summonCooldown <= 0) {
+                            activeHintCooldown = 5;
+                            currentState = STATE.SUMMON;
+                        }
+                    }
+                }
                 return;
             }
         }
     }
 
     private void doFollow() {
-        GUIManager.getInstance().printDevLog(name + " follow");
-
-        if(getDistanceFromPlayer() < FOLLOW_DISTANCE_THRESHOLD) {
+        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
             currentState = STATE.ANGERED;
             return;
         }
@@ -203,8 +311,7 @@ public class FlareWitch extends Monster {
     }
 
     private void doIdle() {
-        GUIManager.getInstance().printDevLog(name + " idle");
-        if(getDistanceFromPlayer() < FOLLOW_DISTANCE_THRESHOLD) {
+        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
             currentState = STATE.ANGERED;
             return;
         }

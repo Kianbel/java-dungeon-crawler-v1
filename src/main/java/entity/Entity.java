@@ -1,8 +1,10 @@
 package entity;
 
 import core.EntityRoomManager;
+import core.IlluminationData;
 import gui.GUIManager;
 import gui.UITheme;
+import javafx.scene.paint.Color;
 import util.DIRECTION;
 import weapon.Weapon;
 import util.Position;
@@ -23,6 +25,9 @@ public abstract class Entity {
     public int id;
     public int stunCounter;
 
+    public Color color;
+    public IlluminationData illuminationData = new IlluminationData();
+
     public Entity(String name, int health, int armor, Weapon weapon, Position position) {
         this.name = name;
         this.armor = armor;
@@ -32,6 +37,7 @@ public abstract class Entity {
         this.position = position;
         id = this.hashCode();
         stunCounter = 0;
+        color = null;
     }
 
 
@@ -66,6 +72,7 @@ public abstract class Entity {
     public void die() {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        if(currentRoom == null) return;
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
     }
 
@@ -79,7 +86,7 @@ public abstract class Entity {
         for(Map.Entry<InteractableTile, Double> set : map.entrySet()) {
             if(random <= set.getValue()) {
                 Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-                currentRoom.addInteractableTile(set.getKey());
+                if(currentRoom != null) currentRoom.addInteractableTile(set.getKey());
                 return;
             }
         }

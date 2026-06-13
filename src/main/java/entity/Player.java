@@ -4,6 +4,7 @@ import core.EntityRoomManager;
 import entity.monster.Monster;
 import gui.GUIManager;
 import gui.UITheme;
+import javafx.scene.paint.Color;
 import weapon.Weapon;
 import weapon.AncientSword;
 import util.Position;
@@ -23,10 +24,12 @@ public class Player extends Entity {
 
     private int putTravelledPositionCtr = 0;
 
+    private boolean godModeEnabled = false;
+
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
-
-//        activateGodMode();
+        illuminationData.isIlluminated = true;
+        illuminationData.illuminationRange = 5;
 
         setHealth(health);
         setHunger(hunger);
@@ -36,11 +39,24 @@ public class Player extends Entity {
         setHpPotions(hpPotions);
     }
 
-    public void activateGodMode() {
+    public void toggleGodMode() {
         System.out.println("!!! PLAYER IN GOD MODE !!!");
-        armor = 1000;
-        hungerDecreaseCounter = 9999999;
-        hunger = 99999999;
+
+        godModeEnabled = !godModeEnabled;
+        if(godModeEnabled) {
+            GUIManager.getInstance().printDevLog("GOD MODE ENABLED");
+            armor = 1000;
+            hungerDecreaseCounter = 9999999;
+            hunger = 99999999;
+            color = Color.RED;
+        }
+        else {
+            GUIManager.getInstance().printDevLog("DISABLED GOD MODE");
+            armor = 0;
+            hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+            hunger = 100;
+            color = null;
+        }
     }
 
     public void handleMove(Position unitPos) {

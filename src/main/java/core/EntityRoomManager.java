@@ -81,7 +81,8 @@ public class EntityRoomManager {
         for(Map.Entry<Room, List<Entity>> set : hashmap.entrySet()) {
             if(set.getValue().contains(entity)) return set.getKey();
         }
-        throw new RuntimeException("Room cannot be found using entity: " + entity.name);
+        System.out.println("Room cannot be found using entity: " + entity.name);
+        return null;
     }
 
     public List<Room> getRooms() {

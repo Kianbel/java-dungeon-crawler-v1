@@ -6,7 +6,6 @@ import entity.Player;
 import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
-import entity.projectile.Fireball;
 import entity.projectile.Projectile;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -60,6 +59,12 @@ public class GameController {
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
 
     // --- DARKNESS ---
+    private enum LIGHT_LEVEL {
+        ILLUMINATED,
+        DIM,
+        PURE_DARKNESS,
+    }
+
     private final double DARKNESS_DISTANCE = 4; // default: 4
     private final double TOTAL_DARKNESS_DISTANCE_MULTIPLIER = 1.5;
 
@@ -249,14 +254,19 @@ public class GameController {
                         }
 
                         if (entity instanceof Player) {
-                            activeColor = entityStyle.color();
+                            activeColor = (entity.color != null) ? entity.color : entityStyle.color();
                         }
                         else {
-                            // Generate unique color variations dynamically based on Monster identity hashes
-                            double hue = entityStyle.color().getHue();
-                            double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
-                            double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
-                            activeColor = Color.hsb(hue, saturation, brightness);
+                            if(entity.color != null) {
+                                activeColor = entity.color;
+                            }
+                            else {
+                                // Generate unique color variations dynamically based on Monster identity hashes
+                                double hue = entityStyle.color().getHue();
+                                double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                                double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                                activeColor = Color.hsb(hue, saturation, brightness);
+                            }
 
                             if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
                                 damagedMonsterOverlayTarget = (Monster) entity;
@@ -266,36 +276,41 @@ public class GameController {
                     }
                 }
 
-                // --- PUT DARKNESS ---
+                // --- INLINE LAYERING PIPELINE CONTINUED ---
 
-                // player previously travelled positions darkness
+                // Run our single-source-of-truth illumination level calculation
+                LIGHT_LEVEL lightLevel = getPositionIlluminationLevel(worldPosition, player, entitiesInRoom);
+
+                // Determine if player has previously explored this specific area
                 boolean isTravelled = false;
-                int distance;
-                List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
-                for(Position previousTravelledPos : previousTravelledPositions) {
-                    distance = (int) getDistanceFromPositions(worldPosition, previousTravelledPos);
-                    if(distance < DARKNESS_DISTANCE) {
-                        isTravelled = true;
-                        break;
-                    }
-                }
+                if (player != null && player.illuminationData != null) {
+                    List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
+                    // If a position was within their baseline fully-lit range before, it's remembered
+                    double memoryThreshold = player.illuminationData.illuminationRange;
 
-                // put lights at surrounding fire entity source
-                boolean isLighted = false;
-                for(int i = 0; i < entitiesInRoom.size(); i++) {
-                    if(entitiesInRoom.get(i) instanceof Fireball fireball) {
-                        distance = (int) getDistanceFromPositions(worldPosition, fireball.position);
-                        if(distance < DARKNESS_DISTANCE*1.5) {
-                            isLighted = true;
+                    for (Position previousTravelledPos : previousTravelledPositions) {
+                        if (worldPosition.getDistanceTo(previousTravelledPos) <= memoryThreshold) {
+                            isTravelled = true;
                             break;
                         }
                     }
                 }
 
-                // player darkness
-                distance = (int) getDistanceFromPositions(worldPosition, player.position);
-                if(distance > DARKNESS_DISTANCE && !isLighted) activeColor = Color.BLACK.brighter().brighter();
-                if(distance > DARKNESS_DISTANCE*TOTAL_DARKNESS_DISTANCE_MULTIPLIER && !isTravelled && !isLighted) activeColor = Color.BLACK;
+                // Apply the calculated lighting/fog-of-war states to the active color
+                switch (lightLevel) {
+                    case ILLUMINATED -> {
+                        // Fully illuminated: Leave activeColor exactly as its base Layer 1/2/3 color
+                    }
+                    case DIM -> {
+                        // Dimly lit: Tint or dim down the base color slightly
+                        activeColor = activeColor.darker();
+                    }
+                    default -> {
+                        // Pure Black Zone (lightLevel == 0)
+                        // If we've seen it before, show it as a uniform grey shadow shroud. Otherwise, pitch black.
+                        activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
+                    }
+                }
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 
@@ -327,6 +342,10 @@ public class GameController {
                         case A -> movementVector.x--;
                         case S -> movementVector.y++;
                         case D -> movementVector.x++;
+                        case T -> {
+                            player.toggleGodMode();
+                            isTickAction = false;
+                        }
                         case SPACE -> movementVector = new Position(0,0);
                         case M -> {
                             if(!isMapOpen) isTickAction = false;
@@ -409,19 +428,47 @@ public class GameController {
         }
     }
 
+    private LIGHT_LEVEL getPositionIlluminationLevel(Position targetPos, Player player, List<Entity> entitiesInRoom) {
+        LIGHT_LEVEL lightLevel = LIGHT_LEVEL.PURE_DARKNESS; // Default to pure black
+        final int dimRange = 2;       // Your buffer variable for the dim outer ring (adjust as needed)
 
-    public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
-    public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
-    public void updateArmor(int arm) { armorText.setText("Armor: " + arm + "/10"); }
-    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w); }
-    public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
-    public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
+        // 1. Evaluate Player Light Source
+        if (player != null && player.illuminationData != null && player.illuminationData.isIlluminated) {
+            double distance = targetPos.getDistanceTo(player.position);
+            double brightRange = player.illuminationData.illuminationRange;
 
-    private String buildBarMeter(int val) {
-        int fill = (int) Math.round((Math.max(0, Math.min(100, val)) / 100.0) * 15);
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < 15; i++) sb.append(i < fill ? "■" : "·");
-        return sb.append("]").toString();
+            if (distance <= brightRange) {
+                return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
+            } else if (distance <= brightRange + dimRange) {
+                lightLevel = LIGHT_LEVEL.DIM; // Mark as dim
+            }
+        }
+
+        // 2. Evaluate Dynamic Entity Light Sources (Fireballs, Glowing Monsters, etc.)
+        for (int i = 0; i < entitiesInRoom.size(); i++) {
+            Entity entity = entitiesInRoom.get(i);
+            if (entity.position == null || entity.illuminationData == null || !entity.illuminationData.isIlluminated) {
+                continue;
+            }
+
+            double distance = targetPos.getDistanceTo(entity.position);
+            double brightRange = entity.illuminationData.illuminationRange;
+
+            if (distance <= brightRange) {
+                return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
+            } else if (distance <= brightRange + dimRange) {
+                lightLevel = LIGHT_LEVEL.DIM; // Mark as dim
+            }
+        }
+
+        // 3. Hook for Future Tile/Structure Light Sources (e.g., Torches, Braziers)
+        // if (activeRoom.getTileAt(targetPos) == TILE.TORCH) {
+        //     double distance = targetPos.getDistanceTo(torchPos);
+        //     if (distance <= 3) return 2;
+        //     else if (distance <= 3 + N) maxLightLevel = Math.max(maxLightLevel, 1);
+        // }
+
+        return lightLevel;
     }
 
     public void addLog(String txt, Color col) {
@@ -433,8 +480,8 @@ public class GameController {
         if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
         logContainer.getChildren().add(element);
     }
-
     public void clearLogContainer() { logContainer.getChildren().clear(); }
+
     public void flashScreenEffect(Color color, int durationInMilis, double fromOpacity, double toOpacity) {
         Rectangle flashOverlay = new Rectangle();
         flashOverlay.widthProperty().bind(canvasContainer.widthProperty());
@@ -457,21 +504,13 @@ public class GameController {
 
         transition.play();
     }
-
     public void triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
         triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
     }
-
     public void triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
         triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
     }
-
-    private void triggerEntitySlideAnimation(Entity entity,
-                                             Position targetPosition,
-                                             double slidePixelMultiplier,
-                                             double animationDurationMs,
-                                             ANIMATION_CURVE animationCurve,
-                                             boolean isReverse) {
+    private void triggerEntitySlideAnimation(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve, boolean isReverse) {
         int dx = targetPosition.x - entity.position.x;
         int dy = targetPosition.y - entity.position.y;
 
@@ -482,6 +521,7 @@ public class GameController {
         double targetPixelY = dy * currentTileSize * slidePixelMultiplier;
 
         Timeline timeline = new Timeline();
+
         final int TOTAL_FRAMES = 10;
 
         for(int i = 0; i <= TOTAL_FRAMES; i++) {
@@ -516,13 +556,19 @@ public class GameController {
         timeline.play();
     }
 
-    private double getDistanceFromPositions(Position from, Position to) {
-        int dx = to.x - from.x;
-        int dy = to.y - from.y;
-        return Math.sqrt(dx*dx + dy*dy);
+    public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
+    public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
+    public void updateArmor(int arm) { armorText.setText("Armor: " + arm + "/10"); }
+    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w); }
+    public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
+    public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
+
+    private String buildBarMeter(int val) {
+        int fill = (int) Math.round((Math.max(0, Math.min(100, val)) / 100.0) * 15);
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < 15; i++) sb.append(i < fill ? "■" : "·");
+        return sb.append("]").toString();
     }
-
-
     private String toHexWebColor(Color c) {
         return String.format("#%02X%02X%02X", (int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255));
     }

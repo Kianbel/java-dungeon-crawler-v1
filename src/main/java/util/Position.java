@@ -26,7 +26,9 @@ public class Position {
         return new Position(x+otherPos.x, y+otherPos.y);
     }
 
-    public Position reverse() {
-        return new Position(-x, -y);
+    public double getDistanceTo(Position to) {
+        int dx = to.x - x;
+        int dy = to.y - y;
+        return Math.sqrt(dx*dx + dy*dy);
     }
 }
