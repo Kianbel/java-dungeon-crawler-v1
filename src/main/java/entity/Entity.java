@@ -113,9 +113,12 @@ public abstract class Entity {
 
             if(damage == 0) {
                 if(attacker instanceof Player) {
-                    GUIManager.getInstance().printLog("You missed!", UITheme.LOG_PLAYER_ACTION);
+                    GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
                 }
             }
+
+            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
+            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
 
             health -= damage;
             if(health <= 0) {

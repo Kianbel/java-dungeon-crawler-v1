@@ -21,7 +21,6 @@ public class Zombie extends Monster {
     @Override
     public void walk(Position unitPos) {
         super.walk(unitPos);
-        if(Math.random() <= 0.1) GUIManager.getInstance().triggerTextPopup("grrr", Color.WHITESMOKE, position);
     }
 
     public void makeMove() {

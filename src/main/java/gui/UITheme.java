@@ -9,8 +9,9 @@ import javafx.scene.paint.Color;
 public class UITheme {
 
     // --- TYPOGRAPHY ENGINE CONFIGURATIONS ---
-    public static final String FONT_FAMILY      = "Courier New";
-    public static final String CSS_FONT_FAMILY  = "-fx-font-family: '" + FONT_FAMILY + "';";
+    public static final String GENERAL_FONT_FAMILY = "Courier New";
+    public static final String CSS_FONT_FAMILY  = "-fx-font-family: '" + GENERAL_FONT_FAMILY + "';";
+    public static final String TEXT_POPUP_FONT_FAMILY = "Verdana";
 
     // Dynamic Sizing Rules
     public static final double DEFAULT_ZOOM    = 18.0;
@@ -73,4 +74,9 @@ public class UITheme {
     public static final Color LOG_CRITICAL     = Color.RED;
     public static final Color LOG_MONSTER_ACTION     = Color.RED;
     public static final Color LOG_DEV     = Color.HOTPINK;
+
+    // --- ATTACK DAMAGE INDICATORS ---
+    public static final Color NORMAL_DAMAGE = Color.RED;
+    public static final Color CRITICAL_DAMAGE = Color.DARKRED;
+    public static final Color MISS = Color.WHITE;
 }

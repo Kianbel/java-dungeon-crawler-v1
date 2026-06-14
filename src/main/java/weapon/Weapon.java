@@ -32,6 +32,10 @@ public abstract class Weapon {
         return attackDamage;
     }
 
+    public boolean isCritical(int damage) {
+        return damage >= baseAttackDamage * CRIT_MULTIPLIER;
+    }
+
     @Override
     public String toString() {
         return String.format("%s (ATK: %d)", name, baseAttackDamage);

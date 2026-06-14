@@ -5,6 +5,7 @@ import entity.Entity;
 import entity.Player;
 import entity.monster.GiantSpider;
 import gui.GUIManager;
+import gui.UITheme;
 import javafx.scene.paint.Color;
 import util.Position;
 
@@ -20,8 +21,10 @@ public class Web extends InteractableTile {
         if(!(entity instanceof GiantSpider)) {
             entity.stun(STUN_MOVE_AMOUNT);
             EntityRoomManager.getInstance().removeInteractableTile(this);
-            if(entity instanceof Player) {
+            if(entity instanceof Player p) {
                 GUIManager.getInstance().triggerColorFlash(Color.WHITESMOKE);
+                GUIManager.getInstance().triggerTextPopup("webbed", Color.WHITESMOKE, p.position);
+                GUIManager.getInstance().printLog("You stepped into a web and got stuck!", UITheme.LOG_PLAYER_ACTION);
             }
         }
     }

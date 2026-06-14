@@ -4,6 +4,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 public class GameCanvas {
     private final Canvas nativeCanvas;
@@ -23,7 +26,7 @@ public class GameCanvas {
     }
 
     public void updateFontSize(double fontSize) {
-        this.font = Font.font(UITheme.FONT_FAMILY, fontSize);
+        this.font = Font.font(UITheme.GENERAL_FONT_FAMILY, fontSize);
         this.cellHeight = fontSize;
         this.cellWidth = fontSize * 0.60;
 
@@ -54,13 +57,15 @@ public class GameCanvas {
     public void drawString(int x, int y, String text, double fontSize, Color color, double offsetX, double offsetY) {
         if (x < 0 || x >= gridColumns || y < 0 || y >= gridRows) return;
 
-        final double renderPixelX = (x * cellWidth) + offsetX;
-        final double renderPixelY = (y * cellHeight) + offsetY;
+        final double renderPixelX = (x * cellWidth) + (cellWidth/2.0) + offsetX;
+        final double renderPixelY = (y * cellHeight) + (cellWidth/2.0) + offsetY;
 
-        Font font = Font.font(UITheme.FONT_FAMILY, fontSize);
+        Font font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, FontWeight.SEMI_BOLD, fontSize);
         gc.setFont(font);
         gc.setFill(color);
+        gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(text, renderPixelX, renderPixelY + fontAscent);
+        gc.setTextAlign(TextAlignment.LEFT);
     }
 
     // Update your health bar method too so it glides along with the monster!

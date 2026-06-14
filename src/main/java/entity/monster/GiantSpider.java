@@ -95,7 +95,6 @@ public class GiantSpider extends Monster implements RangeAttack {
     @Override
     public void walk(Position unitPos) {
         super.walk(unitPos);
-        if(Math.random() <= 0.2) GUIManager.getInstance().triggerTextPopup("tap tap", Color.WHITESMOKE, position);
     }
 
     public boolean backOff() {
@@ -103,8 +102,8 @@ public class GiantSpider extends Monster implements RangeAttack {
 
         int dx = playerPosition.x - position.x;
         int dy = playerPosition.y - position.y;
-        int unitX = (dx == 0) ? 0 : ((dx < 0) ? -1 : 1);
-        int unitY = (dy == 0) ? 0 : ((dy < 0) ? -1 : 1);
+        int unitX = Integer.compare(dx, 0);
+        int unitY = Integer.compare(dy, 0);
 
         Position targetPosition = new Position(position.x-unitX, position.y-unitY);
         if(isValidTargetPosition(targetPosition)) {

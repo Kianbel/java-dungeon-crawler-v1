@@ -7,6 +7,7 @@ import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.projectile.Projectile;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -145,21 +146,7 @@ public class GameController {
         buildControlsReferenceHud();
     }
 
-    private void buildControlsReferenceHud() {
-        controlsBox.getChildren().clear();
-        String[] mappings = {
-                "[WASD]  Move Explorer",
-                "[SPACE] Rest / Skip Turn",
-                "[E]     Interact Structure",
-                "[+ / -] Adjust Camera Zoom"
-        };
-        for (String item : mappings) {
-            Label element = new Label(item);
-            // Apply centralized style layout variables
-            element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
-            controlsBox.getChildren().add(element);
-        }
-    }
+
 
     private void handleWindowResize() {
         if (gameCanvas == null) return;
@@ -318,15 +305,14 @@ public class GameController {
             Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
 
             if (screenPos != null) {
-                Color fadedColor = new Color(
+                Color color = new Color(
                         textPopup.color.getRed(),
                         textPopup.color.getGreen(),
                         textPopup.color.getBlue(),
                         textPopup.opacity
                 );
 
-                // TODO: hardcoded x offset T^T
-                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 30, fadedColor, (double) -textPopup.text.length()*12.5 /2, (int)textPopup.pixelOffsetY);
+                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, color, 0, textPopup.pixelOffsetY);
             }
         }
     }
@@ -491,40 +477,43 @@ public class GameController {
     }
     public void clearLogContainer() { logContainer.getChildren().clear(); }
 
-    public void triggerTextPopup(TextPopupData textPopupData, double duration) {
-        Timeline timeline = new Timeline();
-        final int TOTAL_FRAMES = 10;
-
-        // Define how many total pixels you want the text to float upward over its life
-        final double MAX_FLOAT_DISTANCE_PIXELS = -30.0; // Negative moves UP on a screen canvas
-
-        // Add it to our active rendering registry exactly once
+    public void triggerTextPopup(TextPopupData textPopupData, double durationMs) {
         textPopupDataList.add(textPopupData);
 
-        for(int i = 0; i <= TOTAL_FRAMES; i++) {
-            final int frame = i;
-            KeyFrame keyframe = new KeyFrame(
-                    Duration.millis(duration / TOTAL_FRAMES * frame),
-                    event -> {
-                        double progress = (double) frame / TOTAL_FRAMES;
-                        // Ease-out calculation for smooth fading
-                        double curve = 1.0 - progress;
-                        textPopupData.opacity = Math.clamp(curve, 0.0, 1.0);
+        final double MAX_FLOAT_DISTANCE_PIXELS = -30.0;
 
-                        // 2. Float calculation (Moves smoothly from 0 to MAX_FLOAT_DISTANCE_PIXELS)
-                        textPopupData.pixelOffsetY = progress * MAX_FLOAT_DISTANCE_PIXELS;
+        // Track the start time in nanoseconds
+        new AnimationTimer() {
+            private long startTime = -1;
 
-                        // Clean up the object once the animation sequence wraps up
-                        if(frame == TOTAL_FRAMES) {
-                            textPopupDataList.remove(textPopupData);
-                        }
+            @Override
+            public void handle(long now) {
+                if (startTime < 0) {
+                    startTime = now;
+                }
 
-                        updateRenderingPipeline();
-                    }
-            );
-            timeline.getKeyFrames().add(keyframe);
-        }
-        timeline.play();
+                // Convert elapsed time to milliseconds
+                double elapsedMs = (now - startTime) / 1_000_000.0;
+                double progress = Math.min(1.0, elapsedMs / durationMs);
+
+                // Smooth linear curve decay for opacity
+                double curve = 1.0 - progress;
+                textPopupData.opacity = Math.clamp(curve, 0.0, 1.0);
+
+                // Smooth upward movement offset
+                textPopupData.pixelOffsetY = progress * MAX_FLOAT_DISTANCE_PIXELS;
+
+                // Request a single layout cycle update
+                updateRenderingPipeline();
+
+                // Safe self-termination once duration is exceeded
+                if (progress >= 1.0) {
+                    textPopupDataList.remove(textPopupData);
+                    updateRenderingPipeline(); // Final clean pass
+                    this.stop();
+                }
+            }
+        }.start();
     }
 
     public void flashScreenEffect(Color color, int durationInMilis, double fromOpacity, double toOpacity) {
@@ -608,6 +597,21 @@ public class GameController {
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
     public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
 
+    private void buildControlsReferenceHud() {
+        controlsBox.getChildren().clear();
+        String[] mappings = {
+                "[WASD]  Move Explorer",
+                "[SPACE] Rest / Skip Turn",
+                "[E]     Interact Structure",
+                "[+ / -] Adjust Camera Zoom"
+        };
+        for (String item : mappings) {
+            Label element = new Label(item);
+            // Apply centralized style layout variables
+            element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
+            controlsBox.getChildren().add(element);
+        }
+    }
     private String buildBarMeter(int val) {
         int fill = (int) Math.round((Math.max(0, Math.min(100, val)) / 100.0) * 15);
         StringBuilder sb = new StringBuilder("[");

@@ -42,10 +42,11 @@ public class FlareWitch extends Monster {
     private int activeHintCooldown = 0;
     private int castCooldown = 0;
     private int summonCooldown = 0;
-
     private double teleportChance = 0.1;
     private int barrageCount = 0;
 
+
+    private final int TELEPORT_DISTANCE_THRESHOLD = 10;
     private final int FOLLOW_DISTANCE_THRESHOLD = 10;
     private final int MIN_CAST_COOLDOWN = 3;
     private final int MAX_CAST_COOLDOWN = 6;
@@ -74,7 +75,7 @@ public class FlareWitch extends Monster {
         super.hurt(damage, attacker);
         if(Math.random() <= teleportChance && activeHintCooldown <= 0) {
             currentState = STATE.TELEPORT;
-            activeHintCooldown = 5;
+            activeHintCooldown = 2;
         }
     }
 
@@ -134,14 +135,16 @@ public class FlareWitch extends Monster {
 
     private void doTeleport() {
         if(activeHintCooldown > 0) {
+            GUIManager.getInstance().triggerTextPopup("chants", Color.DARKVIOLET, position);
             currentState = STATE.TELEPORT;
+            color = Color.DARKVIOLET;
             return;
         }
 
         List<Position> availablePositions = currentRoom.getSpawnablePositions();
-        List<Position> teleportablePositions = new ArrayList<>();
+        List<Position> teleportablePositions = new ArrayList<>((int) (Math.PI * TELEPORT_DISTANCE_THRESHOLD * TELEPORT_DISTANCE_THRESHOLD));
         for(Position p : availablePositions) {
-            if(p.getDistanceTo(this.position) < 10) {
+            if(p.getDistanceTo(this.position) < TELEPORT_DISTANCE_THRESHOLD) {
                 teleportablePositions.add(p);
             }
         }
@@ -158,16 +161,16 @@ public class FlareWitch extends Monster {
         }
 
         if(activeHintCooldown > 0) {
-            color = Color.RED;
+            GUIManager.getInstance().triggerTextPopup("chants", Color.DARKRED, position);
+            color = Color.DARKRED;
             return;
         }
 
         int summonCount = 5;
         if(isPhase2) summonCount = 3;
-        color = Color.RED;
 
         List<Position> spawnablePositions = currentRoom.getSpawnablePositions();
-        List<Position> summonPositions = new ArrayList<>();
+        List<Position> summonPositions = new ArrayList<>((int) (Math.PI * SUMMON_DISTANCE * SUMMON_DISTANCE));
         for(int i = 0; i < spawnablePositions.size(); i++) {
             Position spawnablePos = spawnablePositions.get(i);
             if(spawnablePos.getDistanceTo(position) <= SUMMON_DISTANCE) {

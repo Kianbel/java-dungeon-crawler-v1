@@ -59,8 +59,14 @@ public class Player extends Entity {
         }
     }
 
+    @Override
+    public void walk(Position unitPos) {
+        super.walk(unitPos);
+    }
+
     public void handleMove(Position unitPos) {
         if(stunCounter > 0) {
+            GUIManager.getInstance().triggerTextPopup("stunned", Color.YELLOW, position);
             GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
             stunCounter--;
             return;
@@ -108,7 +114,6 @@ public class Player extends Entity {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
 
-            GUIManager.getInstance().printLog(String.format("You attacked %s for %sHP. (Remaining: %sHP)", targetEntity.name, inflictedDamage, targetEntity.health), UITheme.LOG_PLAYER_ACTION);
             GUIManager.getInstance().triggerAttackAnimation(this, targetEntity);
 
             if(!targetEntity.isAlive()) {
@@ -136,9 +141,15 @@ public class Player extends Entity {
             health -= damage;
             if(health < 0) health = 0;
 
+            if(damage == 0) {
+                GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
+                return;
+            }
             if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
 
-            GUIManager.getInstance().printLog(attacker.name + " hurt you for " + damage + "HP.", UITheme.LOG_MONSTER_ACTION);
+            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
+            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
+
             GUIManager.getInstance().setHP(health);
 
             if(health == 0) die();

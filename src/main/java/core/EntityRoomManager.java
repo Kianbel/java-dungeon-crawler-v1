@@ -95,7 +95,8 @@ public class EntityRoomManager {
                 if(e instanceof Player) return set.getKey();
             }
         }
-        throw new RuntimeException("Player cannot be found");
+        System.out.println("Player room cannot be found");
+        return null;
     }
 
     public List<InteractableTile> getInteractableTilesFromRoom(Room room) {
