@@ -58,7 +58,7 @@ public class FlareWitch extends Monster {
 
     public FlareWitch(Position position) {
         super("Flare Witch", 100, 2, new Fist(), position);
-        currentState = STATE.IDLE;
+        changeState(STATE.IDLE);
         illuminationData.isIlluminated = true;
     }
 
@@ -74,8 +74,7 @@ public class FlareWitch extends Monster {
     public void hurt(int damage, Entity attacker) {
         super.hurt(damage, attacker);
         if(Math.random() <= teleportChance && activeHintCooldown <= 0) {
-            currentState = STATE.TELEPORT;
-            activeHintCooldown = 2;
+            changeState(STATE.TELEPORT);
         }
     }
 
@@ -124,10 +123,8 @@ public class FlareWitch extends Monster {
         }
         if(castCooldown > 0) {
             castCooldown--;
-            barrageCount = 0;
+            if(castCooldown == 0) barrageCount = 0;
         }
-
-//        System.out.println(activeHintCooldown);
 
         if(summonCooldown > 0) summonCooldown--;
         if(activeHintCooldown > 0) activeHintCooldown--;
@@ -136,8 +133,6 @@ public class FlareWitch extends Monster {
     private void doTeleport() {
         if(activeHintCooldown > 0) {
             GUIManager.getInstance().triggerTextPopup("chants", Color.DARKVIOLET, position);
-            currentState = STATE.TELEPORT;
-            color = Color.DARKVIOLET;
             return;
         }
 
@@ -151,18 +146,12 @@ public class FlareWitch extends Monster {
 
         position = teleportablePositions.get(random.nextInt(teleportablePositions.size()));
 
-        currentState = STATE.CAST_CIRCLE;
+        changeState(STATE.CAST_CIRCLE);
     }
 
     private void doSummon() {
-        if(summonCooldown > 0) {
-            currentState = STATE.ANGERED;
-            return;
-        }
-
         if(activeHintCooldown > 0) {
             GUIManager.getInstance().triggerTextPopup("chants", Color.DARKRED, position);
-            color = Color.DARKRED;
             return;
         }
 
@@ -192,7 +181,7 @@ public class FlareWitch extends Monster {
             summonedEntities.add(summon);
         }
 
-        currentState = STATE.ANGERED;
+        changeState(STATE.ANGERED);
         summonCooldown = MAX_SUMMON_COOLDOWN;
     }
 
@@ -210,23 +199,23 @@ public class FlareWitch extends Monster {
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos3), currentRoom);
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos4), currentRoom);
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(unitPosToPlayer, fireballPos5), currentRoom);
-        currentState = STATE.ANGERED;
+        changeState(STATE.ANGERED);
         castCooldown = random.nextInt(MIN_CAST_COOLDOWN, MAX_CAST_COOLDOWN+1);
     }
 
     private void doAttack() {
         attack(player);
-        currentState = STATE.ADVANCE;
+        changeState(STATE.ADVANCE);
     }
 
     private void doAdvance() {
         if(Math.random() <= 0.3) {
-            currentState = STATE.ANGERED;
+            changeState(STATE.ANGERED);
             return;
         }
 
         if(getDistanceFromPlayer() == 1) {
-            currentState = STATE.ATTACK;
+            changeState(STATE.ATTACK);
             return;
         }
 
@@ -238,88 +227,77 @@ public class FlareWitch extends Monster {
     }
 
     private void doCastBarrage() {
-        if(barrageCount >= MAX_BARRAGE_COUNT) {
-            castCooldown = MAX_CAST_COOLDOWN;
-            currentState = STATE.ANGERED;
-            return;
-        }
-
         Position fireballSpawnPosition = position.add(pathfindToPlayerPosition());
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(pathfindToPlayerPosition(true), fireballSpawnPosition), currentRoom);
         barrageCount++;
+
+        if(barrageCount >= MAX_BARRAGE_COUNT) {
+            castCooldown = MAX_CAST_COOLDOWN;
+            changeState(STATE.ANGERED);
+        }
     }
 
     private void doCastSingle() {
         Position fireballSpawnPosition = position.add(pathfindToPlayerPosition());
         EntityRoomManager.getInstance().addEntityToRoom(new Fireball(pathfindToPlayerPosition(true), fireballSpawnPosition), currentRoom);
 
-        currentState = STATE.ANGERED;
+        changeState(STATE.ANGERED);
         castCooldown = random.nextInt(MIN_CAST_COOLDOWN, MAX_CAST_COOLDOWN+1);
     }
 
     private void doAngered() {
-        color = null;
-
         if(distanceToPlayer >= FOLLOW_DISTANCE_THRESHOLD) {
-            currentState = STATE.FOLLOW;
+            changeState(STATE.FOLLOW);
             return;
         }
         else if(Math.random() <= 0.3) {
-            currentState = STATE.ADVANCE;
+            changeState(STATE.ADVANCE);
             return;
         }
-
 
         if(castCooldown <= 0) {
             if(!isPhase2) {
                 Randomizer randomizer = new Randomizer();
                 switch(randomizer.pick(1, 2)) {
-                    case 1 -> currentState = STATE.CAST_SINGLE;
+                    case 1 -> changeState(STATE.CAST_SINGLE);
                     case 2 -> {
-                        if(summonCooldown <= 0) {
-                            activeHintCooldown = 5;
-                            currentState = STATE.SUMMON;
-                        }
+                        if(summonCooldown <= 0) changeState(STATE.SUMMON);
+                        else changeState(STATE.CAST_SINGLE);
                     }
                 }
-                return;
             }
             else {
                 Randomizer randomizer = new Randomizer();
                 switch(randomizer.pick(1, 2, 3)) {
-                    case 1 -> currentState = STATE.CAST_BARRAGE;
-                    case 2 -> currentState = STATE.CAST_CIRCLE;
+                    case 1 -> changeState(STATE.CAST_BARRAGE);
+                    case 2 -> changeState(STATE.CAST_CIRCLE);
                     case 3 -> {
-                        if(summonCooldown <= 0) {
-                            activeHintCooldown = 5;
-                            currentState = STATE.SUMMON;
+                        if(summonCooldown <= 0) changeState(STATE.SUMMON);
+                        else {
+                            switch(randomizer.pick(1, 2)) {
+                                case 1 -> changeState(STATE.CAST_BARRAGE);
+                                case 2 -> changeState(STATE.CAST_CIRCLE);
+                            }
                         }
                     }
                 }
-                return;
             }
         }
     }
 
     private void doFollow() {
-        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
-            currentState = STATE.ANGERED;
-            return;
-        }
-
         Position unitPosToPlayer = pathfindToPlayerPosition();
         Position targetPosition = position.add(unitPosToPlayer);
         if(isValidTargetPosition(targetPosition)) {
             walk(unitPosToPlayer);
         }
+
+        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
+            changeState(STATE.ANGERED);
+        }
     }
 
     private void doIdle() {
-        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
-            currentState = STATE.ANGERED;
-            return;
-        }
-
         Position randomUnitPos = new Position(random.nextInt(-1,2), random.nextInt(-1,2));
         if(randomUnitPos.x == randomUnitPos.y) {
             if(Math.random() * 100 % 2 == 0) randomUnitPos.x = 0;
@@ -328,6 +306,43 @@ public class FlareWitch extends Monster {
         Position targetPosition = position.add(randomUnitPos);
         if(isValidTargetPosition(targetPosition)) {
             walk(randomUnitPos);
+        }
+
+        if(distanceToPlayer < FOLLOW_DISTANCE_THRESHOLD) {
+            changeState(STATE.ANGERED);
+        }
+    }
+
+    private void changeState(STATE newState) {
+        currentState = newState;
+
+        switch(newState) {
+            case IDLE -> {
+            }
+            case ANGERED -> {
+                color = null;
+            }
+            case FOLLOW -> {
+            }
+            case ADVANCE -> {
+            }
+            case CAST_SINGLE -> {
+            }
+            case CAST_BARRAGE -> {
+            }
+            case CAST_CIRCLE -> {
+            }
+            case SUMMON -> {
+                activeHintCooldown = 5;
+                color = Color.DARKRED;
+            }
+            case ATTACK -> {
+            }
+            case TELEPORT -> {
+                GUIManager.getInstance().printDevLog("teleport1");
+                activeHintCooldown = 2;
+                color = Color.DARKVIOLET;
+            }
         }
     }
 }
