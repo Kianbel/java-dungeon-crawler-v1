@@ -160,7 +160,6 @@ public class Player extends Entity {
     public void stun(int moveCount) {
         if(stunCounter > 0) return;
         stunCounter = moveCount;
-        GUIManager.getInstance().printLog("You got stunned!", UITheme.LOG_PLAYER_ACTION);
     }
 
     public void setHealth(int health) {
@@ -202,7 +201,7 @@ public class Player extends Entity {
         if(hunger < 0) {
             hunger = 0;
             setHealth(health - 5);
-            GUIManager.getInstance().printLog("You are starving", UITheme.LOG_CRITICAL);
+            GUIManager.getInstance().printLog("You are starving", Color.ORANGE);
         }
         GUIManager.getInstance().setHunger(hunger);
 

@@ -69,11 +69,11 @@ public class UITheme {
     public static final Color OVERLAY_RETICLE  = Color.AQUA;
     public static final Color OVERLAY_MODAL    = Color.GOLD;
 
-    public static final Color LOG_WORLD        = Color.LIGHTBLUE;
+    public static final Color LOG_WORLD = Color.WHITE;
     public static final Color LOG_PLAYER_ACTION = Color.YELLOW;
-    public static final Color LOG_CRITICAL     = Color.RED;
-    public static final Color LOG_MONSTER_ACTION     = Color.RED;
-    public static final Color LOG_DEV     = Color.HOTPINK;
+    public static final Color LOG_CRITICAL = Color.RED;
+    public static final Color LOG_MONSTER_ACTION = Color.RED;
+    public static final Color LOG_DEV = Color.HOTPINK;
 
     // --- ATTACK DAMAGE INDICATORS ---
     public static final Color NORMAL_DAMAGE = Color.RED;

@@ -37,13 +37,18 @@ public class GiantSpider extends Monster implements RangeAttack {
     }
 
     @Override
+    protected void makeSoundTextPopup() {
+        GUIManager.getInstance().triggerTextPopup("hiss", Color.DARKRED, position);
+    }
+
+    @Override
     public void makeMove() {
+        super.makeMove();
         if(webShootCooldown > 0) webShootCooldown--;
 
         Entity player = EntityRoomManager.getInstance().getPlayer();
-        Position playerPosition = player.position;
-        int dx = playerPosition.x - position.x;
-        int dy = playerPosition.y - position.y;
+        int dx = player.position.x - position.x;
+        int dy = player.position.y - position.y;
         int distanceToPlayer = (int) Math.sqrt(dx*dx + dy*dy);
 
         if(distanceToPlayer <= 2) {
@@ -58,7 +63,7 @@ public class GiantSpider extends Monster implements RangeAttack {
             }
 
             if(Math.random() <= WEBBING_CHANCE) {
-                if(shoot(playerPosition, WEB_RANGE)) return;
+                if(shoot(player.position, WEB_RANGE)) return;
             }
         }
         handleWalk();

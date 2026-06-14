@@ -5,6 +5,7 @@ import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
 import gui.UITheme;
+import javafx.scene.paint.Color;
 import util.Position;
 
 public class Heart extends InteractableTile {
@@ -19,7 +20,8 @@ public class Heart extends InteractableTile {
     public void onEntityEnter(Entity entity) {
         if(entity instanceof Player p) {
             p.setHealth(p.health + healAmount);
-            GUIManager.getInstance().printLog("+" + healAmount + " HP", UITheme.LOG_WORLD);
+            GUIManager.getInstance().printLog("+" + healAmount + " HP", Color.GREEN);
+            GUIManager.getInstance().triggerTextPopup("+" + healAmount, Color.GREEN, p.position);
             EntityRoomManager.getInstance().removeInteractableTile(this);
         }
     }

@@ -19,11 +19,12 @@ public class Zombie extends Monster {
     }
 
     @Override
-    public void walk(Position unitPos) {
-        super.walk(unitPos);
+    protected void makeSoundTextPopup() {
+        GUIManager.getInstance().triggerTextPopup("groans", Color.DARKGREEN, position);
     }
 
     public void makeMove() {
+        super.makeMove();
         Position unitPos = pathfindToPlayerPosition();
         if(unitPos.x == 0 && unitPos.y == 0) return;
 

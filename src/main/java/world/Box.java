@@ -3,6 +3,8 @@ package world;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import gui.GUIManager;
+import gui.UITheme;
 import util.Position;
 
 import java.util.Random;
@@ -26,8 +28,12 @@ public class Box extends InteractableTile {
         if(Math.random() <= DROP_CHANCE) {
             if(Math.random() <= HEART_CHANCE) {
                 dropTile = new Heart(roomLayoutPosition, random.nextInt(5,16));
+                GUIManager.getInstance().printLog("You break open a box and it dropped a heart!", UITheme.LOG_WORLD);
             }
-            else dropTile = new Coin(roomLayoutPosition, random.nextInt(5, 11));
+            else {
+                dropTile = new Coin(roomLayoutPosition, random.nextInt(5, 11));
+                GUIManager.getInstance().printLog("You break open a box and it dropped some coins!", UITheme.LOG_WORLD);
+            }
         }
         else dropTile = new BrokenBox(roomLayoutPosition);
 

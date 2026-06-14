@@ -602,7 +602,8 @@ public class GameController {
         String[] mappings = {
                 "[WASD]  Move Explorer",
                 "[SPACE] Rest / Skip Turn",
-                "[E]     Interact Structure",
+                "[M] Open Map",
+//                "[E]     Interact Structure",
                 "[+ / -] Adjust Camera Zoom"
         };
         for (String item : mappings) {

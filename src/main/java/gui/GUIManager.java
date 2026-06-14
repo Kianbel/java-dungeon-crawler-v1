@@ -67,9 +67,13 @@ public class GUIManager {
     }
 
     public void triggerTextPopup(String text, Color color, Position position) {
+        triggerTextPopup(text, color, position, 800);
+    }
+
+    public void triggerTextPopup(String text, Color color, Position position, double durationMs) {
         if (isPipelineOperational()) {
             TextPopupData textPopupData = new TextPopupData(text, color, position);
-            controller.triggerTextPopup(textPopupData, 500);
+            controller.triggerTextPopup(textPopupData, durationMs);
         }
     }
 

@@ -4,8 +4,6 @@ import core.EntityRoomManager;
 import entity.Entity;
 import entity.MoveAfterPlayer;
 import entity.Player;
-import gui.GUIManager;
-import javafx.scene.paint.Color;
 import weapon.Weapon;
 import util.Position;
 import util.TILE;
@@ -13,25 +11,20 @@ import core.room.type.Room;
 import world.InteractableTile;
 
 import java.util.List;
-import java.util.Random;
 
 public abstract class Monster extends Entity implements MoveAfterPlayer {
     public Monster(String name, int health, int armor, Weapon weapon, Position position) {
         super(name, health, armor, weapon, position);
     }
 
-    protected double getAngleToPlayer() {
-        Entity player = EntityRoomManager.getInstance().getPlayer();
-        Position playerPosition = player.position;
-        int dx = playerPosition.x - position.x;
-        int dy = playerPosition.y - position.y;
-        double distance = Math.sqrt(dx*dx + dy*dy);
-        double unitX = dx / distance;
-        double unitY = dy / distance;
-
-        double angleToPlayer = Math.abs(Math.atan2(unitY, unitX)) * (180.0 / Math.PI);
-        return angleToPlayer % 90;
+    @Override
+    public void makeMove() {
+        if(Math.random() <= 0.1) makeSoundTextPopup();
     }
+
+    /** Override to add sound when walking
+     */
+    protected void makeSoundTextPopup() {}
 
     /** Returns the unit vector position towards player position.
      * diagonal direction is disabled by default
