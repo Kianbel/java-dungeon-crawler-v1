@@ -26,8 +26,8 @@ public class InfestedRoom extends Room {
         super.populateWithEntities();
 
         EntitySpawner entitySpawner = new EntitySpawner(this);
-//        if(Math.random() <= 0.3) entitySpawner.spawnMonstersAmount(GiantSpider::new, new Random().nextInt(1,3));
-        entitySpawner.spawnMonstersAmount(GiantSpider::new, new Random().nextInt(1,3));
+        if(Math.random() <= 0.3) entitySpawner.spawnMonstersAmount(GiantSpider::new, new Random().nextInt(1,3));
+//        entitySpawner.spawnMonstersAmount(GiantSpider::new, new Random().nextInt(1,3));
         entitySpawner.spawnMonstersAmount(Zombie::new, new Random().nextInt(1,6));
     }
 }

@@ -6,4 +6,6 @@ module gui {
 
     opens gui to javafx.fxml;
     exports gui;
+    exports util;
+    opens util to javafx.fxml;
 }

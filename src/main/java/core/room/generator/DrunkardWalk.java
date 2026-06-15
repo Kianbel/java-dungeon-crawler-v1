@@ -2,6 +2,7 @@ package core.room.generator;
 
 import util.Position;
 import util.MAP;
+import util.Randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,31 +10,31 @@ import java.util.Random;
 
 public class DrunkardWalk extends Generator {
 
-    private MAP[][] mapLayout = new MAP[MAP_HEIGHT][MAP_LENGTH];
-    private Position walker = new Position(MAP_LENGTH/2, MAP_HEIGHT/2);
+    private MAP[][] mapLayout;
+    private Position walker;
     private int currentRoomAmount = 1;
+
+    private final int MAP_HEIGHT;
+    private final int MAP_LENGTH;
+
+    public DrunkardWalk(int mapHeight, int mapLength) {
+        MAP_HEIGHT = mapHeight;
+        MAP_LENGTH = mapLength;
+        mapLayout = new MAP[mapHeight][mapLength];
+        walker = new Position(mapLength/2, mapHeight/2);
+    }
 
     @Override
     public MAP[][] start(int roomsAmount) {
-        int attempts = 0;
         mapLayout[walker.y][walker.x] = MAP.SPAWN;
         spawnRoomPosition = new Position(walker.x, walker.y);
 
-        int MAX_ATTEMPTS = 8;
-        while(currentRoomAmount < roomsAmount && attempts < MAX_ATTEMPTS) {
-            switch ((int) (Math.random() * 100 % 4)) {
-                case 0 -> {
-                    if (!putRoomAt(walker.x, walker.y - 2)) attempts++;
-                }
-                case 1 -> {
-                    if (!putRoomAt(walker.x + 2, walker.y)) attempts++;
-                }
-                case 2 -> {
-                    if (!putRoomAt(walker.x, walker.y + 2)) attempts++;
-                }
-                case 3 -> {
-                    if (!putRoomAt(walker.x - 2, walker.y)) attempts++;
-                }
+        while(currentRoomAmount < roomsAmount) {
+            switch (Randomizer.pick(1, 2, 3, 4)) {
+                case 1 -> putRoomAt(walker.x, walker.y - 2);
+                case 2 -> putRoomAt(walker.x + 2, walker.y);
+                case 3 -> putRoomAt(walker.x, walker.y + 2);
+                case 4 -> putRoomAt(walker.x - 2, walker.y);
             }
         }
         bossRoomPosition = new Position(walker.x, walker.y);
@@ -79,9 +80,9 @@ public class DrunkardWalk extends Generator {
         }
     }
 
-    private boolean putRoomAt(int x, int y) {
-        if(x < 0 || x >= MAP_LENGTH) return false;
-        if(y < 0 || y >= MAP_HEIGHT) return false;
+    private void putRoomAt(int x, int y) {
+        if(x < 0 || x >= MAP_LENGTH) return;
+        if(y < 0 || y >= MAP_HEIGHT) return;
 
         if(x - walker.x < 0) mapLayout[walker.y][walker.x-1] = MAP.HCORRIDOR;
         else if(x - walker.x > 0) mapLayout[walker.y][walker.x+1] = MAP.HCORRIDOR;
@@ -93,8 +94,6 @@ public class DrunkardWalk extends Generator {
         if(mapLayout[y][x] != MAP.INFESTED) {
             mapLayout[y][x] = MAP.INFESTED;
             currentRoomAmount++;
-            return true;
         }
-        return false;
     }
 }

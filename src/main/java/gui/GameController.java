@@ -328,21 +328,23 @@ public class GameController {
 
                     Player player = (Player) EntityRoomManager.getInstance().getPlayer();
                     if (player == null) return;
-                    if(player.isDead) return;
 
                     Position movementVector = new Position(0, 0);
                     boolean isTickAction = true;
 
                     switch (code) {
-                        case W -> movementVector.y--;
-                        case A -> movementVector.x--;
-                        case S -> movementVector.y++;
-                        case D -> movementVector.x++;
+                        case W, UP -> movementVector.y--;
+                        case A, LEFT -> movementVector.x--;
+                        case S, DOWN -> movementVector.y++;
+                        case D, RIGHT -> movementVector.x++;
                         case T -> {
                             player.toggleGodMode();
                             isTickAction = false;
                         }
-                        case SPACE -> movementVector = new Position(0,0);
+                        case SPACE -> {
+                            movementVector = new Position(0,0);
+                            GUIManager.getInstance().triggerTextPopup("wait", Color.WHITE, player.position);
+                        }
                         case M -> {
                             if(!isMapOpen) isTickAction = false;
                             isMapOpen = !isMapOpen;
@@ -354,25 +356,25 @@ public class GameController {
                         }
                         default -> isTickAction = false;
                     }
-                    if(isMapOpen) {
-                        openMap();
-                    }
+                    if(isMapOpen) openMap();
+
                     if (isTickAction) {
                         isMapOpen = false;
-                        player.handleMove(movementVector);
+                        if(!player.isDead) {
+                            player.handleMove(movementVector);
 
-                        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
-                        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-                        for(int i = 0; i < entities.size(); i++) {
-                            Entity entity = entities.get(i);
-                            if(entity instanceof Monster m) {
-                                m.makeMove();
-                            }
-                            if(entity instanceof Projectile p) {
-                                p.makeMove();
+                            Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
+                            List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
+                            for(int i = 0; i < entities.size(); i++) {
+                                Entity entity = entities.get(i);
+                                if(entity instanceof Monster m) {
+                                    m.makeMove();
+                                }
+                                if(entity instanceof Projectile p) {
+                                    p.makeMove();
+                                }
                             }
                         }
-
                         updateRenderingPipeline();
                     }
                 });
@@ -425,8 +427,8 @@ public class GameController {
     }
 
     private LIGHT_LEVEL getPositionIlluminationLevel(Position targetPos, Player player, List<Entity> entitiesInRoom) {
-        LIGHT_LEVEL lightLevel = LIGHT_LEVEL.PURE_DARKNESS; // Default to pure black
-        final int dimRange = 2;       // Your buffer variable for the dim outer ring (adjust as needed)
+        LIGHT_LEVEL lightLevel = LIGHT_LEVEL.PURE_DARKNESS;
+        final int dimRange = 2;
 
         // 1. Evaluate Player Light Source
         if (player != null && player.isIlluminated()) {
@@ -434,9 +436,9 @@ public class GameController {
             double brightRange = player.getIlluminationRange();
 
             if (distance <= brightRange) {
-                return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
+                return LIGHT_LEVEL.ILLUMINATED;
             } else if (distance <= brightRange + dimRange) {
-                lightLevel = LIGHT_LEVEL.DIM; // Mark as dim
+                lightLevel = LIGHT_LEVEL.DIM;
             }
         }
 
@@ -451,18 +453,36 @@ public class GameController {
             double brightRange = entity.getIlluminationRange();
 
             if (distance <= brightRange) {
-                return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
+                return LIGHT_LEVEL.ILLUMINATED;
             } else if (distance <= brightRange + dimRange) {
-                lightLevel = LIGHT_LEVEL.DIM; // Mark as dim
+                lightLevel = LIGHT_LEVEL.DIM;
             }
         }
 
-        // 3. Hook for Future Tile/Structure Light Sources (e.g., Torches, Braziers)
-        // if (activeRoom.getTileAt(targetPos) == TILE.TORCH) {
-        //     double distance = targetPos.getDistanceTo(torchPos);
-        //     if (distance <= 3) return 2;
-        //     else if (distance <= 3 + N) maxLightLevel = Math.max(maxLightLevel, 1);
-        // }
+        // 3. Hook for Stationary Light Sources (Doors acting as ambient lights)
+//        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+//        if (activeRoom != null) {
+//            TILE[][] activeRoomLayout = activeRoom.getLayout();
+//
+//            // Scan layout for doors to see if targetPos is illuminated by one
+//            for (int y = 0; y < activeRoomLayout.length; y++) {
+//                for (int x = 0; x < activeRoomLayout[y].length; x++) {
+////                    if (activeRoomLayout[y][x] == TILE.DOOR) {
+////                        Position doorPos = new Position(x, y);
+////                        double distance = targetPos.getDistanceTo(doorPos);
+////                        double brightRange = 1.0; // Range of the door's glow
+////
+////                        if (distance <= brightRange) {
+////                            return LIGHT_LEVEL.ILLUMINATED;
+////                        } else if (distance <= brightRange + dimRange) {
+////                            if (lightLevel == LIGHT_LEVEL.PURE_DARKNESS) {
+////                                lightLevel = LIGHT_LEVEL.DIM;
+////                            }
+////                        }
+////                    }
+//                }
+//            }
+//        }
 
         return lightLevel;
     }

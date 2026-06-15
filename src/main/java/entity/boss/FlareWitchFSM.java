@@ -8,7 +8,7 @@ import entity.monster.GiantSpider;
 import entity.monster.Zombie;
 import entity.projectile.Fireball;
 import gui.GUIManager;
-import gui.Randomizer;
+import util.Randomizer;
 import javafx.scene.paint.Color;
 import util.Position;
 
@@ -268,8 +268,7 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
 
         if(castCooldown <= 0) {
             if(!isPhase2) {
-                Randomizer randomizer = new Randomizer();
-                switch(randomizer.pick(1, 2)) {
+                switch(Randomizer.pick(1, 2)) {
                     case 1 -> switchState(STATE.CAST_SINGLE);
                     case 2 -> {
                         if(summonCooldown <= 0) switchState(STATE.SUMMON);
@@ -278,14 +277,13 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
                 }
             }
             else {
-                Randomizer randomizer = new Randomizer();
-                switch(randomizer.pick(1, 2, 3)) {
+                switch(Randomizer.pick(1, 2, 3)) {
                     case 1 -> switchState(STATE.CAST_BARRAGE);
                     case 2 -> switchState(STATE.CAST_CIRCLE);
                     case 3 -> {
                         if(summonCooldown <= 0) switchState(STATE.SUMMON);
                         else {
-                            switch(randomizer.pick(1, 2)) {
+                            switch(Randomizer.pick(1, 2)) {
                                 case 1 -> switchState(STATE.CAST_BARRAGE);
                                 case 2 -> switchState(STATE.CAST_CIRCLE);
                             }
