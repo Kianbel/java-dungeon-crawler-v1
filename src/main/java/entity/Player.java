@@ -17,6 +17,7 @@ public class Player extends Entity {
     public int coins = 0;
     public int hpPotions = 0;
     public int hunger = 100;
+    public boolean isDead = false;
 
     private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
@@ -28,8 +29,8 @@ public class Player extends Entity {
 
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
-        illuminationData.isIlluminated = true;
-        illuminationData.illuminationRange = 5;
+        setIlluminated(true);
+        setIlluminationRange(5);
 
         setHealth(health);
         setHunger(hunger);
@@ -48,14 +49,14 @@ public class Player extends Entity {
             armor = 1000;
             hungerDecreaseCounter = 9999999;
             hunger = 99999999;
-            color = Color.RED;
+            overrideColor(Color.RED);
         }
         else {
             GUIManager.getInstance().printDevLog("DISABLED GOD MODE");
             armor = 0;
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
-            color = null;
+            resetColor();
         }
     }
 
@@ -126,9 +127,7 @@ public class Player extends Entity {
     @Override
     public void die() {
         health = 0;
-        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
-
+        isDead = true;
         GUIManager.getInstance().printLog("You died!", UITheme.LOG_MONSTER_ACTION);
     }
 

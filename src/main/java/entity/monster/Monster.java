@@ -30,13 +30,13 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
      * diagonal direction is disabled by default
      * @return Position(unitX, unitY)
      */
-    protected Position pathfindToPlayerPosition() {
+    public Position pathfindToPlayerPosition() {
         return pathfindToPlayerPosition(false);
     }
     /** Returns the unit vector position towards player position.
      * @return Position(unitX, unitY)
      */
-    protected Position pathfindToPlayerPosition(boolean allowDiagonal) {
+    public Position pathfindToPlayerPosition(boolean allowDiagonal) {
         Entity player = EntityRoomManager.getInstance().getPlayer();
         Position playerPosition = player.position;
         int dx = playerPosition.x - position.x;
@@ -65,7 +65,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         return new Position((int) unitX, (int) unitY);
     }
 
-    protected boolean isValidTargetPosition(Position targetPosition) {
+    public boolean isValidTargetPosition(Position targetPosition) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         TILE[][] roomLayout = currentRoom.getLayout();
 
@@ -91,7 +91,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         return true;
     }
 
-    protected int getDistanceFromPlayer() {
+    public int getDistanceFromPlayer() {
         Entity player = EntityRoomManager.getInstance().getPlayer();
         int dx = player.position.x - position.x;
         int dy = player.position.y - position.y;

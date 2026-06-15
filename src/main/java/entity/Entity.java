@@ -22,11 +22,11 @@ public abstract class Entity {
     public int armor;
     public Weapon weapon;
     public Position position;
-    public int id;
+    public final int id;
     public int stunCounter;
 
-    public Color color;
-    public IlluminationData illuminationData = new IlluminationData();
+    private Color color;
+    private final IlluminationData illuminationData;
 
     public Entity(String name, int health, int armor, Weapon weapon, Position position) {
         this.name = name;
@@ -35,9 +35,10 @@ public abstract class Entity {
         this.maxHealth = health;
         this.weapon = weapon;
         this.position = position;
-        id = this.hashCode();
-        stunCounter = 0;
-        color = null;
+        this.id = this.hashCode();
+        this.illuminationData = new IlluminationData();
+        this.stunCounter = 0;
+        this.color = null;
     }
 
 
@@ -77,7 +78,6 @@ public abstract class Entity {
     }
 
     /** NOTE: THE VALUES MUST BE IN ASCENDING ORDER
-     *
      * @param map a hashmap of all droppable tiles of an entity on death
      *            where KEY: InteractableTile and VALUE: drop chance
      */
@@ -191,8 +191,32 @@ public abstract class Entity {
         }
     }
 
-    public void goToPosition(Position targetPosition) {
-        position = targetPosition;
+    public void setIlluminated(boolean b) {
+        illuminationData.isIlluminated = b;
+    }
+
+    public void setIlluminationRange(int range) {
+        illuminationData.illuminationRange = range;
+    }
+
+    public int getIlluminationRange() {
+        return illuminationData.illuminationRange;
+    }
+
+    public boolean isIlluminated() {
+        return illuminationData.isIlluminated;
+    }
+
+    public void overrideColor(Color color) {
+        this.color = color;
+    }
+
+    public void resetColor() {
+        this.color = null;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     @Override

@@ -168,7 +168,6 @@ public class GameController {
     public void updateRenderingPipeline() {
         final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if (activeRoom == null) return;
-
         final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
 
         final TILE[][] roomLayout = activeRoom.getLayout();
@@ -241,11 +240,11 @@ public class GameController {
                         }
 
                         if (entity instanceof Player) {
-                            activeColor = (entity.color != null) ? entity.color : entityStyle.color();
+                            activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
                         }
                         else {
-                            if(entity.color != null) {
-                                activeColor = entity.color;
+                            if(entity.getColor() != null) {
+                                activeColor = entity.getColor();
                             }
                             else {
                                 // Generate unique color variations dynamically based on Monster identity hashes
@@ -270,10 +269,10 @@ public class GameController {
 
                 // Determine if player has previously explored this specific area
                 boolean isTravelled = false;
-                if (player != null && player.illuminationData != null) {
+                if (player != null) {
                     List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
                     // If a position was within their baseline fully-lit range before, it's remembered
-                    double memoryThreshold = player.illuminationData.illuminationRange;
+                    double memoryThreshold = player.getIlluminationRange();
 
                     for (Position previousTravelledPos : previousTravelledPositions) {
                         if (worldPosition.getDistanceTo(previousTravelledPos) <= memoryThreshold) {
@@ -318,6 +317,7 @@ public class GameController {
     }
 
     private void attachKeyboardHandlers() {
+
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(e -> {
@@ -327,8 +327,9 @@ public class GameController {
                     if (code == KeyCode.MINUS) { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
 
                     Player player = (Player) EntityRoomManager.getInstance().getPlayer();
-
                     if (player == null) return;
+                    if(player.isDead) return;
+
                     Position movementVector = new Position(0, 0);
                     boolean isTickAction = true;
 
@@ -428,9 +429,9 @@ public class GameController {
         final int dimRange = 2;       // Your buffer variable for the dim outer ring (adjust as needed)
 
         // 1. Evaluate Player Light Source
-        if (player != null && player.illuminationData != null && player.illuminationData.isIlluminated) {
+        if (player != null && player.isIlluminated()) {
             double distance = targetPos.getDistanceTo(player.position);
-            double brightRange = player.illuminationData.illuminationRange;
+            double brightRange = player.getIlluminationRange();
 
             if (distance <= brightRange) {
                 return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
@@ -442,12 +443,12 @@ public class GameController {
         // 2. Evaluate Dynamic Entity Light Sources (Fireballs, Glowing Monsters, etc.)
         for (int i = 0; i < entitiesInRoom.size(); i++) {
             Entity entity = entitiesInRoom.get(i);
-            if (entity.position == null || entity.illuminationData == null || !entity.illuminationData.isIlluminated) {
+            if (entity.position == null || !entity.isIlluminated()) {
                 continue;
             }
 
             double distance = targetPos.getDistanceTo(entity.position);
-            double brightRange = entity.illuminationData.illuminationRange;
+            double brightRange = entity.getIlluminationRange();
 
             if (distance <= brightRange) {
                 return LIGHT_LEVEL.ILLUMINATED; // Maximum brightness achieved, short-circuit immediately
