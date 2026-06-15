@@ -10,6 +10,8 @@ import util.Position;
 import util.TILE;
 import weapon.GenericDamager;
 
+import java.util.List;
+
 public abstract class Projectile extends Entity implements MoveAfterPlayer {
     protected final Position movementUnitPos;
 
@@ -22,20 +24,24 @@ public abstract class Projectile extends Entity implements MoveAfterPlayer {
         Position targetPosition = position.add(movementUnitPos);
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         TILE[][] roomLayout = currentRoom.getLayout();
-        TILE tile = roomLayout[targetPosition.y][targetPosition.x];
 
-        switch(tile) {
-            case TILE.FLOOR, GRASS, PASSABLE_OBSTACLE: break;
-            default:
+        List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
+        for(Entity e : entities) {
+            if(e.equals(this)) continue;
+            if(e.position.equals(targetPosition) && !(e instanceof Projectile)) {
+                attack(e);
                 die();
                 return;
+            }
         }
 
-        Entity player = EntityRoomManager.getInstance().getPlayer();
-        if(player.position.equals(targetPosition) || player.position.equals(position)) {
-            attack(player);
+        TILE tile = roomLayout[targetPosition.y][targetPosition.x];
+        if(!tile.isWalkable()) {
+            die();
+            return;
         }
-        else walk(movementUnitPos);
+
+        walk(movementUnitPos);
     }
 
     @Override

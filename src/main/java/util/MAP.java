@@ -8,5 +8,9 @@ public enum MAP {
     CLEAR,
     VCORRIDOR,
     HCORRIDOR,
-    EMPTY,
+    EMPTY;
+
+    public boolean isCorridor() {
+        return this == VCORRIDOR || this == HCORRIDOR;
+    }
 }

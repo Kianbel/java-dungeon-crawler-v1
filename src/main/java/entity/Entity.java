@@ -51,21 +51,20 @@ public abstract class Entity {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         TILE[][] currentRoomLayout = currentRoom.getLayout();
 
-        switch(currentRoomLayout[dPos.y][dPos.x]) {
-            case TILE.FLOOR, PASSABLE_OBSTACLE, GRASS -> {
-                Position oldPos = position;
-                position = dPos;
-                GUIManager.getInstance().triggerMoveAnimation(this, oldPos);
-                handleOnEntityEnterInteractableTiles();
-            }
-            case TILE.DOOR -> {
-                Position oldUnitPos = new Position(unitPos.x, unitPos.y);
-                Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
-                EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
-                fixEntityPositionAfterTransferFromUnitPos(oldUnitPos);
-                if(this instanceof Player) {
-                    GUIManager.getInstance().triggerRoomTransitionFlash();
-                }
+        TILE tile = currentRoomLayout[dPos.y][dPos.x];
+        if(tile.isWalkable()) {
+            Position oldPos = position;
+            position = dPos;
+            GUIManager.getInstance().triggerMoveAnimation(this, oldPos);
+            handleOnEntityEnterInteractableTiles();
+        }
+        else if(tile == TILE.DOOR) {
+            Position oldUnitPos = new Position(unitPos.x, unitPos.y);
+            Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
+            EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
+            fixEntityPositionAfterTransferFromUnitPos(oldUnitPos);
+            if(this instanceof Player) {
+                GUIManager.getInstance().triggerRoomTransitionFlash();
             }
         }
     }

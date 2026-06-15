@@ -103,7 +103,7 @@ public abstract class Room {
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 TILE tile = layout[y][x];
-                if(tile == TILE.FLOOR) spawnablePositions.add(new Position(x, y));
+                if(tile.isWalkable()) spawnablePositions.add(new Position(x, y));
             }
         }
         return spawnablePositions;

@@ -51,7 +51,7 @@ public class DrunkardWalk extends Generator {
             for(int x = 0; x < MAP_LENGTH; x++) {
                 MAP mapTile = mapLayout[y][x];
                 if(mapTile == null) continue;;
-                if(mapTile == MAP.VCORRIDOR || mapTile == MAP.HCORRIDOR) continue;
+                if(mapTile.isCorridor()) continue;
 
                 if(spawnRoomPosition.x == x && spawnRoomPosition.y == y) {
                     mapLayout[y][x] = MAP.SPAWN;

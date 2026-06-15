@@ -53,7 +53,7 @@ public class DungeonManager {
             for(int x = 0; x < MAP_LENGTH; x++) {
                 MAP mapTile = mapLayout[y][x];
                 if(mapTile == null) continue;
-                if(mapTile == MAP.VCORRIDOR || mapTile == MAP.HCORRIDOR) continue;
+                if(mapTile.isCorridor()) continue;
 
                 boolean northDoor = false, eastDoor = false, southDoor = false, westDoor = false;
 

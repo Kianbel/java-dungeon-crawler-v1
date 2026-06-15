@@ -1,8 +1,7 @@
 package entity.projectile;
 
-import core.EntityRoomManager;
-import core.room.type.Room;
 import entity.Entity;
+import entity.Player;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
 import util.Position;
@@ -22,7 +21,11 @@ public class Fireball extends Projectile {
 
     @Override
     public void attack(Entity targetEntity) {
+        if(targetEntity instanceof Fireball || targetEntity.equals(this)) return;
         super.attack(targetEntity);
-        GUIManager.getInstance().triggerColorFlash(Color.ORANGE, 100);
+
+        if(targetEntity instanceof Player) {
+            GUIManager.getInstance().triggerColorFlash(Color.ORANGE, 100);
+        }
     }
 }
