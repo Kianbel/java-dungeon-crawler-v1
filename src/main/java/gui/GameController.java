@@ -67,6 +67,11 @@ public class GameController {
         PURE_DARKNESS,
     }
 
+    // --- PERSISTENT ZERO-ALLOCATION SPATIAL CACHES ---
+    private InteractableTile[][] interactableGridCache;
+    private Entity[][] entityGridCache;
+    private LIGHT_LEVEL[][] lightGridCache;
+
     // --- LOGS ---
     private final int MAX_LOG_LINES = 8;
 
@@ -151,15 +156,35 @@ public class GameController {
         handleWindowResize();
     }
 
+    /**
+     * Prepares and resets memory spaces natively to completely isolate heap allocations.
+     * Fixed to ensure brand-new cache matrices are fully populated with baseline values.
+     */
+    private void synchronizeSpatialCaches(int width, int height) {
+        // 1. Allocate arrays if they are null or if room dimensions changed
+        if (interactableGridCache == null || interactableGridCache.length != height || interactableGridCache[0].length != width) {
+            interactableGridCache = new InteractableTile[height][width];
+            entityGridCache = new Entity[height][width];
+            lightGridCache = new LIGHT_LEVEL[height][width];
+        }
+
+        // 2. Clear or reset all indices to prevent NullPointerExceptions across frames
+        for (int row = 0; row < height; row++) {
+            Arrays.fill(interactableGridCache[row], null);
+            Arrays.fill(entityGridCache[row], null);
+            Arrays.fill(lightGridCache[row], LIGHT_LEVEL.PURE_DARKNESS);
+        }
+    }
+
     public void updateRenderingPipeline() {
         final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if (activeRoom == null) return;
         final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
 
         final TILE[][] roomLayout = activeRoom.getLayout();
-
         final int roomHeight = roomLayout.length;
         final int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
+
         if (player != null) {
             viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
         }
@@ -167,6 +192,62 @@ public class GameController {
         gameCanvas.clearCanvas();
         GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
 
+        // Initialize or wipe persistent matrices without spawning fresh objects
+        synchronizeSpatialCaches(roomWidth, roomHeight);
+
+        // Map interactable layers instantly
+        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
+        if (interactableTiles != null) {
+            for (int i = 0; i < interactableTiles.size(); i++) {
+                InteractableTile interactable = interactableTiles.get(i);
+                Position pos = interactable.roomLayoutPosition;
+                if (pos.y >= 0 && pos.y < roomHeight && pos.x >= 0 && pos.x < roomWidth) {
+                    interactableGridCache[pos.y][pos.x] = interactable;
+                }
+            }
+        }
+
+        // Map moving entities into matrix coordinates
+        List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
+        if (entitiesInRoom != null) {
+            for (int i = 0; i < entitiesInRoom.size(); i++) {
+                Entity entity = entitiesInRoom.get(i);
+                if (entity.position != null && entity.position.y >= 0 && entity.position.y < roomHeight && entity.position.x >= 0 && entity.position.x < roomWidth) {
+                    entityGridCache[entity.position.y][entity.position.x] = entity;
+                }
+            }
+        }
+
+        // --- FORWARD BLITTING LIGHT ENGINE: Project light outwards from emitters ---
+        if (player != null && player.isIlluminated()) {
+            blitLightSource(player.position.x, player.position.y, player.getIlluminationRange(), roomLayout, roomWidth, roomHeight);
+        }
+
+        if (entitiesInRoom != null) {
+            for (int i = 0; i < entitiesInRoom.size(); i++) {
+                Entity entity = entitiesInRoom.get(i);
+                if (entity.position != null && entity.isIlluminated()) {
+                    blitLightSource(entity.position.x, entity.position.y, entity.getIlluminationRange(), roomLayout, roomWidth, roomHeight);
+                }
+            }
+        }
+
+        for (int row = 0; row < roomHeight; row++) {
+            for (int col = 0; col < roomWidth; col++) {
+                if (roomLayout[row][col] == TILE.TORCH) {
+                    blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight);
+                }
+                InteractableTile interactable = interactableGridCache[row][col];
+                if (interactable instanceof Fire) {
+                    blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight);
+                }
+            }
+        }
+
+        List<Position> travelledPositions = activeRoom.getPlayerTravelledPositions();
+        double memoryThreshold = (player != null) ? player.getIlluminationRange() : 0.0;
+
+        // --- VIEWPORT RENDERING CYCLE: Direct grid rendering using O(1) lookups ---
         for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
             for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
 
@@ -181,7 +262,7 @@ public class GameController {
                 String activeGlyph = glyphRegistry.getVoidStyle().glyph();
                 Color activeColor = UITheme.CANVAS_VOID;
 
-                // Layer 1: Base Floor/Wall Structures
+                // Layer 1: Layout structure maps
                 TILE tile = roomLayout[worldPosition.y][worldPosition.x];
                 if (tile != null) {
                     GlyphStyle tileStyle;
@@ -194,66 +275,60 @@ public class GameController {
                     activeColor = tileStyle.color();
                 }
 
-                // Layer 2: Interactable Map Loot Objects
-                List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
-                for (InteractableTile interactableTile : interactableTiles) {
-                    if (interactableTile.roomLayoutPosition.equals(worldPosition)) {
-                        GlyphStyle interactableTileStyle = glyphRegistry.getStyle(interactableTile);
-                        activeGlyph = interactableTileStyle.glyph();
-                        activeColor = interactableTileStyle.color();
-                        break;
-                    }
+                // Layer 2: Interactable objects
+                InteractableTile currentInteractable = interactableGridCache[worldPosition.y][worldPosition.x];
+                if (currentInteractable != null) {
+                    GlyphStyle interactableTileStyle = glyphRegistry.getStyle(currentInteractable);
+                    activeGlyph = interactableTileStyle.glyph();
+                    activeColor = interactableTileStyle.color();
                 }
 
-                // Layer 3: Living Entities
+                // Layer 3: Living entities
                 Monster damagedMonsterOverlayTarget = null;
                 double entityPixelOffsetX = 0.0;
                 double entityPixelOffsetY = 0.0;
-                List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
 
-                for (Entity entity : entitiesInRoom) {
-                    if (entity.position.equals(worldPosition)) {
-                        GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
-                        activeGlyph = entityStyle.glyph();
+                Entity entity = entityGridCache[worldPosition.y][worldPosition.x];
+                if (entity != null) {
+                    GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
+                    activeGlyph = entityStyle.glyph();
 
-                        if (entityAnimationPixelDrawOffsets.containsKey(entity)) {
-                            RenderOffset animationOffset = entityAnimationPixelDrawOffsets.get(entity);
-                            entityPixelOffsetX = animationOffset.x;
-                            entityPixelOffsetY = animationOffset.y;
-                        }
+                    if (entityAnimationPixelDrawOffsets.containsKey(entity)) {
+                        RenderOffset animationOffset = entityAnimationPixelDrawOffsets.get(entity);
+                        entityPixelOffsetX = animationOffset.x;
+                        entityPixelOffsetY = animationOffset.y;
+                    }
 
-                        if (entity instanceof Player) {
-                            activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
+                    if (entity instanceof Player) {
+                        activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
+                    } else {
+                        if (entity.getColor() != null) {
+                            activeColor = entity.getColor();
                         } else {
-                            if(entity.getColor() != null) {
-                                activeColor = entity.getColor();
-                            } else {
-                                double hue = entityStyle.color().getHue();
-                                double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
-                                double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
-                                activeColor = Color.hsb(hue, saturation, brightness);
-                            }
-
-                            if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
-                                damagedMonsterOverlayTarget = (Monster) entity;
-                            }
+                            double hue = entityStyle.color().getHue();
+                            double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                            double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                            activeColor = Color.hsb(hue, saturation, brightness);
                         }
-                        break;
+
+                        if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
+                            damagedMonsterOverlayTarget = (Monster) entity;
+                        }
                     }
                 }
 
-                // Calculate illumination level using our upgraded occlusion system
-                LIGHT_LEVEL lightLevel = getPositionIlluminationLevel(worldPosition, player, entitiesInRoom, activeRoom);
+                // Gather illumination from our pre-blitted matrix
+                LIGHT_LEVEL lightLevel = lightGridCache[worldPosition.y][worldPosition.x];
 
-                // Determine if player has previously explored this specific area
+                // Parse map exploration traces
                 boolean isTravelled = false;
-                if (player != null) {
-                    List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
-                    double memoryThreshold = player.getIlluminationRange();
-
-                    for (Position previousTravelledPos : previousTravelledPositions) {
-                        // For explored maps memory (Fog of War), we check if a clear sight path existed
-                        if (worldPosition.getDistanceTo(previousTravelledPos) <= memoryThreshold && isPathClear(previousTravelledPos, worldPosition, activeRoom)) {
+                if (player != null && travelledPositions != null) {
+                    for (int i = 0; i < travelledPositions.size(); i++) {
+                        Position previousTravelledPos = travelledPositions.get(i);
+                        double dx = worldPosition.x - previousTravelledPos.x;
+                        double dy = worldPosition.y - previousTravelledPos.y;
+                        if ((dx * dx + dy * dy) <= (memoryThreshold * memoryThreshold) &&
+                                isPathClear(previousTravelledPos.x, previousTravelledPos.y, worldPosition.x, worldPosition.y, roomLayout)) {
                             isTravelled = true;
                             break;
                         }
@@ -276,7 +351,8 @@ public class GameController {
         }
 
         // SCREEN OVERLAY RENDERING
-        for (TextPopupData textPopup : textPopupDataList) {
+        for (int i = 0; i < textPopupDataList.size(); i++) {
+            TextPopupData textPopup = textPopupDataList.get(i);
             Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
 
             if (screenPos != null) {
@@ -288,7 +364,41 @@ public class GameController {
                 );
 
                 final double offsetX = (double) (textPopup.hashCode() * 17 % 101) % 20;
-                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, blendedPopupColor, offsetX, textPopup.pixelOffsetY);
+                gameCanvas.drawString(screenPos.x, screenPos.y - 1, textPopup.text, 22, blendedPopupColor, offsetX, textPopup.pixelOffsetY);
+            }
+        }
+    }
+
+    /**
+     * Blits light outwards onto our lighting cache inside an emitter's localized bounding box.
+     */
+    private void blitLightSource(int sourceX, int sourceY, int brightRange, TILE[][] roomLayout, int roomWidth, int roomHeight) {
+        final int dimRange = 2;
+        final int maximumRange = brightRange + dimRange;
+
+        int startX = Math.max(0, sourceX - maximumRange);
+        int endX = Math.min(roomWidth - 1, sourceX + maximumRange);
+        int startY = Math.max(0, sourceY - maximumRange);
+        int endY = Math.min(roomHeight - 1, sourceY + maximumRange);
+
+        for (int y = startY; y <= endY; y++) {
+            for (int x = startX; x <= endX; x++) {
+                // If a tile is already directly illuminated, bypass calculation steps
+                if (lightGridCache[y][x] == LIGHT_LEVEL.ILLUMINATED) continue;
+
+                int dx = x - sourceX;
+                int dy = y - sourceY;
+                double distanceSquared = (dx * dx) + (dy * dy);
+
+                if (distanceSquared <= (maximumRange * maximumRange)) {
+                    if (isPathClear(sourceX, sourceY, x, y, roomLayout)) {
+                        LIGHT_LEVEL generatedLevel = (distanceSquared <= (brightRange * brightRange)) ? LIGHT_LEVEL.ILLUMINATED : LIGHT_LEVEL.DIM;
+
+                        if (generatedLevel == LIGHT_LEVEL.ILLUMINATED || lightGridCache[y][x] == LIGHT_LEVEL.PURE_DARKNESS) {
+                            lightGridCache[y][x] = generatedLevel;
+                        }
+                    }
+                }
             }
         }
     }
@@ -403,141 +513,51 @@ public class GameController {
     }
 
     /**
-     * Calculates the explicit light level for a target position with complete Raycast Occlusion parsing.
-     */
-    private LIGHT_LEVEL getPositionIlluminationLevel(Position targetPos, Player player, List<Entity> entitiesInRoom, Room activeRoom) {
-        LIGHT_LEVEL finalLight = LIGHT_LEVEL.PURE_DARKNESS;
-        final int dimRange = 2;
-
-        if (activeRoom == null) return finalLight;
-        TILE[][] roomLayout = activeRoom.getLayout();
-
-        // 1. Evaluate Player Light Source
-        if (player != null && player.isIlluminated()) {
-            double distance = targetPos.getDistanceTo(player.position);
-            double brightRange = player.getIlluminationRange();
-
-            if (distance <= brightRange + dimRange && isPathClear(player.position, targetPos, activeRoom)) {
-                if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
-                finalLight = LIGHT_LEVEL.DIM;
-            }
-        }
-
-        // 2. Evaluate Dynamic Entity Light Sources
-        for (int i = 0; i < entitiesInRoom.size(); i++) {
-            Entity entity = entitiesInRoom.get(i);
-            if (entity.position == null || !entity.isIlluminated()) continue;
-
-            double distance = targetPos.getDistanceTo(entity.position);
-            double brightRange = entity.getIlluminationRange();
-
-            if (distance <= brightRange + dimRange && isPathClear(entity.position, targetPos, activeRoom)) {
-                if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
-                finalLight = LIGHT_LEVEL.DIM;
-            }
-        }
-
-        // 3. Stationary Light Sources (Torches)
-        for (int y = 0; y < roomLayout.length; y++) {
-            for (int x = 0; x < roomLayout[y].length; x++) {
-                if (roomLayout[y][x] == TILE.TORCH) {
-                    Position torchPos = new Position(x, y);
-                    double distance = targetPos.getDistanceTo(torchPos);
-                    double brightRange = 1.0;
-
-                    if (distance <= brightRange + dimRange && isPathClear(torchPos, targetPos, activeRoom)) {
-                        if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
-                        finalLight = LIGHT_LEVEL.DIM;
-                    }
-                }
-            }
-        }
-
-        // 4. Interactable Light Sources
-        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
-        if (interactableTiles != null) {
-            for (InteractableTile interactable : interactableTiles) {
-                if (interactable instanceof Fire) {
-                    Position firePos = interactable.roomLayoutPosition;
-                    double distance = targetPos.getDistanceTo(firePos);
-                    double brightRange = 1.0;
-
-                    if (distance <= brightRange + dimRange && isPathClear(firePos, targetPos, activeRoom)) {
-                        if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
-                        finalLight = LIGHT_LEVEL.DIM;
-                    }
-                }
-            }
-        }
-
-        return finalLight;
-    }
-
-    /**
      * Bresenham's Line-Of-Sight Implementation.
-     * Checks if a line ray between two points encounters any light-blocking elements (e.g. Walls).
+     * Evaluated using primitive integer parameters to completely eliminate heap object generation overhead.
      */
-    private boolean isPathClear(Position start, Position end, Room activeRoom) {
-        if (start.equals(end) || activeRoom == null) return true;
+    private boolean isPathClear(int startX, int startY, int targetX, int targetY, TILE[][] roomLayout) {
+        if (startX == targetX && startY == targetY) return true;
 
-        TILE[][] roomLayout = activeRoom.getLayout();
-        int x0 = start.x;
-        int y0 = start.y;
-        int x1 = end.x;
-        int y1 = end.y;
+        int currentX = startX;
+        int currentY = startY;
 
-        int dx = Math.abs(x1 - x0);
-        int dy = Math.abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-
-        // 👇 1. CREATE A TEMPORARY GRID CACHE OF INTERACTABLES FOR INSTANT LOOKUPS
-        // This turns a slow list-search into an instant coordinate check.
-        InteractableTile[][] interactableGrid = new InteractableTile[roomLayout.length][roomLayout[0].length];
-        List<InteractableTile> interactables = activeRoom.getInteractableTiles();
-        if (interactables != null) {
-            for (InteractableTile interactable : interactables) {
-                Position p = interactable.roomLayoutPosition;
-                if (p.y >= 0 && p.y < interactableGrid.length && p.x >= 0 && p.x < interactableGrid[0].length) {
-                    interactableGrid[p.y][p.x] = interactable;
-                }
-            }
-        }
+        final int deltaX = Math.abs(targetX - currentX);
+        final int deltaY = Math.abs(targetY - currentY);
+        final int stepX = currentX < targetX ? 1 : -1;
+        final int stepY = currentY < targetY ? 1 : -1;
+        int errorValue = deltaX - deltaY;
 
         while (true) {
-            if (x0 != start.x || y0 != start.y) {
-                if (x0 == end.x && y0 == end.y) {
+            if (currentX != startX || currentY != startY) {
+                if (currentX == targetX && currentY == targetY) {
                     break;
                 }
 
-                // Check room dimensions safety boundaries
-                if (y0 >= 0 && y0 < roomLayout.length && x0 >= 0 && x0 < roomLayout[y0].length) {
+                if (currentY >= 0 && currentY < roomLayout.length && currentX >= 0 && currentX < roomLayout[currentY].length) {
 
-                    // 2. Check standard layout tiles (Walls)
-                    TILE tile = roomLayout[y0][x0];
+                    TILE tile = roomLayout[currentY][currentX];
                     if (tile == TILE.WALL || tile == TILE.BOOKSHELF) {
                         return false;
                     }
 
-                    // 👇 3. REPLACED THE SLOW FOR-LOOP WITH AN INSTANT GRID CHECK
-                    InteractableTile interactable = interactableGrid[y0][x0];
+                    InteractableTile interactable = interactableGridCache[currentY][currentX];
                     if (interactable instanceof Web || interactable instanceof Box) {
-                        return false; // Path blocked instantly!
+                        return false;
                     }
                 }
             }
 
-            if (x0 == x1 && y0 == y1) break;
+            if (currentX == targetX && currentY == targetY) break;
 
-            int e2 = 2 * err;
-            if (e2 > -dy) {
-                err -= dy;
-                x0 += sx;
+            int errorDoubleAdjustment = 2 * errorValue;
+            if (errorDoubleAdjustment > -deltaY) {
+                errorValue -= deltaY;
+                currentX += stepX;
             }
-            if (e2 < dx) {
-                err += dx;
-                y0 += sy;
+            if (errorDoubleAdjustment < deltaX) {
+                errorValue += deltaX;
+                currentY += stepY;
             }
         }
         return true;

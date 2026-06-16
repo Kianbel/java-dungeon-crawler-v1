@@ -32,7 +32,7 @@ public class Viewport {
             }
             cameraOffset.x = Math.max(0, Math.min(cameraOffset.x, worldMaxW - screenWidth));
         } else {
-            cameraOffset.x = -(screenWidth - worldMaxW) / 2;
+            cameraOffset.x = -(screenWidth - worldMaxW) >> 1; // Optimized bitwise division by 2
         }
 
         // --- Vertical Tracking Pipeline ---
@@ -45,7 +45,7 @@ public class Viewport {
             }
             cameraOffset.y = Math.max(0, Math.min(cameraOffset.y, worldMaxH - screenHeight));
         } else {
-            cameraOffset.y = -(screenHeight - worldMaxH) / 2;
+            cameraOffset.y = -(screenHeight - worldMaxH) >> 1; // Optimized bitwise division by 2
         }
     }
 

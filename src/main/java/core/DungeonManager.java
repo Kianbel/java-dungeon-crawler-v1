@@ -22,7 +22,7 @@ public class DungeonManager {
         return instance;
     }
 
-    private final int ROOM_AMOUNT = 5;
+    private final int ROOM_AMOUNT = 3;
     private final int MAP_HEIGHT = 21;
     private final int MAP_LENGTH = 21;
 
