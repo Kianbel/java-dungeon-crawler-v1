@@ -45,38 +45,19 @@ public class DrunkardWalk extends Generator {
     }
 
     private void makeSpecificRooms() {
-        List<Position> transformableRooms = new ArrayList<>();
-
         for(int y = 0; y < MAP_HEIGHT; y++) {
             for(int x = 0; x < MAP_LENGTH; x++) {
                 MAP mapTile = mapLayout[y][x];
                 if(mapTile == null) continue;;
                 if(mapTile.isCorridor()) continue;
 
-                if(spawnRoomPosition.x == x && spawnRoomPosition.y == y) {
+                if(spawnRoomPosition.equals(x,y)) {
                     mapLayout[y][x] = MAP.SPAWN;
-                    continue;
                 }
-                if(bossRoomPosition.x == x && bossRoomPosition.y == y) {
+                else if(bossRoomPosition.equals(x,y)) {
                     mapLayout[y][x] = MAP.BOSS;
-                    continue;
                 }
-
-                transformableRooms.add(new Position(x, y));
             }
-        }
-
-        // --- TREASURE ROOM ---
-        Random random = new Random();
-        Position treasureRoomPos = transformableRooms.remove(random.nextInt(transformableRooms.size()));
-        mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
-
-        // --- CLEAR ROOMS (1/3 OF TOTAL ROOMS) ---
-        int clearRoomAmount = transformableRooms.size()/3;
-        for(int i = 0; i < clearRoomAmount; i++) {
-            random = new Random();
-            Position clearRoomPos = transformableRooms.remove(random.nextInt(transformableRooms.size()));
-            mapLayout[clearRoomPos.y][clearRoomPos.x] = MAP.CLEAR;
         }
     }
 
@@ -91,8 +72,8 @@ public class DrunkardWalk extends Generator {
 
         walker.x = x;
         walker.y = y;
-        if(mapLayout[y][x] != MAP.INFESTED) {
-            mapLayout[y][x] = MAP.INFESTED;
+        if(mapLayout[y][x] != MAP.NORMAL) {
+            mapLayout[y][x] = MAP.NORMAL;
             currentRoomAmount++;
         }
     }

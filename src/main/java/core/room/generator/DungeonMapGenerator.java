@@ -41,8 +41,7 @@ public class DungeonMapGenerator {
                     case SPAWN -> stringBuilder.append('s');
                     case BOSS -> stringBuilder.append('b');
                     case TREASURE -> stringBuilder.append('t');
-                    case INFESTED -> stringBuilder.append('i');
-                    case CLEAR -> stringBuilder.append('#');
+                    case NORMAL -> stringBuilder.append('#');
                     case VCORRIDOR -> stringBuilder.append('|');
                     case HCORRIDOR -> stringBuilder.append('-');
                     default -> stringBuilder.append('.');

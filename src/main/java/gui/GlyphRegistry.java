@@ -60,12 +60,6 @@ public class GlyphRegistry {
                 new GlyphStyle("▓", Color.DARKBLUE.darker()),
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
-                new GlyphStyle("⮽", Color.SADDLEBROWN),
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker()),
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker().darker()),
-                new GlyphStyle("⮽", Color.SADDLEBROWN),
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker()),
-                new GlyphStyle("⮽", Color.SADDLEBROWN.darker().darker()),
                 new GlyphStyle("⛩", Color.SADDLEBROWN.darker()),
         });
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {

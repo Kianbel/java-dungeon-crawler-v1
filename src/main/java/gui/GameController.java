@@ -410,7 +410,7 @@ public class GameController {
                 if(activeRoom.minimapPosition.equals(worldPosition)) color = Color.YELLOW;
                 if(mapTile != null) {
                     switch(mapTile) {
-                        case SPAWN, CLEAR, INFESTED, TREASURE -> c = "□";
+                        case SPAWN, NORMAL, TREASURE -> c = "□";
                         case BOSS -> {
                             c = "□";
                             color = Color.RED;

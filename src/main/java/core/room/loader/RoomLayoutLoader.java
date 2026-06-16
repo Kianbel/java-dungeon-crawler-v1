@@ -63,13 +63,10 @@ public class RoomLayoutLoader {
         Class<? extends Room> roomClass;
         switch(classString) {
             case "boss" -> roomClass = BossRoom.class;
-            case "clear" -> roomClass = ClearRoom.class;
-            case "infested" -> roomClass = InfestedRoom.class;
+            case "normal" -> roomClass = NormalRoom.class;
             case "spawn" -> roomClass = SpawnRoom.class;
             case "treasure" -> roomClass = TreasureRoom.class;
-            default -> {
-                throw new RuntimeException("Invalid class string: " + classString);
-            }
+            default -> throw new RuntimeException("Invalid class string: " + classString);
         }
         return roomClass;
     }
@@ -94,7 +91,6 @@ public class RoomLayoutLoader {
             case 0x682700 -> { return TILE.DOOR; }
             case 0x00FF00 -> { return TILE.GRASS; }
             case 0x00FFFF -> { return TILE.WATER; }
-//            case 0xFF00FF -> { return TILE.SOLID_OBSTACLE; }
             case 0xffff00 -> { return TILE.PASSABLE_OBSTACLE; }
             case 0x7f1dff -> { return TILE.BOOKSHELF; }
             case 0xFF00FF -> { return TILE.BOX; }

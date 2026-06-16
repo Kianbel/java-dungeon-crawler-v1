@@ -142,14 +142,13 @@ public abstract class Entity {
         unitPos.y *= 2;
 
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        Position targetRoomPos = new Position(currentRoom.minimapPosition.x + unitPos.x, currentRoom.minimapPosition.y + unitPos.y);
+        Position targetRoomPos = currentRoom.minimapPosition.add(unitPos);
 
         List<Room> rooms = EntityRoomManager.getInstance().getRooms();
         for(Room r : rooms) {
-            if(r.minimapPosition.x == targetRoomPos.x &&
-                    r.minimapPosition.y == targetRoomPos.y &&
-                    r != currentRoom
-            ) return r;
+            if(r.minimapPosition.equals(targetRoomPos) && r != currentRoom) {
+                return r;
+            }
         }
         System.out.println("Cannot find target room at pos: " + targetRoomPos);
         return null;

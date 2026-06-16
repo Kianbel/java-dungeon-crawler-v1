@@ -32,7 +32,6 @@ public class DungeonManager {
         mapLayout = dungeonMapGenerator.getMapLayout();
 
         RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
-        dungeonMapGenerator.printMapLayout();
 
         generateRooms();
 
@@ -67,10 +66,9 @@ public class DungeonManager {
 
                 switch(mapLayout[y][x]) {
                     case MAP.SPAWN -> newRoom = new SpawnRoom(minimapPosition);
-                    case MAP.INFESTED -> newRoom = new InfestedRoom(minimapPosition);
                     case MAP.TREASURE -> newRoom = new TreasureRoom(minimapPosition);
                     case MAP.BOSS -> newRoom = new BossRoom(minimapPosition);
-                    case MAP.CLEAR -> newRoom = new ClearRoom(minimapPosition);
+                    case MAP.NORMAL -> newRoom = new NormalRoom(minimapPosition);
                     default -> {
                         continue;
                     }

@@ -3,9 +3,8 @@ package util;
 public enum MAP {
     SPAWN,
     BOSS,
+    NORMAL,
     TREASURE,
-    INFESTED,
-    CLEAR,
     VCORRIDOR,
     HCORRIDOR,
     EMPTY;
