@@ -30,6 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
 import world.Fire;
 import world.InteractableTile;
+import world.Web;
 
 import java.util.*;
 
@@ -71,24 +72,21 @@ public class GameController {
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
     private final Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new HashMap<>();
 
+    // --- TEXT POP UPS ---
     private final List<TextPopupData> textPopupDataList = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        // 1. Unmanage the Canvas to protect against layout scaling loops
         canvas.setManaged(false);
 
-        // 2. Build Base Layout Frameworks
         gameCanvas = new GameCanvas(canvas, currentTileSize);
         viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
 
         GUIManager.getInstance().registerController(this);
         DungeonManager.getInstance().generateDungeon();
 
-        // 3. Apply Unified Dynamic Theme Injection across all HUD Containers
         applyInterfaceTheme();
 
-        // 4. Bind window resize handlers
         canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setWidth(newVal.doubleValue());
             handleWindowResize();
@@ -101,41 +99,32 @@ public class GameController {
         attachKeyboardHandlers();
     }
 
-    /**
-     * Programmatically styles layout cards to ensure UI settings remain centralized.
-     */
     private void applyInterfaceTheme() {
-        // Root Container Node Context
         rootContainer.setStyle("-fx-background-color: " + UITheme.BG_ROOT + "; " + UITheme.CSS_FONT_FAMILY);
         canvasContainer.setStyle("-fx-border-color: " + UITheme.BORDER_HIGHLIGHT + "; -fx-border-width: 2; -fx-background-color: #000000;");
 
-        // Sidebar Dashboard Panel Containers
         String subPanelStyle = "-fx-border-color: " + UITheme.BORDER_NORMAL + "; -fx-border-width: 2; -fx-background-color: " + UITheme.BG_CARD + ";";
         statsPanel.setStyle(subPanelStyle);
         logsPanel.setStyle(subPanelStyle);
         controlsPanel.setStyle(subPanelStyle);
 
-        // Header Captions Style bindings using centralized font definitions
         String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: " + toHexWebColor(UITheme.OVERLAY_MODAL) + ";";
         statsHeader.setStyle(headerStyle);
         logsHeader.setStyle(headerStyle);
         controlsHeader.setStyle(headerStyle);
 
-        // Descriptive Static Label Elements Font Paints
         String labelStaticStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";";
         lblHealth.setStyle(labelStaticStyle);
         lblHunger.setStyle(labelStaticStyle);
         lblCoins.setStyle(labelStaticStyle);
         lblPotions.setStyle(labelStaticStyle);
 
-        // Dynamic Text Metric Value Fields Style updates
         String activeMetricStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + "; -fx-font-weight: bold;";
         healthValText.setStyle(activeMetricStyle);
         hungerValText.setStyle(activeMetricStyle);
         coinsText.setStyle(activeMetricStyle);
         potionsText.setStyle(activeMetricStyle);
 
-        // Custom Visual Colors for specific UI Components
         healthBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
         hungerBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
         armorText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + "; -fx-font-weight: bold;");
@@ -143,8 +132,6 @@ public class GameController {
 
         buildControlsReferenceHud();
     }
-
-
 
     private void handleWindowResize() {
         if (gameCanvas == null) return;
@@ -170,28 +157,26 @@ public class GameController {
 
         final TILE[][] roomLayout = activeRoom.getLayout();
 
-        final int ROOM_HEIGHT = roomLayout.length;
-        final int ROOM_WIDTH = (ROOM_HEIGHT > 0) ? roomLayout[0].length : 0;
+        final int roomHeight = roomLayout.length;
+        final int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
         if (player != null) {
-            viewport.updateCameraFocus(player.position, ROOM_WIDTH, ROOM_HEIGHT);
+            viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
         }
 
         gameCanvas.clearCanvas();
         GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
-
 
         for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
             for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
 
                 Position worldPosition = viewport.toWorldPosition(screenX, screenY);
 
-                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < ROOM_WIDTH && worldPosition.y >= 0 && worldPosition.y < ROOM_HEIGHT;
-                if (!isWithinRoomBounds) { // draw void character
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < roomWidth && worldPosition.y >= 0 && worldPosition.y < roomHeight;
+                if (!isWithinRoomBounds) {
                     gameCanvas.drawCharacter(screenX, screenY, glyphRegistry.getVoidStyle().glyph(), UITheme.CANVAS_VOID, 0.0, 0.0);
                     continue;
                 }
 
-                // --- INLINE LAYERING PIPELINE ---
                 String activeGlyph = glyphRegistry.getVoidStyle().glyph();
                 Color activeColor = UITheme.CANVAS_VOID;
 
@@ -230,7 +215,6 @@ public class GameController {
                         GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
                         activeGlyph = entityStyle.glyph();
 
-                        // Fetch dynamic presentation offsets from the UI mapping
                         if (entityAnimationPixelDrawOffsets.containsKey(entity)) {
                             RenderOffset animationOffset = entityAnimationPixelDrawOffsets.get(entity);
                             entityPixelOffsetX = animationOffset.x;
@@ -239,13 +223,10 @@ public class GameController {
 
                         if (entity instanceof Player) {
                             activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
-                        }
-                        else {
+                        } else {
                             if(entity.getColor() != null) {
                                 activeColor = entity.getColor();
-                            }
-                            else {
-                                // Generate unique color variations dynamically based on Monster identity hashes
+                            } else {
                                 double hue = entityStyle.color().getHue();
                                 double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
                                 double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
@@ -260,27 +241,24 @@ public class GameController {
                     }
                 }
 
-                // --- INLINE LAYERING PIPELINE CONTINUED ---
-
-                // Run our single-source-of-truth illumination level calculation
-                LIGHT_LEVEL lightLevel = getPositionIlluminationLevel(worldPosition, player, entitiesInRoom);
+                // Calculate illumination level using our upgraded occlusion system
+                LIGHT_LEVEL lightLevel = getPositionIlluminationLevel(worldPosition, player, entitiesInRoom, activeRoom);
 
                 // Determine if player has previously explored this specific area
                 boolean isTravelled = false;
                 if (player != null) {
                     List<Position> previousTravelledPositions = activeRoom.getPlayerTravelledPositions();
-                    // If a position was within their baseline fully-lit range before, it's remembered
                     double memoryThreshold = player.getIlluminationRange();
 
                     for (Position previousTravelledPos : previousTravelledPositions) {
-                        if (worldPosition.getDistanceTo(previousTravelledPos) <= memoryThreshold) {
+                        // For explored maps memory (Fog of War), we check if a clear sight path existed
+                        if (worldPosition.getDistanceTo(previousTravelledPos) <= memoryThreshold && isPathClear(previousTravelledPos, worldPosition, activeRoom)) {
                             isTravelled = true;
                             break;
                         }
                     }
                 }
 
-                // Apply the calculated lighting/fog-of-war states to the active color
                 switch (lightLevel) {
                     case ILLUMINATED -> {}
                     case DIM -> activeColor = activeColor.darker();
@@ -293,17 +271,15 @@ public class GameController {
                     double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
                     gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
                 }
-
             }
         }
 
-        // 2. SCREEN OVERLAY RENDERING
-        Random random = new Random();
+        // SCREEN OVERLAY RENDERING
         for (TextPopupData textPopup : textPopupDataList) {
             Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
 
             if (screenPos != null) {
-                Color color = new Color(
+                Color blendedPopupColor = new Color(
                         textPopup.color.getRed(),
                         textPopup.color.getGreen(),
                         textPopup.color.getBlue(),
@@ -311,13 +287,12 @@ public class GameController {
                 );
 
                 final double offsetX = (double) (textPopup.hashCode() * 17 % 101) % 20;
-                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, color, offsetX, textPopup.pixelOffsetY);
+                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, blendedPopupColor, offsetX, textPopup.pixelOffsetY);
             }
         }
     }
 
     private void attachKeyboardHandlers() {
-
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setOnKeyPressed(e -> {
@@ -367,11 +342,11 @@ public class GameController {
                             List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
                             for(int i = 0; i < entities.size(); i++) {
                                 Entity entity = entities.get(i);
-                                if(entity instanceof Monster m) {
-                                    m.makeMove();
+                                if(entity instanceof Monster monster) {
+                                    monster.makeMove();
                                 }
-                                if(entity instanceof Projectile p) {
-                                    p.makeMove();
+                                if(entity instanceof Projectile projectile) {
+                                    projectile.makeMove();
                                 }
                             }
                         }
@@ -388,9 +363,9 @@ public class GameController {
 
         final MAP[][] mapLayout = DungeonManager.getInstance().getMapLayout();
 
-        final int MAP_HEIGHT = mapLayout.length;
-        final int MAP_LENGTH = mapLayout[0].length;
-        viewport.updateCameraFocus(activeRoom.minimapPosition, MAP_LENGTH, MAP_HEIGHT);
+        final int mapHeight = mapLayout.length;
+        final int mapLength = mapLayout[0].length;
+        viewport.updateCameraFocus(activeRoom.minimapPosition, mapLength, mapHeight);
 
         gameCanvas.clearCanvas();
 
@@ -398,115 +373,180 @@ public class GameController {
             for(int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
                 Position worldPosition = viewport.toWorldPosition(screenX, screenY);
 
-                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < MAP_LENGTH && worldPosition.y >= 0 && worldPosition.y < MAP_HEIGHT;
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < mapLength && worldPosition.y >= 0 && worldPosition.y < mapHeight;
                 if (!isWithinRoomBounds) {
                     gameCanvas.drawCharacter(screenX, screenY, " ", Color.BLACK, 0.0, 0.0);
                     continue;
                 }
 
                 MAP mapTile = mapLayout[worldPosition.y][worldPosition.x];
-                String c = "?";
-                Color color = Color.GRAY;
-                if(activeRoom.minimapPosition.equals(worldPosition)) color = Color.YELLOW;
+                String minimapGlyph = "?";
+                Color tileColor = Color.GRAY;
+                if(activeRoom.minimapPosition.equals(worldPosition)) tileColor = Color.YELLOW;
                 if(mapTile != null) {
                     switch(mapTile) {
-                        case SPAWN, NORMAL, TREASURE -> c = "□";
+                        case SPAWN, NORMAL, TREASURE -> minimapGlyph = "□";
                         case BOSS -> {
-                            c = "□";
-                            color = Color.RED;
+                            minimapGlyph = "□";
+                            tileColor = Color.RED;
                         }
-                        case VCORRIDOR -> c = "|";
-                        case HCORRIDOR -> c = "-";
+                        case VCORRIDOR -> minimapGlyph = "|";
+                        case HCORRIDOR -> minimapGlyph = "-";
                     }
                 }
-                else color = Color.BLACK;
+                else tileColor = Color.BLACK;
 
-                gameCanvas.drawCharacter(screenX, screenY, c, color, 0,0);
+                gameCanvas.drawCharacter(screenX, screenY, minimapGlyph, tileColor, 0,0);
             }
         }
     }
 
-    private LIGHT_LEVEL getPositionIlluminationLevel(Position targetPos, Player player, List<Entity> entitiesInRoom) {
-        LIGHT_LEVEL lightLevel = LIGHT_LEVEL.PURE_DARKNESS;
+    /**
+     * Calculates the explicit light level for a target position with complete Raycast Occlusion parsing.
+     */
+    private LIGHT_LEVEL getPositionIlluminationLevel(Position targetPos, Player player, List<Entity> entitiesInRoom, Room activeRoom) {
+        LIGHT_LEVEL finalLight = LIGHT_LEVEL.PURE_DARKNESS;
         final int dimRange = 2;
+
+        if (activeRoom == null) return finalLight;
+        TILE[][] roomLayout = activeRoom.getLayout();
 
         // 1. Evaluate Player Light Source
         if (player != null && player.isIlluminated()) {
             double distance = targetPos.getDistanceTo(player.position);
             double brightRange = player.getIlluminationRange();
 
-            if (distance <= brightRange) {
-                return LIGHT_LEVEL.ILLUMINATED;
-            } else if (distance <= brightRange + dimRange) {
-                lightLevel = LIGHT_LEVEL.DIM;
+            if (distance <= brightRange + dimRange && isPathClear(player.position, targetPos, activeRoom)) {
+                if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
+                finalLight = LIGHT_LEVEL.DIM;
             }
         }
 
-        // 2. Evaluate Dynamic Entity Light Sources (Fireballs, Glowing Monsters, etc.)
+        // 2. Evaluate Dynamic Entity Light Sources
         for (int i = 0; i < entitiesInRoom.size(); i++) {
             Entity entity = entitiesInRoom.get(i);
-            if (entity.position == null || !entity.isIlluminated()) {
-                continue;
-            }
+            if (entity.position == null || !entity.isIlluminated()) continue;
 
             double distance = targetPos.getDistanceTo(entity.position);
             double brightRange = entity.getIlluminationRange();
 
-            if (distance <= brightRange) {
-                return LIGHT_LEVEL.ILLUMINATED;
-            } else if (distance <= brightRange + dimRange) {
-                lightLevel = LIGHT_LEVEL.DIM;
+            if (distance <= brightRange + dimRange && isPathClear(entity.position, targetPos, activeRoom)) {
+                if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
+                finalLight = LIGHT_LEVEL.DIM;
             }
         }
 
-        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
-        if (activeRoom != null) {
-            // 3. Evaluate Stationary Tile Light Sources (Torches)
-//            TILE[][] activeRoomLayout = activeRoom.getLayout();
-//            for (int y = 0; y < activeRoomLayout.length; y++) {
-//                for (int x = 0; x < activeRoomLayout[y].length; x++) {
-//                    if (activeRoomLayout[y][x] == TILE.TORCH) {
-//                        Position torchPos = new Position(x, y);
-//                        double distance = targetPos.getDistanceTo(torchPos);
-//                        double brightRange = 1.0;
-//
-//                        if (distance <= brightRange) {
-//                            return LIGHT_LEVEL.ILLUMINATED;
-//                        } else if (distance <= brightRange + dimRange) {
-//                            lightLevel = LIGHT_LEVEL.DIM;
-//                        }
-//                    }
-//                }
-//            }
+        // 3. Stationary Light Sources (Torches)
+        for (int y = 0; y < roomLayout.length; y++) {
+            for (int x = 0; x < roomLayout[y].length; x++) {
+                if (roomLayout[y][x] == TILE.TORCH) {
+                    Position torchPos = new Position(x, y);
+                    double distance = targetPos.getDistanceTo(torchPos);
+                    double brightRange = 1.0;
 
-            // 4. Evaluate Interactable Tiles
-            // Since chests are in a List in your Room class, we iterate through them here
-            List<InteractableTile> interactables = activeRoom.getInteractableTiles();
-            for (InteractableTile interactable : interactables) {
-                if (interactable instanceof Fire) {
-                    double distance = targetPos.getDistanceTo(interactable.roomLayoutPosition);
-                    double brightRange = 1.0; // The radius of the chest's glow
-
-                    if (distance <= brightRange) {
-                        return LIGHT_LEVEL.ILLUMINATED;
-                    } else if (distance <= brightRange + dimRange) {
-                        lightLevel = LIGHT_LEVEL.DIM;
+                    if (distance <= brightRange + dimRange && isPathClear(torchPos, targetPos, activeRoom)) {
+                        if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
+                        finalLight = LIGHT_LEVEL.DIM;
                     }
                 }
             }
         }
 
-        return lightLevel;
+        // 4. Interactable Light Sources
+        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
+        if (interactableTiles != null) {
+            for (InteractableTile interactable : interactableTiles) {
+                if (interactable instanceof Fire) {
+                    Position firePos = interactable.roomLayoutPosition;
+                    double distance = targetPos.getDistanceTo(firePos);
+                    double brightRange = 1.0;
+
+                    if (distance <= brightRange + dimRange && isPathClear(firePos, targetPos, activeRoom)) {
+                        if (distance <= brightRange) return LIGHT_LEVEL.ILLUMINATED;
+                        finalLight = LIGHT_LEVEL.DIM;
+                    }
+                }
+            }
+        }
+
+        return finalLight;
     }
+
+    /**
+     * Bresenham's Line-Of-Sight Implementation.
+     * Checks if a line ray between two points encounters any light-blocking elements (e.g. Walls).
+     */
+    private boolean isPathClear(Position start, Position end, Room activeRoom) {
+        if (start.equals(end) || activeRoom == null) return true;
+
+        TILE[][] roomLayout = activeRoom.getLayout();
+        int x0 = start.x;
+        int y0 = start.y;
+        int x1 = end.x;
+        int y1 = end.y;
+
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
+
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+
+        int err = dx - dy;
+
+        while (true) {
+            if (x0 != start.x || y0 != start.y) {
+                if (x0 == end.x && y0 == end.y) {
+                    break;
+                }
+
+                // Check room dimensions safety boundaries
+                if (y0 >= 0 && y0 < roomLayout.length && x0 >= 0 && x0 < roomLayout[y0].length) {
+
+                    // 1. Check standard layout tiles (Walls)
+                    TILE tile = roomLayout[y0][x0];
+                    if (tile == TILE.WALL || tile == TILE.BOOKSHELF) {
+                        return false;
+                    }
+
+                    // 2. Check Interactable Tiles
+                    Position currentStepPos = new Position(x0, y0);
+                    List<InteractableTile> interactables = activeRoom.getInteractableTiles();
+
+                    for (InteractableTile interactable : interactables) {
+                        if (interactable.roomLayoutPosition.equals(currentStepPos)) {
+                            // Check if this specific interactable should block light
+                            if (interactable instanceof Web) {
+                                return false; // Interactable blocks light!
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (x0 == x1 && y0 == y1) break;
+
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x0 += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y0 += sy;
+            }
+        }
+        return true;
+    }
+
     public void addLog(String txt, Color col) {
         Label element = new Label(txt);
-        // Inject font parameters safely straight from theme file definitions
         element.setStyle(UITheme.STYLE_LOG + " -fx-text-fill: " + toHexWebColor(col) + ";");
         element.setWrapText(true);
 
         if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
         logContainer.getChildren().add(element);
     }
+
     public void clearLogContainer() { logContainer.getChildren().clear(); }
 
     public void triggerTextPopup(TextPopupData textPopupData, double durationMs) {
@@ -514,7 +554,6 @@ public class GameController {
 
         final double MAX_FLOAT_DISTANCE_PIXELS = -30.0;
 
-        // Track the start time in nanoseconds
         new AnimationTimer() {
             private long startTime = -1;
 
@@ -524,24 +563,18 @@ public class GameController {
                     startTime = now;
                 }
 
-                // Convert elapsed time to milliseconds
                 double elapsedMs = (now - startTime) / 1_000_000.0;
                 double progress = Math.min(1.0, elapsedMs / durationMs);
 
-                // Smooth linear curve decay for opacity
                 double curve = 1.0 - progress;
                 textPopupData.opacity = Math.clamp(curve, 0.0, 1.0);
-
-                // Smooth upward movement offset
                 textPopupData.pixelOffsetY = progress * MAX_FLOAT_DISTANCE_PIXELS;
 
-                // Request a single layout cycle update
                 updateRenderingPipeline();
 
-                // Safe self-termination once duration is exceeded
                 if (progress >= 1.0) {
                     textPopupDataList.remove(textPopupData);
-                    updateRenderingPipeline(); // Final clean pass
+                    updateRenderingPipeline();
                     this.stop();
                 }
             }
@@ -564,18 +597,21 @@ public class GameController {
 
         transition.setOnFinished(event -> {
             canvasContainer.getChildren().remove(flashOverlay);
-            updateRenderingPipeline(); // Final screen refresh
+            updateRenderingPipeline();
         });
         flashOverlay.setManaged(false);
 
         transition.play();
     }
+
     public void triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
         triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
     }
+
     public void triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
         triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
     }
+
     private void triggerEntitySlideAnimation(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve, boolean isReverse) {
         int dx = targetPosition.x - entity.position.x;
         int dy = targetPosition.y - entity.position.y;
@@ -592,7 +628,7 @@ public class GameController {
         final int TOTAL_FRAMES = 10;
 
         for(int i = 0; i <= TOTAL_FRAMES; i++) {
-            final int frame = i; // needs to be final for lambda expressions
+            final int frame = i;
             KeyFrame keyframe = new KeyFrame(
                     Duration.millis(animationDurationMs / TOTAL_FRAMES * frame),
                     event -> {
@@ -622,10 +658,10 @@ public class GameController {
         timeline.play();
     }
 
-    public void updateHealth(int hp) { healthValText.setText(hp + "/100"); healthBarText.setText(buildBarMeter(hp)); }
-    public void updateHunger(int hg) { hungerValText.setText(hg + "/100"); hungerBarText.setText(buildBarMeter(hg)); }
-    public void updateArmor(int arm) { armorText.setText("Armor: " + arm + "/10"); }
-    public void updateWeapon(Weapon w) { weaponText.setText("Weapon: " + w); }
+    public void updateHealth(int health) { healthValText.setText(health + "/100"); healthBarText.setText(buildBarMeter(health)); }
+    public void updateHunger(int hunger) { hungerValText.setText(hunger + "/100"); hungerBarText.setText(buildBarMeter(hunger)); }
+    public void updateArmor(int armor) { armorText.setText("Armor: " + armor + "/10"); }
+    public void updateWeapon(Weapon weapon) { weaponText.setText("Weapon: " + weapon); }
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
     public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
 
@@ -635,23 +671,23 @@ public class GameController {
                 "[WASD]  Move Explorer",
                 "[SPACE] Rest / Skip Turn",
                 "[M] Open Map",
-//                "[E]     Interact Structure",
                 "[+ / -] Adjust Camera Zoom"
         };
         for (String item : mappings) {
             Label element = new Label(item);
-            // Apply centralized style layout variables
             element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
             controlsBox.getChildren().add(element);
         }
     }
-    private String buildBarMeter(int val) {
-        int fill = (int) Math.round((Math.max(0, Math.min(100, val)) / 100.0) * 15);
+
+    private String buildBarMeter(int value) {
+        int fill = (int) Math.round((Math.max(0, Math.min(100, value)) / 100.0) * 15);
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < 15; i++) sb.append(i < fill ? "■" : "·");
         return sb.append("]").toString();
     }
-    private String toHexWebColor(Color c) {
-        return String.format("#%02X%02X%02X", (int)(c.getRed()*255), (int)(c.getGreen()*255), (int)(c.getBlue()*255));
+
+    private String toHexWebColor(Color color) {
+        return String.format("#%02X%02X%02X", (int)(color.getRed()*255), (int)(color.getGreen()*255), (int)(color.getBlue()*255));
     }
 }

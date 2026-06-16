@@ -2,9 +2,12 @@ package core.room.type;
 
 import util.DIRECTION;
 import util.Position;
+import util.Randomizer;
 import util.TILE;
-import world.Box;
-import world.InteractableTile;
+import weapon.AncientSword;
+import weapon.IronBlade;
+import weapon.Weapon;
+import world.*;
 
 import java.util.*;
 
@@ -51,34 +54,65 @@ public abstract class Room {
 
         // --- HANDLE BOX/DOOR GENERATION ---
         final double BOX_SPAWN_CHANCE = 0.6;
+        final double WEB_SPAWN_CHANCE = 0.5;
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
-                if(layout[y][x] == TILE.BOX) {
-                    layout[y][x] = TILE.FLOOR;
-                    if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Box(new Position(x,y)));
-                }
-                else if(layout[y][x] == TILE.DOOR) {
-                    // if tile above door is not wall, door is south door
-                    if(y-1 >= 0 && layout[y-1][x] != TILE.WALL && layout[y-1][x] != TILE.EMPTY) {
-                        if(!hasDoorSouth) layout[y][x] = TILE.WALL;
-                        else doorPositionsHashmap.put(DIRECTION.SOUTH, new Position(x,y-1));
+                switch(layout[y][x]) {
+                    case TORCH -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new Fire(new Position(x,y)));
                     }
-                    // if tile below door is not wall, door is north door
-                    if(y+1 < height && layout[y+1][x] != TILE.WALL && layout[y+1][x] != TILE.EMPTY) {
-                        if(!hasDoorNorth) layout[y][x] = TILE.WALL;
-                        else doorPositionsHashmap.put(DIRECTION.NORTH, new Position(x,y+1));
+                    case WEB -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        if(Math.random() <= WEB_SPAWN_CHANCE) addInteractableTile(new Web(new Position(x,y)));
                     }
-                    // if tile left of door is not wall, door is east door
-                    if(x-1 >= 0 && layout[y][x-1] != TILE.WALL && layout[y][x-1] != TILE.EMPTY) {
-                        if(!hasDoorEast) layout[y][x] = TILE.WALL;
-                        else doorPositionsHashmap.put(DIRECTION.EAST, new Position(x-1, y));
+                    case CHEST -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        InteractableTile chestDrop = null;
+
+                        Position currentPos = new Position(x,y);
+                        switch(Randomizer.pick(1,2,3)) {
+                            case 1 -> chestDrop = new Coin(currentPos, Randomizer.pick(5,10,15));
+                            case 2 -> chestDrop = new Heart(currentPos, Randomizer.pick(10,15,20));
+                            case 3 -> {
+                                Weapon weapon = null;
+                                switch(Randomizer.pick(1,2)) {
+                                    case 1 -> weapon = new AncientSword();
+                                    case 2 -> weapon = new IronBlade();
+                                }
+                                chestDrop = new DroppedWeapon(currentPos, weapon);
+                            }
+                        }
+                        addInteractableTile(new Chest(currentPos, chestDrop));
                     }
-                    // if tile right of door is not wall, door is west door
-                    if(x+1 < length && layout[y][x+1] != TILE.WALL && layout[y][x+1] != TILE.EMPTY) {
-                        if(!hasDoorWest) layout[y][x] = TILE.WALL;
-                        else doorPositionsHashmap.put(DIRECTION.WEST, new Position(x+1, y));
+                    case BOX -> {
+                        layout[y][x] = TILE.FLOOR;
+                        if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Box(new Position(x, y)));
                     }
+                    case DOOR -> {
+                        // if tile above door is not wall, door is south door
+                        if(y-1 >= 0 && layout[y-1][x] != TILE.WALL && layout[y-1][x] != TILE.EMPTY) {
+                            if(!hasDoorSouth) layout[y][x] = TILE.WALL;
+                            else doorPositionsHashmap.put(DIRECTION.SOUTH, new Position(x,y-1));
+                        }
+                        // if tile below door is not wall, door is north door
+                        if(y+1 < height && layout[y+1][x] != TILE.WALL && layout[y+1][x] != TILE.EMPTY) {
+                            if(!hasDoorNorth) layout[y][x] = TILE.WALL;
+                            else doorPositionsHashmap.put(DIRECTION.NORTH, new Position(x,y+1));
+                        }
+                        // if tile left of door is not wall, door is east door
+                        if(x-1 >= 0 && layout[y][x-1] != TILE.WALL && layout[y][x-1] != TILE.EMPTY) {
+                            if(!hasDoorEast) layout[y][x] = TILE.WALL;
+                            else doorPositionsHashmap.put(DIRECTION.EAST, new Position(x-1, y));
+                        }
+                        // if tile right of door is not wall, door is west door
+                        if(x+1 < length && layout[y][x+1] != TILE.WALL && layout[y][x+1] != TILE.EMPTY) {
+                            if(!hasDoorWest) layout[y][x] = TILE.WALL;
+                            else doorPositionsHashmap.put(DIRECTION.WEST, new Position(x+1, y));
+                        }
+                    }
+
                 }
             }
         }
@@ -119,12 +153,7 @@ public abstract class Room {
         if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
         if(targetPosition.y < 0 || targetPosition.y >= height) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
 
-        for(InteractableTile t : interactableTiles) {
-            if(t.roomLayoutPosition.x == tile.roomLayoutPosition.x && t.roomLayoutPosition.y == tile.roomLayoutPosition.y) {
-                return false;
-            }
-        }
-
+        if(interactableTiles.contains(tile)) return false;
         return interactableTiles.add(tile);
     }
 
