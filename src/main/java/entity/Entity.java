@@ -102,6 +102,22 @@ public abstract class Entity {
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
     }
 
+    public void hurt(int damage) {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        damage -= armor;
+        if(damage < 0) {
+            damage = 0;
+        }
+
+        GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
+
+        health -= damage;
+        if(health <= 0) {
+            health = 0;
+            die();
+        }
+    }
+
     public void hurt(int damage, Entity attacker) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {

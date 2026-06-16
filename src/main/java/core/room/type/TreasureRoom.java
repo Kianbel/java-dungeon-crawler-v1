@@ -24,11 +24,9 @@ public class TreasureRoom extends Room {
 
         InteractableTile chestDrop;
         double random = Math.random();
-        // TODO: investigate chest sometimes not dropping weapons
-        chestDrop = new DroppedWeapon(chestPosition, new IronBlade());
-//        if(random <= 0.4) chestDrop = new DroppedWeapon(chestPosition, new IronBlade());
-//        else if(random <= 0.8) chestDrop = new Heart(chestPosition, 20);
-//        else chestDrop = new Coin(chestPosition, 20);
+        if(random <= 0.4) chestDrop = new DroppedWeapon(chestPosition, new IronBlade());
+        else if(random <= 0.8) chestDrop = new Heart(chestPosition, 20);
+        else chestDrop = new Coin(chestPosition, 20);
 
         InteractableTile chest = new Chest(chestPosition, chestDrop);
         addInteractableTile(chest);

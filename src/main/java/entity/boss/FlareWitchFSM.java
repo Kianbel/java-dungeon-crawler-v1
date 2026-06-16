@@ -121,13 +121,14 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
             case STATE.CAST_CIRCLE -> {
             }
             case STATE.SUMMON -> {
+                GUIManager.getInstance().triggerTextPopup("chants", Color.DARKRED, owner.position);
                 activeHintCooldown = 5;
                 owner.overrideColor(Color.DARKRED);
             }
             case STATE.ATTACK -> {
             }
             case STATE.TELEPORT -> {
-                GUIManager.getInstance().printDevLog("teleport1");
+                GUIManager.getInstance().triggerTextPopup("chants", Color.DARKVIOLET, owner.position);
                 activeHintCooldown = 2;
                 owner.overrideColor(Color.DARKVIOLET);
             }
@@ -142,7 +143,6 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
 
     private void teleport() {
         if(activeHintCooldown > 0) {
-            GUIManager.getInstance().triggerTextPopup("chants", Color.DARKVIOLET, owner.position);
             activeHintCooldown--;
             return;
         }
@@ -162,7 +162,6 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
 
     private void summon() {
         if(activeHintCooldown > 0) {
-            GUIManager.getInstance().triggerTextPopup("chants", Color.DARKRED, owner.position);
             activeHintCooldown--;
             return;
         }

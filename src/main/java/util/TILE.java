@@ -11,7 +11,10 @@ public enum TILE {
     SOLID_OBSTACLE,
     PASSABLE_OBSTACLE,
     BOOKSHELF,
-    BOX;
+    BOX,
+    WEB,
+    TORCH,
+    CHEST;
 
     public boolean isWalkable() {
         return this == FLOOR || this == PASSABLE_OBSTACLE || this == GRASS;

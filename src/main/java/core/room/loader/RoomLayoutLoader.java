@@ -78,11 +78,12 @@ public class RoomLayoutLoader {
             DOOR, = 0x682700
             GRASS, = 0x00FF00
             WATER, = 0x00FFFF
-            SOLID_OBSTACLE, = 0xFF00FF // NOT USED;
             PASSABLE_OBSTACLE, = 0xffff00
-
             BOOKSHELF = 0x7f1dff
             BOX = 0xFF00FF
+            WEB = 0xFFFFFF
+            TORCH = 0xff8000
+            CHEST = 0x56391c
          */
 
         switch (pixel & 0x00FFFFFF) {
@@ -94,6 +95,9 @@ public class RoomLayoutLoader {
             case 0xffff00 -> { return TILE.PASSABLE_OBSTACLE; }
             case 0x7f1dff -> { return TILE.BOOKSHELF; }
             case 0xFF00FF -> { return TILE.BOX; }
+            case 0xFFFFFF -> { return TILE.WEB; }
+            case 0xFF8000 -> { return TILE.TORCH; }
+            case 0x56391C -> { return TILE.CHEST; }
 
             default -> { return TILE.EMPTY; }
         }

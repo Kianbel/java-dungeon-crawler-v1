@@ -21,7 +21,7 @@ public class Fireball extends Projectile {
 
     @Override
     public void attack(Entity targetEntity) {
-        if(targetEntity instanceof Fireball || targetEntity.equals(this)) return;
+        if(targetEntity instanceof Fireball) return;
         super.attack(targetEntity);
 
         if(targetEntity instanceof Player) {

@@ -147,7 +147,7 @@ public class Player extends Entity {
             if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
 
             if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
-            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
+            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
 
             GUIManager.getInstance().setHP(health);
 

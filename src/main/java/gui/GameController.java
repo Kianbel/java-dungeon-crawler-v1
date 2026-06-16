@@ -28,12 +28,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
+import world.Fire;
 import world.InteractableTile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameController {
 
@@ -300,6 +298,7 @@ public class GameController {
         }
 
         // 2. SCREEN OVERLAY RENDERING
+        Random random = new Random();
         for (TextPopupData textPopup : textPopupDataList) {
             Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
 
@@ -311,7 +310,8 @@ public class GameController {
                         textPopup.opacity
                 );
 
-                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, color, 0, textPopup.pixelOffsetY);
+                final double offsetX = (double) (textPopup.hashCode() * 17 % 101) % 20;
+                gameCanvas.drawString(screenPos.x, screenPos.y-1, textPopup.text, 22, color, offsetX, textPopup.pixelOffsetY);
             }
         }
     }
@@ -459,34 +459,45 @@ public class GameController {
             }
         }
 
-        // 3. Hook for Stationary Light Sources (Doors acting as ambient lights)
-//        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
-//        if (activeRoom != null) {
+        Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        if (activeRoom != null) {
+            // 3. Evaluate Stationary Tile Light Sources (Torches)
 //            TILE[][] activeRoomLayout = activeRoom.getLayout();
-//
-//            // Scan layout for doors to see if targetPos is illuminated by one
 //            for (int y = 0; y < activeRoomLayout.length; y++) {
 //                for (int x = 0; x < activeRoomLayout[y].length; x++) {
-////                    if (activeRoomLayout[y][x] == TILE.DOOR) {
-////                        Position doorPos = new Position(x, y);
-////                        double distance = targetPos.getDistanceTo(doorPos);
-////                        double brightRange = 1.0; // Range of the door's glow
-////
-////                        if (distance <= brightRange) {
-////                            return LIGHT_LEVEL.ILLUMINATED;
-////                        } else if (distance <= brightRange + dimRange) {
-////                            if (lightLevel == LIGHT_LEVEL.PURE_DARKNESS) {
-////                                lightLevel = LIGHT_LEVEL.DIM;
-////                            }
-////                        }
-////                    }
+//                    if (activeRoomLayout[y][x] == TILE.TORCH) {
+//                        Position torchPos = new Position(x, y);
+//                        double distance = targetPos.getDistanceTo(torchPos);
+//                        double brightRange = 1.0;
+//
+//                        if (distance <= brightRange) {
+//                            return LIGHT_LEVEL.ILLUMINATED;
+//                        } else if (distance <= brightRange + dimRange) {
+//                            lightLevel = LIGHT_LEVEL.DIM;
+//                        }
+//                    }
 //                }
 //            }
-//        }
+
+            // 4. Evaluate Interactable Tiles
+            // Since chests are in a List in your Room class, we iterate through them here
+            List<InteractableTile> interactables = activeRoom.getInteractableTiles();
+            for (InteractableTile interactable : interactables) {
+                if (interactable instanceof Fire) {
+                    double distance = targetPos.getDistanceTo(interactable.roomLayoutPosition);
+                    double brightRange = 1.0; // The radius of the chest's glow
+
+                    if (distance <= brightRange) {
+                        return LIGHT_LEVEL.ILLUMINATED;
+                    } else if (distance <= brightRange + dimRange) {
+                        lightLevel = LIGHT_LEVEL.DIM;
+                    }
+                }
+            }
+        }
 
         return lightLevel;
     }
-
     public void addLog(String txt, Color col) {
         Label element = new Label(txt);
         // Inject font parameters safely straight from theme file definitions

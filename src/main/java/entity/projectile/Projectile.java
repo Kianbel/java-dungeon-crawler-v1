@@ -28,7 +28,7 @@ public abstract class Projectile extends Entity implements MoveAfterPlayer {
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
         for(Entity e : entities) {
             if(e.equals(this)) continue;
-            if(e.position.equals(targetPosition) && !(e instanceof Projectile)) {
+            if((e.position.equals(targetPosition) || e.position.equals(position)) && !(e instanceof Projectile)) {
                 attack(e);
                 die();
                 return;

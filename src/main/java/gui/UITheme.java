@@ -11,7 +11,7 @@ public class UITheme {
     // --- TYPOGRAPHY ENGINE CONFIGURATIONS ---
     public static final String GENERAL_FONT_FAMILY = "Courier New";
     public static final String CSS_FONT_FAMILY  = "-fx-font-family: '" + GENERAL_FONT_FAMILY + "';";
-    public static final String TEXT_POPUP_FONT_FAMILY = "Courier New";
+    public static final String TEXT_POPUP_FONT_FAMILY = "Inter";
 
     // Dynamic Sizing Rules
     public static final double DEFAULT_ZOOM    = 18.0;
@@ -76,7 +76,8 @@ public class UITheme {
     public static final Color LOG_DEV = Color.HOTPINK;
 
     // --- ATTACK DAMAGE INDICATORS ---
-    public static final Color NORMAL_DAMAGE = Color.RED;
+    public static final Color PLAYER_TAKE_DAMAGE = Color.RED;
+    public static final Color NORMAL_DAMAGE = Color.WHITE;
     public static final Color CRITICAL_DAMAGE = Color.DARKRED;
-    public static final Color MISS = Color.WHITE;
+    public static final Color MISS = Color.YELLOW;
 }

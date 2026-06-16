@@ -85,6 +85,7 @@ public class GlyphRegistry {
         registerInteractableTile(Heart.class, "♥", UITheme.STAT_HEALTH);
         registerInteractableTile(Box.class, "⮽", Color.SADDLEBROWN);
         registerInteractableTile(BrokenBox.class, "%", Color.SADDLEBROWN);
+        registerInteractableTile(Fire.class, "\uD83D\uDD25", Color.ORANGE);
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

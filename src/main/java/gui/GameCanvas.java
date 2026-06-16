@@ -3,6 +3,7 @@ package gui;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -56,11 +57,11 @@ public class GameCanvas {
 
     public void drawString(int x, int y, String text, double fontSize, Color color, double offsetX, double offsetY) {
         if (x < 0 || x >= gridColumns || y < 0 || y >= gridRows) return;
-
         final double renderPixelX = (x * cellWidth) + (cellWidth/2.0) + offsetX;
         final double renderPixelY = (y * cellHeight) + (cellWidth/2.0) + offsetY;
 
-        Font font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, FontWeight.SEMI_BOLD, fontSize);
+        Font font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, fontSize);
+        if(Character.isDigit(text.charAt(0))) font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, FontWeight.BOLD, fontSize);
         gc.setFont(font);
         gc.setFill(color);
         gc.setTextAlign(TextAlignment.CENTER);
