@@ -4,6 +4,7 @@ import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
 import entity.monster.Monster;
+import gui.UITheme;
 import util.Position;
 import weapon.Fist;
 
@@ -20,6 +21,7 @@ public class FlareWitch extends Monster {
         stateMachine = new FlareWitchFSM(this);
         stateMachine.setupInitialState();
         setIlluminated(true);
+        overrideColor(UITheme.ENTITY_FLARE_WITCH);
     }
 
     @Override

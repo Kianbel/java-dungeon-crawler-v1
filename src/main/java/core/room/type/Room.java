@@ -181,7 +181,6 @@ public abstract class Room {
     }
 
     public Position getEnteringPositionFromDirection(DIRECTION fromDirection) {
-        System.out.println(fromDirection);
         switch (fromDirection) {
             case NORTH -> {
                 return doorPositionsHashmap.get(DIRECTION.SOUTH);

@@ -84,8 +84,6 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
         }
         if (summonCooldown > 0) summonCooldown--;
 
-        GUIManager.getInstance().printDevLog(activeHintCooldown + "");
-
         switch (currentState) {
             case IDLE -> idle();
             case ANGERED -> angered();

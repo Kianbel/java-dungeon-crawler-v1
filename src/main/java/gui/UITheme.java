@@ -43,11 +43,20 @@ public class UITheme {
 
     /* https://lospec.com/palette-list/micro-roguelike */
     // --- TILES ---
-    public static final Color TILE_WALL = Color.web("#43434f");
-    public static final Color TILE_DOOR = Color.web("#ba6156");
-    public static final Color TILE_FLOOR = Color.web("#222323");
-    public static final Color TILE_GRASS = Color.web("#3ca370");
-    public static final Color TILE_WATER = Color.web("#6476e8");
+//    public static final Color TILE_WALL = Color.web("#43434f");
+//    public static final Color TILE_DOOR = Color.web("#ba6156");
+//    public static final Color TILE_FLOOR = Color.web("#222323");
+//    public static final Color TILE_GRASS = Color.web("#3ca370");
+//    public static final Color TILE_WATER = Color.web("#6476e8");
+//    public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
+//    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#43434f");
+//    public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
+
+    public static final Color TILE_WALL = Color.web("#e36433");
+    public static final Color TILE_DOOR = Color.web("#cf492c");
+    public static final Color TILE_FLOOR = Color.web("#731144");
+    public static final Color TILE_GRASS = Color.web("#e3884e");
+    public static final Color TILE_WATER = Color.web("#ecb55f");
     public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
     public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#43434f");
     public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
