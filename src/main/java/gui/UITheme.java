@@ -41,33 +41,42 @@ public class UITheme {
     public static final Color TEXT_PARCHMENT   = Color.WHITE;
     public static final Color TEXT_MUTED       = Color.DARKGRAY;
 
-    // --- MAP GRID STRUCTURAL ASSETS ---
-    public static final Color WORLD_WALL       = Color.web("#4A515B");
-    public static final Color WORLD_WALL_ALT   = Color.web("#636B75");
-    public static final Color WORLD_FLOOR_DIM  = Color.web("#1A261F");
-    public static final Color WORLD_FLOOR_LIT  = Color.web("#23362B");
-    public static final Color WORLD_DOOR       = Color.web("#CD853F");
+    // --- TILES ---
+    public static final Color TILE_WALL = Color.web("#000000");
+    public static final Color TILE_DOOR = Color.web("#000000");
+    public static final Color TILE_FLOOR = Color.web("#000000");
+    public static final Color TILE_GRASS = Color.web("#000000");
+    public static final Color TILE_WATER = Color.web("#000000");
+    public static final Color TILE_BOOKSHELF = Color.web("#000000");
+    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#000000");
+    public static final Color TILE_SOLID_OBSTACLE = Color.web("#000000");
 
-    // --- INTERACTABLE OBJECT LOOT PALETTE ---
-    public static final Color LOOT_WEB         = Color.SILVER;
-    public static final Color LOOT_CHEST       = Color.SADDLEBROWN;
-    public static final Color LOOT_WEAPON      = Color.LIGHTCYAN;
+    // --- INTERACTABLE TILES ---
+    public static final Color ITILE_BOX = Color.web("#000000");
+    public static final Color ITILE_BROKEN_BOX = Color.web("#000000");
+    public static final Color ITILE_DROPPED_WEAPON = Color.web("#000000");
+    public static final Color ITILE_COIN = Color.web("#000000");
+    public static final Color ITILE_HEART = Color.web("#000000");
+    public static final Color ITILE_FIRE = Color.web("#000000");
+    public static final Color ITILE_WEB = Color.web("#000000");
+    public static final Color ITILE_CHEST = Color.web("#000000");
 
-    // --- CHARACTER ENTITIES PALETTE ---
-    public static final Color ENTITY_PLAYER    = Color.web("#FFD700");
-    public static final Color ENTITY_ZOMBIE    = Color.DARKOLIVEGREEN;
-    public static final Color ENTITY_SPIDER    = Color.ROSYBROWN;
+    // --- ENTITIES PALETTE ---
+    public static final Color ENTITY_PLAYER = Color.web("#FFD700");
+    public static final Color ENTITY_ZOMBIE = Color.DARKOLIVEGREEN;
+    public static final Color ENTITY_SPIDER = Color.ROSYBROWN;
+    public static final Color ENTITY_FLARE_WITCH = Color.ROSYBROWN;
+
+    // --- PROJECTILES
+    public static final Color PROJECTILE_FIREBALL = Color.ORANGE;
 
     // --- STATS HUD & LOG CHANNELS ---
-    public static final Color STAT_HEALTH      = Color.RED;
-    public static final Color STAT_HUNGER      = Color.CHOCOLATE;
-    public static final Color STAT_ARMOR       = Color.LIGHTSTEELBLUE;
-    public static final Color STAT_WEAPON      = Color.LIGHTGRAY;
-    public static final Color STAT_GOLD        = Color.GOLD;
-    public static final Color STAT_POTION      = Color.AQUAMARINE;
-
-    public static final Color OVERLAY_RETICLE  = Color.AQUA;
-    public static final Color OVERLAY_MODAL    = Color.GOLD;
+    public static final Color STAT_HEALTH = Color.RED;
+    public static final Color STAT_HUNGER = Color.CHOCOLATE;
+    public static final Color STAT_ARMOR = Color.LIGHTSTEELBLUE;
+    public static final Color STAT_WEAPON = Color.LIGHTGRAY;
+    public static final Color STAT_GOLD = Color.GOLD;
+    public static final Color STAT_POTION = Color.AQUAMARINE;
 
     public static final Color LOG_WORLD = Color.WHITE;
     public static final Color LOG_PLAYER_ACTION = Color.YELLOW;

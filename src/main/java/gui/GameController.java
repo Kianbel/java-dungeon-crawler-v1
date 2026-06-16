@@ -108,7 +108,7 @@ public class GameController {
         logsPanel.setStyle(subPanelStyle);
         controlsPanel.setStyle(subPanelStyle);
 
-        String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: " + toHexWebColor(UITheme.OVERLAY_MODAL) + ";";
+        String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: #ede6c8;";
         statsHeader.setStyle(headerStyle);
         logsHeader.setStyle(headerStyle);
         controlsHeader.setStyle(headerStyle);
