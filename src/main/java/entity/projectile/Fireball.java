@@ -3,6 +3,7 @@ package entity.projectile;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
+import gui.UITheme;
 import javafx.scene.paint.Color;
 import util.Position;
 
@@ -11,7 +12,7 @@ public class Fireball extends Projectile {
         super("Fireball", 8, moveDirectionInUnitPos, position);
         setIlluminated(true);
         setIlluminationRange(3);
-        overrideColor(Color.ORANGE);
+        overrideColor(UITheme.PROJECTILE_FIREBALL);
     }
 
     @Override
@@ -25,7 +26,7 @@ public class Fireball extends Projectile {
         super.attack(targetEntity);
 
         if(targetEntity instanceof Player) {
-            GUIManager.getInstance().triggerColorFlash(Color.ORANGE, 100);
+            GUIManager.getInstance().triggerColorFlash(UITheme.PROJECTILE_FIREBALL, 1000);
         }
     }
 }

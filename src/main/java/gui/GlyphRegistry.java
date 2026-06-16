@@ -27,13 +27,14 @@ public class GlyphRegistry {
         // --- MULTI-TEXTURE STRUCTURAL REGISTRY ---
         // Pulls color values seamlessly from UITheme roles
         tileRegistry.put(TILE.WALL, new GlyphStyle[]{
-                new GlyphStyle("▒", UITheme.TILE_WALL),
-                new GlyphStyle("▒", UITheme.TILE_WALL),
+//                new GlyphStyle("▒", UITheme.TILE_WALL),
+//                new GlyphStyle("▒", UITheme.TILE_WALL),
                 new GlyphStyle("▓", UITheme.TILE_WALL)
         });
 
         tileRegistry.put(TILE.FLOOR, new GlyphStyle[]{
                 new GlyphStyle("·", UITheme.TILE_FLOOR),
+                new GlyphStyle(".", UITheme.TILE_FLOOR),
                 new GlyphStyle(".", UITheme.TILE_FLOOR),
                 new GlyphStyle("░", UITheme.TILE_FLOOR)
         });
@@ -42,11 +43,6 @@ public class GlyphRegistry {
                 new GlyphStyle("⌸", UITheme.TILE_DOOR)
         });
         tileRegistry.put(TILE.GRASS, new GlyphStyle[] {
-                new GlyphStyle("w", UITheme.TILE_GRASS),
-                new GlyphStyle("w", UITheme.TILE_GRASS),
-                new GlyphStyle("w", UITheme.TILE_GRASS),
-                new GlyphStyle("w", UITheme.TILE_GRASS),
-                new GlyphStyle("w", UITheme.TILE_GRASS),
                 new GlyphStyle("\"", UITheme.TILE_GRASS),
                 new GlyphStyle("'", UITheme.TILE_GRASS),
                 new GlyphStyle("⚘", UITheme.TILE_GRASS),
@@ -56,19 +52,17 @@ public class GlyphRegistry {
         });
         tileRegistry.put(TILE.WATER, new GlyphStyle[] {
                 new GlyphStyle("▓", UITheme.TILE_WATER),
-                new GlyphStyle("▓", UITheme.TILE_WATER),
-                new GlyphStyle("▓", UITheme.TILE_WATER),
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("⛩", UITheme.TILE_SOLID_OBSTACLE),
         });
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
+//                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
+//                new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
+//                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
                 new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("⚔", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("\uD83D\uDDE1", UITheme.TILE_PASSABLE_OBSTACLE), // sword
+//                new GlyphStyle("⚔", UITheme.TILE_PASSABLE_OBSTACLE),
+//                new GlyphStyle("\uD83D\uDDE1", UITheme.TILE_PASSABLE_OBSTACLE), // sword
                 new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {

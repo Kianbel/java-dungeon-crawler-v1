@@ -103,7 +103,6 @@ public abstract class Entity {
     }
 
     public void hurt(int damage) {
-        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         damage -= armor;
         if(damage < 0) {
             damage = 0;

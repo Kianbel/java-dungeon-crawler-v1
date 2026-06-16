@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
+import world.Box;
 import world.Fire;
 import world.InteractableTile;
 import world.Web;
@@ -487,11 +488,22 @@ public class GameController {
 
         int dx = Math.abs(x1 - x0);
         int dy = Math.abs(y1 - y0);
-
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
-
         int err = dx - dy;
+
+        // 👇 1. CREATE A TEMPORARY GRID CACHE OF INTERACTABLES FOR INSTANT LOOKUPS
+        // This turns a slow list-search into an instant coordinate check.
+        InteractableTile[][] interactableGrid = new InteractableTile[roomLayout.length][roomLayout[0].length];
+        List<InteractableTile> interactables = activeRoom.getInteractableTiles();
+        if (interactables != null) {
+            for (InteractableTile interactable : interactables) {
+                Position p = interactable.roomLayoutPosition;
+                if (p.y >= 0 && p.y < interactableGrid.length && p.x >= 0 && p.x < interactableGrid[0].length) {
+                    interactableGrid[p.y][p.x] = interactable;
+                }
+            }
+        }
 
         while (true) {
             if (x0 != start.x || y0 != start.y) {
@@ -502,23 +514,16 @@ public class GameController {
                 // Check room dimensions safety boundaries
                 if (y0 >= 0 && y0 < roomLayout.length && x0 >= 0 && x0 < roomLayout[y0].length) {
 
-                    // 1. Check standard layout tiles (Walls)
+                    // 2. Check standard layout tiles (Walls)
                     TILE tile = roomLayout[y0][x0];
                     if (tile == TILE.WALL || tile == TILE.BOOKSHELF) {
                         return false;
                     }
 
-                    // 2. Check Interactable Tiles
-                    Position currentStepPos = new Position(x0, y0);
-                    List<InteractableTile> interactables = activeRoom.getInteractableTiles();
-
-                    for (InteractableTile interactable : interactables) {
-                        if (interactable.roomLayoutPosition.equals(currentStepPos)) {
-                            // Check if this specific interactable should block light
-                            if (interactable instanceof Web) {
-                                return false; // Interactable blocks light!
-                            }
-                        }
+                    // 👇 3. REPLACED THE SLOW FOR-LOOP WITH AN INSTANT GRID CHECK
+                    InteractableTile interactable = interactableGrid[y0][x0];
+                    if (interactable instanceof Web || interactable instanceof Box) {
+                        return false; // Path blocked instantly!
                     }
                 }
             }

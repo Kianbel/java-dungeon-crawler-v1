@@ -42,33 +42,33 @@ public class UITheme {
     public static final Color TEXT_MUTED       = Color.DARKGRAY;
 
     // --- TILES ---
-    public static final Color TILE_WALL = Color.web("#000000");
-    public static final Color TILE_DOOR = Color.web("#000000");
-    public static final Color TILE_FLOOR = Color.web("#000000");
-    public static final Color TILE_GRASS = Color.web("#000000");
-    public static final Color TILE_WATER = Color.web("#000000");
-    public static final Color TILE_BOOKSHELF = Color.web("#000000");
-    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#000000");
-    public static final Color TILE_SOLID_OBSTACLE = Color.web("#000000");
+    public static final Color TILE_WALL = Color.web("#43434f");
+    public static final Color TILE_DOOR = Color.web("#ba6156");
+    public static final Color TILE_FLOOR = Color.web("#222323");
+    public static final Color TILE_GRASS = Color.web("#3ca370");
+    public static final Color TILE_WATER = Color.web("#6476e8");
+    public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
+    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#43434f");
+    public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
 
     // --- INTERACTABLE TILES ---
-    public static final Color ITILE_BOX = Color.web("#000000");
-    public static final Color ITILE_BROKEN_BOX = Color.web("#000000");
-    public static final Color ITILE_DROPPED_WEAPON = Color.web("#000000");
-    public static final Color ITILE_COIN = Color.web("#000000");
-    public static final Color ITILE_HEART = Color.web("#000000");
-    public static final Color ITILE_FIRE = Color.web("#000000");
-    public static final Color ITILE_WEB = Color.web("#000000");
-    public static final Color ITILE_CHEST = Color.web("#000000");
+    public static final Color ITILE_BOX = Color.web("#ba6156");
+    public static final Color ITILE_BROKEN_BOX = Color.web("#ba6156");
+    public static final Color ITILE_DROPPED_WEAPON = Color.web("#ffffeb");
+    public static final Color ITILE_COIN = Color.web("#ffe478");
+    public static final Color ITILE_HEART = Color.web("#eb564b");
+    public static final Color ITILE_FIRE = Color.web("#f2a65e");
+    public static final Color ITILE_WEB = Color.web("#c2c2d1");
+    public static final Color ITILE_CHEST = Color.web("#8c3f5d");
 
     // --- ENTITIES PALETTE ---
-    public static final Color ENTITY_PLAYER = Color.web("#FFD700");
-    public static final Color ENTITY_ZOMBIE = Color.DARKOLIVEGREEN;
-    public static final Color ENTITY_SPIDER = Color.ROSYBROWN;
-    public static final Color ENTITY_FLARE_WITCH = Color.ROSYBROWN;
+    public static final Color ENTITY_PLAYER = Color.web("#ffe478");
+    public static final Color ENTITY_ZOMBIE = Color.web("#3ca370");
+    public static final Color ENTITY_SPIDER = Color.web("#8c3f5d");
+    public static final Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
 
     // --- PROJECTILES
-    public static final Color PROJECTILE_FIREBALL = Color.ORANGE;
+    public static final Color PROJECTILE_FIREBALL = Color.web("#f2a65e");
 
     // --- STATS HUD & LOG CHANNELS ---
     public static final Color STAT_HEALTH = Color.RED;

@@ -49,7 +49,12 @@ public abstract class Room {
         for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
             final int x = rand.nextInt(1, length-1);
             final int y = rand.nextInt(1, height-1);
-            if(layout[y][x] == TILE.FLOOR) layout[y][x] = TILE.PASSABLE_OBSTACLE;
+            if(layout[y][x] == TILE.FLOOR) {
+                switch(Randomizer.pick(1,2)) {
+                    case 1 -> layout[y][x] = TILE.GRASS;
+                    case 2 -> layout[y][x] = TILE.PASSABLE_OBSTACLE;
+                }
+            }
         }
 
         // --- HANDLE BOX/DOOR GENERATION ---

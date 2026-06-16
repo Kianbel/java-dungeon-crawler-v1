@@ -132,6 +132,26 @@ public class Player extends Entity {
     }
 
     @Override
+    public void hurt(int damage) {
+        damage -= armor;
+        if(damage < 0) damage = 0;
+        health -= damage;
+        if(health < 0) health = 0;
+
+        if(damage == 0) {
+            GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
+            return;
+        }
+        if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
+
+        GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+
+        GUIManager.getInstance().setHP(health);
+
+        if(health == 0) die();
+    }
+
+    @Override
     public void hurt(int damage, Entity attacker) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
