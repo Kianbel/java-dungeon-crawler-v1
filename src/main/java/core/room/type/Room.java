@@ -64,6 +64,14 @@ public abstract class Room {
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 switch(layout[y][x]) {
+                    case LOCKED_DOOR -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new LockedDoor(new Position(x,y)));
+                    }
+                    case STAIRCASE -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new Staircase(new Position(x,y)));
+                    }
                     case TORCH -> {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new Fire(new Position(x,y)));

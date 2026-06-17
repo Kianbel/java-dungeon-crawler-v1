@@ -16,7 +16,6 @@ public class SpawnRoom extends Room {
         super(layout, minimapPosition);
 
         addInteractableTile(new OpenedDoor(new Position(3, 3)));
-        addInteractableTile(new LevelDoor(new Position(4, 3)));
         addInteractableTile(new Staircase(new Position(5, 3)));
         addInteractableTile(new Chest(new Position(6,3), new DroppedItem(new Position(6,3), new IronBlade())));
     }

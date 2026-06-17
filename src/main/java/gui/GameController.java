@@ -1,5 +1,6 @@
 package gui;
 
+import core.GameData;
 import entity.Entity;
 import entity.monster.Monster;
 import entity.Player;
@@ -80,15 +81,14 @@ public class GameController {
     @FXML
     public void initialize() {
         canvas.setManaged(false);
-
         gameCanvas = new GameCanvas(canvas, currentTileSize);
         viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
         gameFSM = new GameFSM(this);
 
         GUIManager.getInstance().registerController(this);
-        DungeonManager.getInstance().generateDungeon();
-
         applyInterfaceTheme();
+
+        setup();
 
         canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setWidth(newVal.doubleValue());
@@ -101,6 +101,25 @@ public class GameController {
 
         gameFSM.runGame();
         attachKeyboardHandlers();
+    }
+
+    private void setup() {
+        textPopupDataList.clear();
+        entityAnimationPixelDrawOffsets.clear();
+        clearLogContainer();
+        EntityRoomManager.getInstance().clear();
+
+        GameData.getInstance().loadColorPaletteBasedOnDungeonFloor();
+        GameData.getInstance().loadTileRegistryBasedOnDungeonFloor();
+
+        DungeonManager.getInstance().generateDungeon();
+
+        Player player = (Player) EntityRoomManager.getInstance().getPlayer();
+        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        final int roomWidth = currentRoom.length;
+        final int roomHeight = currentRoom.height;
+
+        viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
     }
 
     private void applyInterfaceTheme() {
@@ -428,21 +447,7 @@ public class GameController {
     }
 
     public void resetGame() {
-        textPopupDataList.clear();
-        entityAnimationPixelDrawOffsets.clear();
-        clearLogContainer();
-        EntityRoomManager.getInstance().clear();
-
-        DungeonManager.getInstance().generateDungeon();
-
-        Player player = (Player) EntityRoomManager.getInstance().getPlayer();
-        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
-        System.out.println(player);
-        System.out.println(currentRoom);
-        final int roomWidth = currentRoom.length;
-        final int roomHeight = currentRoom.height;
-
-        viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
+        setup();
 
         gameFSM.runGame();
     }

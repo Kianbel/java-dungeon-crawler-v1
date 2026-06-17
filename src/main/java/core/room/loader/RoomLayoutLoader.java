@@ -84,6 +84,9 @@ public class RoomLayoutLoader {
             WEB = 0xFFFFFF
             TORCH = 0xff8000
             CHEST = 0x56391c
+            LEVEL_DOOR = 0xff6262
+            LOCKED_DOOR = 0xff0000
+            STAIRCASE = 0x0f0038
          */
 
         switch (pixel & 0x00FFFFFF) {
@@ -98,6 +101,10 @@ public class RoomLayoutLoader {
             case 0xFFFFFF -> { return TILE.WEB; }
             case 0xFF8000 -> { return TILE.TORCH; }
             case 0x56391C -> { return TILE.CHEST; }
+
+            case 0xFF6262 -> { return TILE.LEVEL_DOOR; }
+            case 0xFF0000 -> { return TILE.LOCKED_DOOR; }
+            case 0x0F0038 -> { return TILE.STAIRCASE; }
 
             default -> { return TILE.EMPTY; }
         }

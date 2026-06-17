@@ -54,6 +54,10 @@ public class GUIManager {
         if (isPipelineOperational()) controller.flashScreenEffect(color, durationMilis, 0.3, 0);
     }
 
+    public void triggerColorFlash(Color color, int durationMilis, double fromOpacity, double toOpacity) {
+        if (isPipelineOperational()) controller.flashScreenEffect(color, durationMilis, fromOpacity, toOpacity);
+    }
+
     public void triggerColorFlash(Color color) {
         controller.flashScreenEffect(color, 60, 0.3, 0);
     }

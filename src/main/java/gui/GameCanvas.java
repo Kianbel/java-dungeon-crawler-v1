@@ -23,6 +23,7 @@ public class GameCanvas {
     public GameCanvas(Canvas nativeCanvas, double initialFontSize) {
         this.nativeCanvas = nativeCanvas;
         this.gc = nativeCanvas.getGraphicsContext2D();
+        this.gc.setFont(javafx.scene.text.Font.font(UITheme.GENERAL_FONT_FAMILY, UITheme.DEFAULT_ZOOM));
         updateFontSize(initialFontSize);
     }
 
@@ -57,7 +58,7 @@ public class GameCanvas {
         double cellCenterX = (gridX * cellWidth) + (cellWidth / 2.0) + offsetX;
         double renderPixelY = (gridY * cellHeight) + offsetY;
 
-        String stretchableCharacters = "▓░▒·.⌸";
+        String stretchableCharacters = "█▓░▒·.⌸";
 
         gc.save();
         // 2. Set alignment to CENTER so characters always anchor from their middle point

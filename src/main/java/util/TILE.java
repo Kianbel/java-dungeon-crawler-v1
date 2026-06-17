@@ -14,7 +14,10 @@ public enum TILE {
     BOX,
     WEB,
     TORCH,
-    CHEST;
+    CHEST,
+    LEVEL_DOOR,
+    LOCKED_DOOR,
+    STAIRCASE;
 
     public boolean isWalkable() {
         return this == FLOOR || this == PASSABLE_OBSTACLE || this == GRASS;

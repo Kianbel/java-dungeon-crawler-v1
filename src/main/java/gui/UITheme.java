@@ -9,9 +9,9 @@ import javafx.scene.paint.Color;
 public class UITheme {
 
     // --- TYPOGRAPHY ENGINE CONFIGURATIONS ---
-    public static final String GENERAL_FONT_FAMILY = "Courier New";
-    public static final String CSS_FONT_FAMILY  = "-fx-font-family: 'Consolas' ;";
-    public static final String TEXT_POPUP_FONT_FAMILY = "Inter";
+    public static String GENERAL_FONT_FAMILY = "Courier New";
+    public static String CSS_FONT_FAMILY  = "-fx-font-family: 'Consolas' ;";
+    public static String TEXT_POPUP_FONT_FAMILY = "Inter";
 
     // Dynamic Sizing Rules
     public static final double DEFAULT_ZOOM    = 18.0;
@@ -43,48 +43,37 @@ public class UITheme {
     public static final Color TEXT_PARCHMENT   = Color.WHITE;
     public static final Color TEXT_MUTED       = Color.DARKGRAY;
 
-    /* https://lospec.com/palette-list/micro-roguelike */
     // --- TILES ---
-//    public static final Color TILE_WALL = Color.web("#43434f");
-//    public static final Color TILE_DOOR = Color.web("#ba6156");
-//    public static final Color TILE_FLOOR = Color.web("#222323");
-//    public static final Color TILE_GRASS = Color.web("#3ca370");
-//    public static final Color TILE_WATER = Color.web("#6476e8");
-//    public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
-//    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#43434f");
-//    public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
-
-    public static final Color TILE_WALL = Color.web("#e36433");
-    public static final Color TILE_DOOR = Color.web("#731144");
-    public static final Color TILE_FLOOR = Color.web("#731144");
-    public static final Color TILE_GRASS = Color.web("#e3884e");
-    public static final Color TILE_WATER = Color.web("#ecb55f");
-    public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
-    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#731144");
-    public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
+    public static Color TILE_WALL = Color.web("#e36433");
+    public static Color TILE_DOOR = Color.web("#731144");
+    public static Color TILE_FLOOR = Color.web("#731144");
+    public static Color TILE_GRASS = Color.web("#e3884e");
+    public static Color TILE_WATER = Color.web("#ecb55f");
+    public static Color TILE_BOOKSHELF = Color.web("#8c3f5d");
+    public static Color TILE_PASSABLE_OBSTACLE = Color.web("#731144");
+    public static Color TILE_SOLID_OBSTACLE = Color.PINK;
 
     // --- INTERACTABLE TILES ---
-    public static final Color ITILE_BOX = Color.web("#ba6156");
-    public static final Color ITILE_BROKEN_BOX = Color.web("#ba6156");
-    public static final Color ITILE_DROPPED_WEAPON = Color.web("#ffffeb");
-    public static final Color ITILE_COIN = Color.web("#ffe478");
-    public static final Color ITILE_HEART = Color.web("#eb564b");
-    public static final Color ITILE_FIRE = Color.web("#f2a65e");
-    public static final Color ITILE_WEB = Color.web("#c2c2d1");
-    public static final Color ITILE_CHEST = Color.web("#8c3f5d");
-    public static final Color ITILE_LOCKED_DOOR = Color.web("#e36433");
-    public static final Color ITILE_LEVEL_DOOR = Color.web("#ffffeb");
-    public static final Color ITILE_OPENED_DOOR = Color.web("#731144");
-    public static final Color ITILE_STAIRCASE = Color.web("#f2a65e");
+    public static Color ITILE_BOX = Color.web("#ba6156");
+    public static Color ITILE_BROKEN_BOX = Color.web("#ba6156");
+    public static Color ITILE_DROPPED_WEAPON = Color.web("#ffffeb");
+    public static Color ITILE_COIN = Color.web("#ffe478");
+    public static Color ITILE_HEART = Color.web("#eb564b");
+    public static Color ITILE_FIRE = Color.web("#f2a65e");
+    public static Color ITILE_WEB = Color.web("#c2c2d1");
+    public static Color ITILE_CHEST = Color.web("#8c3f5d");
+    public static Color ITILE_LOCKED_DOOR = Color.web("#e36433");
+    public static Color ITILE_OPENED_DOOR = Color.web("#731144");
+    public static Color ITILE_STAIRCASE = Color.web("#f2a65e");
 
     // --- ENTITIES PALETTE ---
     public static final Color ENTITY_PLAYER = Color.web("#ffe478");
-    public static final Color ENTITY_ZOMBIE = Color.web("#3ca370");
-    public static final Color ENTITY_SPIDER = Color.web("#8c3f5d");
-    public static final Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
+    public static Color ENTITY_ZOMBIE = Color.web("#3ca370");
+    public static Color ENTITY_SPIDER = Color.web("#8c3f5d");
+    public static Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
 
     // --- PROJECTILES
-    public static final Color PROJECTILE_FIREBALL = Color.web("#f2a65e");
+    public static Color PROJECTILE_FIREBALL = Color.web("#f2a65e");
 
     // --- STATS HUD & LOG CHANNELS ---
     public static final Color STAT_HEALTH = Color.web("#eb564b");

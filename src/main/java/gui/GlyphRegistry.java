@@ -72,7 +72,6 @@ public class GlyphRegistry {
         registerInteractableTile(BrokenBox.class, "%", UITheme.ITILE_BROKEN_BOX);
         registerInteractableTile(Fire.class, "\uD83D\uDD25", UITheme.ITILE_FIRE);
         registerInteractableTile(LockedDoor.class, "⌸", UITheme.ITILE_LOCKED_DOOR);
-        registerInteractableTile(LevelDoor.class, "⌸", UITheme.ITILE_LEVEL_DOOR);
         registerInteractableTile(OpenedDoor.class, "⌸", UITheme.ITILE_OPENED_DOOR);
         registerInteractableTile(Staircase.class, "目", UITheme.ITILE_STAIRCASE);
 
@@ -87,6 +86,20 @@ public class GlyphRegistry {
     }
 
     public static GlyphRegistry getInstance() { return instance; }
+
+    public void clearTileRegistry() {
+        tileRegistry.clear();
+    }
+    public void clearInteractableTileRegistry() {
+        interactableTileRegistry.clear();
+    }
+    public void clearEntityRegistry() {
+        entityRegistry.clear();
+    }
+
+    public void registerTiles(TILE tile, GlyphStyle[] glyphs) {
+        tileRegistry.put(tile, glyphs);
+    }
 
     public void registerInteractableTile(Class<? extends InteractableTile> clazz, String glyph, Color color) {
         interactableTileRegistry.put(clazz, new GlyphStyle(glyph, color));
