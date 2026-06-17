@@ -67,8 +67,6 @@ public class GlyphRegistry {
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
                 new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
-                new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
-                new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
         });
 
         // --- INTERACTABLE TILE REGISTRY ---

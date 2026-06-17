@@ -26,34 +26,84 @@ public class GameCanvas {
         updateFontSize(initialFontSize);
     }
 
-    public void updateFontSize(double fontSize) {
-        this.font = Font.font(UITheme.GENERAL_FONT_FAMILY, fontSize);
-        this.cellHeight = fontSize;
-        this.cellWidth = fontSize * 0.60;
-
-        this.gridColumns = (int) Math.floor(nativeCanvas.getWidth() / cellWidth);
-        this.gridRows = (int) Math.floor(nativeCanvas.getHeight() / cellHeight);
-
-        this.fontAscent = cellHeight * 0.78;
-    }
-
     public void clearCanvas() {
         // Pull context values safely from central variables configuration
         gc.setFill(UITheme.CANVAS_VOID);
         gc.fillRect(0, 0, nativeCanvas.getWidth(), nativeCanvas.getHeight());
     }
 
+    /*
+    COMMENTED OUT SQUARE TILES
+     */
+
+    public void updateFontSize(double fontSize) {
+        this.font = Font.font(UITheme.GENERAL_FONT_FAMILY, fontSize);
+        this.cellHeight = fontSize;
+        this.cellWidth = fontSize; // 1. Set cell width equal to height to make grid cells perfect squares
+
+        this.gridColumns = (int) Math.floor(nativeCanvas.getWidth() / cellWidth);
+        this.gridRows = (int) Math.floor(nativeCanvas.getHeight() / cellHeight);
+
+        // Vertical font alignment adjustment
+        this.fontAscent = cellHeight * 0.78;
+    }
     public void drawCharacter(int gridX, int gridY, String character, Color textColor, double offsetX, double offsetY) {
         if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;
 
-        // Add the pixel offsets directly to the layout position
-        double renderPixelX = (gridX * cellWidth) + offsetX;
-        double renderPixelY = (gridY * cellHeight) + offsetY;
-
         gc.setFont(this.font);
         gc.setFill(textColor);
-        gc.fillText(character, renderPixelX, renderPixelY + fontAscent);
+
+        // 1. Calculate the exact horizontal center of the cell for both methods
+        double cellCenterX = (gridX * cellWidth) + (cellWidth / 2.0) + offsetX;
+        double renderPixelY = (gridY * cellHeight) + offsetY;
+
+        String stretchableCharacters = "▓░▒·.⌸";
+
+        gc.save();
+        // 2. Set alignment to CENTER so characters always anchor from their middle point
+        gc.setTextAlign(TextAlignment.CENTER);
+
+        if (character != null && !character.isBlank() && stretchableCharacters.contains(character)) {
+            // --- METHOD A: CENTERED & HORIZONTALLY STRETCHED ---
+            // Translates to the center first, meaning the 1.66x stretch scales symmetrically outward
+            gc.translate(cellCenterX, renderPixelY + fontAscent);
+
+            double scaleX = 1.0 / 0.60;
+            gc.scale(scaleX, 1.0);
+
+            gc.fillText(character, 0, 0); // Drawn exactly at the transformed center origin
+        } else {
+            // --- METHOD B: PERFECTLY CENTERED (NATURAL RATIO) ---
+            // Keeps heroes, items, and monsters sharp and completely un-distorted
+            gc.fillText(character, cellCenterX, renderPixelY + fontAscent);
+        }
+
+        // gc.restore() automatically resets text alignment back to TextAlignment.LEFT for safety
+        gc.restore();
     }
+
+//    public void updateFontSize(double fontSize) {
+//        this.font = Font.font(UITheme.GENERAL_FONT_FAMILY, fontSize);
+//        this.cellHeight = fontSize;
+//        this.cellWidth = fontSize * 0.60;
+//
+//        this.gridColumns = (int) Math.floor(nativeCanvas.getWidth() / cellWidth);
+//        this.gridRows = (int) Math.floor(nativeCanvas.getHeight() / cellHeight);
+//
+//        this.fontAscent = cellHeight * 0.78;
+//    }
+//
+//    public void drawCharacter(int gridX, int gridY, String character, Color textColor, double offsetX, double offsetY) {
+//        if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;
+//
+//        // Add the pixel offsets directly to the layout position
+//        double renderPixelX = (gridX * cellWidth) + offsetX;
+//        double renderPixelY = (gridY * cellHeight) + offsetY;
+//
+//        gc.setFont(this.font);
+//        gc.setFill(textColor);
+//        gc.fillText(character, renderPixelX, renderPixelY + fontAscent);
+//    }
 
     public void drawString(int x, int y, String text, double fontSize, Color color, double offsetX, double offsetY) {
         if (x < 0 || x >= gridColumns || y < 0 || y >= gridRows) return;

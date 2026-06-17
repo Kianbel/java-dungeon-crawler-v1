@@ -172,7 +172,6 @@ public abstract class Entity {
     protected void fixEntityPositionAfterTransferFromUnitPos(Position unitPos) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         DIRECTION fromDirection;
-        System.out.println(unitPos);
         if(unitPos.x == 0 && unitPos.y == 1) {
             fromDirection = DIRECTION.SOUTH;
         }
@@ -202,6 +201,10 @@ public abstract class Entity {
                 return;
             }
         }
+    }
+
+    public boolean isInBounds(int roomHeight, int roomLength) {
+        return position.x >= 0 && position.x < roomLength && position.y >= 0 && position.y < roomHeight;
     }
 
     public void setIlluminated(boolean b) {
