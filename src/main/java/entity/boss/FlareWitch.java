@@ -5,11 +5,15 @@ import core.room.type.Room;
 import entity.Entity;
 import entity.monster.Monster;
 import gui.UITheme;
+import item.key.LevelKey;
 import util.Position;
 import item.weapon.Fist;
+import world.DroppedItem;
+import world.InteractableTile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FlareWitch extends Monster {
     private final FlareWitchFSM stateMachine;
@@ -26,11 +30,20 @@ public class FlareWitch extends Monster {
 
     @Override
     public void die() {
+        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+
         super.die();
         for(Entity e : summonedEntities) {
             e.die();
         }
         summonedEntities.clear();
+
+        currentRoom.addInteractableTile(new DroppedItem(position, new LevelKey()));
+    }
+
+    @Override
+    protected void dropOnDeath(Map<InteractableTile, Double> map) {
+        super.dropOnDeath(map);
     }
 
     @Override

@@ -44,13 +44,6 @@ public class Player extends Entity {
         setCoins(coins);
 
         addItemToInventory(new LevelKey());
-        addItemToInventory(new LevelKey());
-        addItemToInventory(new LevelKey());
-        addItemToInventory(new RoomKey());
-        addItemToInventory(new RoomKey());
-        addItemToInventory(new RoomKey());
-        addItemToInventory(new RoomKey());
-        addItemToInventory(new RoomKey());
         addItemToInventory(new RoomKey());
         addItemToInventory(new HealthPotion());
     }

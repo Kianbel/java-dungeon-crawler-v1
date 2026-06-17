@@ -3,12 +3,11 @@ package core.room.type;
 import core.EntityRoomManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
+import item.weapon.IronBlade;
+import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
-import world.LevelDoor;
-import world.LockedDoor;
-import world.OpenedDoor;
-import world.Staircase;
+import world.*;
 
 public class SpawnRoom extends Room {
 
@@ -19,6 +18,7 @@ public class SpawnRoom extends Room {
         addInteractableTile(new OpenedDoor(new Position(3, 3)));
         addInteractableTile(new LevelDoor(new Position(4, 3)));
         addInteractableTile(new Staircase(new Position(5, 3)));
+        addInteractableTile(new Chest(new Position(6,3), new DroppedItem(new Position(6,3), new IronBlade())));
     }
 
     @Override

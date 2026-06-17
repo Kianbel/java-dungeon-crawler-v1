@@ -39,10 +39,10 @@ public class GameController {
     @FXML private VBox logContainer;
     @FXML private VBox statsPanel, logsPanel, controlsPanel, controlsBox;
     @FXML private Label statsHeader, logsHeader, controlsHeader;
-    @FXML private Label lblHealth, lblHunger, lblCoins, lblPotions;
-    @FXML private Label healthBarText, healthValText;
-    @FXML private Label hungerBarText, hungerValText;
-    @FXML private Label armorText, weaponText, coinsText, potionsText;
+    @FXML private Label lblHealth, lblHunger, lblCoins, lblArmor, lblWeapon;
+    @FXML private Label healthBar, healthValText;
+    @FXML private Label hungerBar, hungerValText;
+    @FXML private Label armorText, weaponText, coinsText;
     @FXML private VBox inventoryPanel, inventoryBox;
     @FXML private Label inventoryHeader;
 
@@ -69,7 +69,7 @@ public class GameController {
     private LIGHT_LEVEL[][] lightGridCache;
 
     // --- LOGS ---
-    private final int MAX_LOG_LINES = 8;
+    private final int MAX_LOG_LINES = 6;
 
     // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
     private final Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new HashMap<>();
@@ -117,20 +117,22 @@ public class GameController {
         logsHeader.setStyle(headerStyle);
         controlsHeader.setStyle(headerStyle);
 
-        String labelStaticStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";";
-        lblHealth.setStyle(labelStaticStyle);
-        lblHunger.setStyle(labelStaticStyle);
-        lblCoins.setStyle(labelStaticStyle);
+        lblHealth.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
+        lblHunger.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
+        lblCoins.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_COIN) + ";");
+        lblArmor.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + ";");
+        lblWeapon.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_WEAPON) + ";");
 
         String activeMetricStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + "; -fx-font-weight: bold;";
         healthValText.setStyle(activeMetricStyle);
         hungerValText.setStyle(activeMetricStyle);
         coinsText.setStyle(activeMetricStyle);
 
-        healthBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
-        hungerBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
-        armorText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + "; -fx-font-weight: bold;");
-        weaponText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_WEAPON) + "; -fx-font-weight: bold;");
+        healthBar.setStyle(UITheme.STYLE_BAR + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
+        hungerBar.setStyle(UITheme.STYLE_BAR + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
+        armorText.setStyle(activeMetricStyle);
+        weaponText.setStyle(activeMetricStyle);
+        coinsText.setStyle(activeMetricStyle);
 
         // Add this inside applyInterfaceTheme() alongside the other panels
         inventoryPanel.setStyle(subPanelStyle);
@@ -662,10 +664,10 @@ public class GameController {
         timeline.play();
     }
 
-    public void updateHealth(int health) { healthValText.setText(health + "/100"); healthBarText.setText(buildBarMeter(health)); }
-    public void updateHunger(int hunger) { hungerValText.setText(hunger + "/100"); hungerBarText.setText(buildBarMeter(hunger)); }
-    public void updateArmor(int armor) { armorText.setText("Armor: " + armor + "/10"); }
-    public void updateWeapon(Weapon weapon) { weaponText.setText("Weapon: " + weapon); }
+    public void updateHealth(int health) { healthValText.setText(health + "/100"); healthBar.setText(buildBarMeter(health)); }
+    public void updateHunger(int hunger) { hungerValText.setText(hunger + "/100"); hungerBar.setText(buildBarMeter(hunger)); }
+    public void updateArmor(int armor) { armorText.setText(armor + "/10"); }
+    public void updateWeapon(Weapon weapon) { weaponText.setText(weapon + ""); }
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
     public void updateInventory(List<item.Item> inventory) {
         inventoryBox.getChildren().clear();
@@ -686,7 +688,7 @@ public class GameController {
 
         // Populate the inventory UI list
         for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
-            Label itemLabel = new Label(entry.getKey() + " x" + entry.getValue());
+            Label itemLabel = new Label(String.format("- %s ( x%d )", entry.getKey(), entry.getValue()));
             itemLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + ";");
             inventoryBox.getChildren().add(itemLabel);
         }
@@ -696,10 +698,8 @@ public class GameController {
     private void buildControlsReferenceHud() {
         controlsBox.getChildren().clear();
         String[] mappings = {
-                "[WASD]  Move Explorer",
-                "[SPACE] Rest / Skip Turn",
-                "[M] Open Map",
-                "[+ / -] Adjust Camera Zoom"
+                "[WASD]  Move Explorer          [M] Open Map",
+                "[SPACE] Rest / Skip Turn       [+/-] Zoom",
         };
         for (String item : mappings) {
             Label element = new Label(item);
@@ -709,9 +709,10 @@ public class GameController {
     }
 
     private String buildBarMeter(int value) {
-        int fill = (int) Math.round((Math.max(0, Math.min(100, value)) / 100.0) * 15);
+        final int BARS_AMOUNT = 25;
+        int fill = (int) Math.round((Math.max(0, Math.min(100, value)) / 100.0) * BARS_AMOUNT);
         StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < 15; i++) sb.append(i < fill ? "■" : "·");
+        for (int i = 0; i < BARS_AMOUNT; i++) sb.append(i < fill ? "■" : "·");
         return sb.append("]").toString();
     }
 

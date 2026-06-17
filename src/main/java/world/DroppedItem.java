@@ -26,10 +26,11 @@ public class DroppedItem extends InteractableTile {
             Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
             GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
 
-            if(item instanceof Weapon) {
+            GUIManager.getInstance().triggerTextPopup("+" + item, Color.LIGHTBLUE, p.position, 1000);
+
+            if(item instanceof Weapon w) {
                 Weapon oldWeapon = p.weapon;
-                GUIManager.getInstance().triggerTextPopup(String.format("+%s (ATK:%d)", p.weapon.name, p.weapon.baseAttackDamage), Color.LIGHTBLUE, p.position, 1000);
-                p.setWeapon(p.weapon);
+                p.setWeapon(w);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
 
                 if(oldWeapon != null) {
@@ -37,7 +38,8 @@ public class DroppedItem extends InteractableTile {
                 }
             }
             else if(item instanceof Key) {
-
+                p.addItemToInventory(item);
+                EntityRoomManager.getInstance().removeInteractableTile(this);
             }
         }
     }

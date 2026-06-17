@@ -10,7 +10,7 @@ public class UITheme {
 
     // --- TYPOGRAPHY ENGINE CONFIGURATIONS ---
     public static final String GENERAL_FONT_FAMILY = "Courier New";
-    public static final String CSS_FONT_FAMILY  = "-fx-font-family: '" + GENERAL_FONT_FAMILY + "';";
+    public static final String CSS_FONT_FAMILY  = "-fx-font-family: 'Consolas' ;";
     public static final String TEXT_POPUP_FONT_FAMILY = "Inter";
 
     // Dynamic Sizing Rules
@@ -21,12 +21,14 @@ public class UITheme {
     // Fixed Sidebar Sizing Rules
     public static final double FONT_SIZE_HEADER = 13.0;
     public static final double FONT_SIZE_TEXT   = 13.0;
+    public static final double FONT_SIZE_BAR    = 18.0;
     public static final double FONT_SIZE_LOG    = 12.0;
     public static final double FONT_SIZE_CTRL   = 12.0;
 
     // Pre-composed Font Style Mixins for Quick FXML/Label Injection
     public static final String STYLE_HEADER = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_HEADER + "px; -fx-font-weight: bold;";
     public static final String STYLE_TEXT   = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_TEXT + "px;";
+    public static final String STYLE_BAR    = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_BAR + "px;";
     public static final String STYLE_LOG    = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_LOG + "px; -fx-font-weight: bold;";
     public static final String STYLE_CTRL   = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_CTRL + "px;";
 
@@ -85,12 +87,11 @@ public class UITheme {
     public static final Color PROJECTILE_FIREBALL = Color.web("#f2a65e");
 
     // --- STATS HUD & LOG CHANNELS ---
-    public static final Color STAT_HEALTH = Color.RED;
-    public static final Color STAT_HUNGER = Color.CHOCOLATE;
-    public static final Color STAT_ARMOR = Color.LIGHTSTEELBLUE;
-    public static final Color STAT_WEAPON = Color.LIGHTGRAY;
-    public static final Color STAT_GOLD = Color.GOLD;
-    public static final Color STAT_POTION = Color.AQUAMARINE;
+    public static final Color STAT_HEALTH = Color.web("#eb564b");
+    public static final Color STAT_HUNGER = Color.web("#f2a65e");
+    public static final Color STAT_ARMOR = Color.web("#7e7e8f");
+    public static final Color STAT_WEAPON = Color.web("#86a7ed");
+    public static final Color STAT_COIN = Color.web("#ffe478");
 
     public static final Color LOG_WORLD = Color.WHITE;
     public static final Color LOG_PLAYER_ACTION = Color.YELLOW;
