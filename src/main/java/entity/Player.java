@@ -4,8 +4,10 @@ import core.EntityRoomManager;
 import entity.monster.Monster;
 import gui.GUIManager;
 import gui.UITheme;
+import item.HealthPotion;
 import item.Item;
 import item.key.LevelKey;
+import item.key.RoomKey;
 import javafx.scene.paint.Color;
 import item.weapon.Weapon;
 import item.weapon.AncientSword;
@@ -18,7 +20,6 @@ import java.util.List;
 
 public class Player extends Entity {
     public int coins = 0;
-    public int hpPotions = 0;
     public int hunger = 100;
     public boolean isDead = false;
     private List<Item> inventory = new ArrayList<>();
@@ -41,9 +42,17 @@ public class Player extends Entity {
         setArmor(armor);
         setWeapon(weapon);
         setCoins(coins);
-        setHpPotions(hpPotions);
 
         addItemToInventory(new LevelKey());
+        addItemToInventory(new LevelKey());
+        addItemToInventory(new LevelKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new RoomKey());
+        addItemToInventory(new HealthPotion());
     }
 
     public void toggleGodMode() {
@@ -207,11 +216,6 @@ public class Player extends Entity {
         GUIManager.getInstance().setCoins(coins);
     }
 
-    public void setHpPotions(int hpPotions) {
-        this.hpPotions = hpPotions;
-        GUIManager.getInstance().setPotions(hpPotions);
-    }
-
     public void setHunger(int hunger) {
         this.hunger = hunger;
         GUIManager.getInstance().setHunger(hunger);
@@ -239,9 +243,11 @@ public class Player extends Entity {
 
     public void addItemToInventory(Item item) {
         inventory.add(item);
+        GUIManager.getInstance().updateInventory(inventory);
     }
 
     public void removeItemFromInventory(Item item) {
         inventory.remove(item);
+        GUIManager.getInstance().updateInventory(inventory);
     }
 }

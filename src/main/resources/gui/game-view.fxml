@@ -50,11 +50,25 @@
                     <Label fx:id="lblCoins" text="Coins:" />
                     <Label fx:id="coinsText" text="0" />
                 </HBox>
-                <HBox spacing="4">
-                    <Label fx:id="lblPotions" text="HP Potions:" />
-                    <Label fx:id="potionsText" text="0" />
-                </HBox>
             </VBox>
+        </VBox>
+
+        <VBox fx:id="inventoryPanel" VBox.vgrow="NEVER">
+            <padding>
+                <Insets bottom="12" left="15" right="15" top="12" />
+            </padding>
+            <Label fx:id="inventoryHeader" text="INVENTORY" />
+            <Region prefHeight="10" />
+
+            <ScrollPane fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        maxHeight="160.0"
+                        style="-fx-background: transparent; -fx-background-color: transparent; -fx-pane-border: transparent;">
+                <content>
+                    <VBox fx:id="inventoryBox" spacing="6.0" style="-fx-background-color: transparent;" />
+                </content>
+            </ScrollPane>
         </VBox>
 
         <VBox fx:id="logsPanel" VBox.vgrow="ALWAYS">

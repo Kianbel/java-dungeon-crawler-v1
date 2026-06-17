@@ -43,6 +43,8 @@ public class GameController {
     @FXML private Label healthBarText, healthValText;
     @FXML private Label hungerBarText, hungerValText;
     @FXML private Label armorText, weaponText, coinsText, potionsText;
+    @FXML private VBox inventoryPanel, inventoryBox;
+    @FXML private Label inventoryHeader;
 
     private GameCanvas gameCanvas;
     private Viewport viewport;
@@ -119,18 +121,20 @@ public class GameController {
         lblHealth.setStyle(labelStaticStyle);
         lblHunger.setStyle(labelStaticStyle);
         lblCoins.setStyle(labelStaticStyle);
-        lblPotions.setStyle(labelStaticStyle);
 
         String activeMetricStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + "; -fx-font-weight: bold;";
         healthValText.setStyle(activeMetricStyle);
         hungerValText.setStyle(activeMetricStyle);
         coinsText.setStyle(activeMetricStyle);
-        potionsText.setStyle(activeMetricStyle);
 
         healthBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
         hungerBarText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
         armorText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + "; -fx-font-weight: bold;");
         weaponText.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_WEAPON) + "; -fx-font-weight: bold;");
+
+        // Add this inside applyInterfaceTheme() alongside the other panels
+        inventoryPanel.setStyle(subPanelStyle);
+        inventoryHeader.setStyle(headerStyle);
 
         buildControlsReferenceHud();
     }
@@ -663,7 +667,31 @@ public class GameController {
     public void updateArmor(int armor) { armorText.setText("Armor: " + armor + "/10"); }
     public void updateWeapon(Weapon weapon) { weaponText.setText("Weapon: " + weapon); }
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
-    public void updatePotions(int count) { potionsText.setText(String.valueOf(count)); }
+    public void updateInventory(List<item.Item> inventory) {
+        inventoryBox.getChildren().clear();
+
+        if (inventory == null || inventory.isEmpty()) {
+            Label emptyLabel = new Label("Empty");
+            emptyLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
+            inventoryBox.getChildren().add(emptyLabel);
+            return;
+        }
+
+        // Group matching items and count their quantities
+        Map<String, Integer> itemCounts = new LinkedHashMap<>();
+        for (item.Item item : inventory) {
+            String itemName = item.name;
+            itemCounts.put(itemName, itemCounts.getOrDefault(itemName, 0) + 1);
+        }
+
+        // Populate the inventory UI list
+        for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
+            Label itemLabel = new Label(entry.getKey() + " x" + entry.getValue());
+            itemLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + ";");
+            inventoryBox.getChildren().add(itemLabel);
+        }
+    }
+
 
     private void buildControlsReferenceHud() {
         controlsBox.getChildren().clear();

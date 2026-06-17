@@ -1,11 +1,14 @@
 package gui;
 
 import entity.Entity;
+import item.Item;
 import javafx.scene.paint.Color;
 import core.room.type.Room;
 import util.ANIMATION_CURVE;
 import util.Position;
 import item.weapon.Weapon;
+
+import java.util.List;
 
 public class GUIManager {
     private static final GUIManager instance = new GUIManager();
@@ -92,5 +95,9 @@ public class GUIManager {
     public void setArmor(int current) { if (isPipelineOperational()) controller.updateArmor(current); }
     public void setWeapon(Weapon weapon) { if (isPipelineOperational()) controller.updateWeapon(weapon); }
     public void setCoins(int amount) { if (isPipelineOperational()) controller.updateCoins(amount); }
-    public void setPotions(int amount) { if (isPipelineOperational()) controller.updatePotions(amount); }
+    public void updateInventory(List<Item> inventory) {
+        if (this.controller != null) {
+            this.controller.updateInventory(inventory);
+        }
+    }
 }
