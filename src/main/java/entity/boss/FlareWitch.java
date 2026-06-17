@@ -6,7 +6,7 @@ import entity.Entity;
 import entity.monster.Monster;
 import gui.UITheme;
 import util.Position;
-import weapon.Fist;
+import item.weapon.Fist;
 
 import java.util.ArrayList;
 import java.util.List;

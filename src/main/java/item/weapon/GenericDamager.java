@@ -1,4 +1,4 @@
-package weapon;
+package item.weapon;
 
 public class GenericDamager extends Weapon {
     public GenericDamager(String name, int baseAttackDamage, double critRate) {

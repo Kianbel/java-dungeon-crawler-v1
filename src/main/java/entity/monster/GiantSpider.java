@@ -5,7 +5,7 @@ import entity.Entity;
 import entity.RangeAttack;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
-import weapon.GiantSpiderFang;
+import item.weapon.GiantSpiderFang;
 import util.Position;
 import core.room.type.Room;
 import world.*;
@@ -72,7 +72,7 @@ public class GiantSpider extends Monster implements RangeAttack {
     @Override
     public void die() {
         Map<InteractableTile, Double> drops = new HashMap<>(Map.of(
-                new DroppedWeapon(position, new GiantSpiderFang()), 0.05,
+                new DroppedItem(position, new GiantSpiderFang()), 0.05,
                 new Heart(position, 5), 0.4,
                 new Coin(position, 5), 0.8
         ));

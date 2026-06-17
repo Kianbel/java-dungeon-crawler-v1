@@ -4,13 +4,16 @@ import core.EntityRoomManager;
 import entity.monster.Monster;
 import gui.GUIManager;
 import gui.UITheme;
+import item.Item;
+import item.key.LevelKey;
 import javafx.scene.paint.Color;
-import weapon.Weapon;
-import weapon.AncientSword;
+import item.weapon.Weapon;
+import item.weapon.AncientSword;
 import util.Position;
 import core.room.type.Room;
 import world.InteractableTile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Entity {
@@ -18,6 +21,7 @@ public class Player extends Entity {
     public int hpPotions = 0;
     public int hunger = 100;
     public boolean isDead = false;
+    private List<Item> inventory = new ArrayList<>();
 
     private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
@@ -38,6 +42,8 @@ public class Player extends Entity {
         setWeapon(weapon);
         setCoins(coins);
         setHpPotions(hpPotions);
+
+        addItemToInventory(new LevelKey());
     }
 
     public void toggleGodMode() {
@@ -225,5 +231,17 @@ public class Player extends Entity {
         GUIManager.getInstance().setHunger(hunger);
 
         hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
+    }
+
+    public void addItemToInventory(Item item) {
+        inventory.add(item);
+    }
+
+    public void removeItemFromInventory(Item item) {
+        inventory.remove(item);
     }
 }

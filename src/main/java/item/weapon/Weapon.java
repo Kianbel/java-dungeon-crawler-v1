@@ -1,20 +1,21 @@
-package weapon;
+package item.weapon;
 
-public abstract class Weapon {
-    public String name;
+import item.Item;
+
+public abstract class Weapon extends Item {
     public int baseAttackDamage;
     public double critRate;
     public final int CRIT_MULTIPLIER = 2;
     private final int ATTACK_DAMAGE_ERROR_RANGE = 1;
 
     public Weapon(String name, int baseAttackDamage, double critRate) {
-        this.name = name;
+        super(name);
         this.baseAttackDamage = baseAttackDamage;
         this.critRate = critRate;
     }
 
     public Weapon(String name, int baseAttackDamage) {
-        this.name = name;
+        super(name);
         this.baseAttackDamage = baseAttackDamage;
         this.critRate = 0.1;
     }

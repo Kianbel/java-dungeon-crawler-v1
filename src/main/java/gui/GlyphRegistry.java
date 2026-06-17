@@ -24,11 +24,7 @@ public class GlyphRegistry {
     private final GlyphStyle defaultStyle = new GlyphStyle("?", Color.MAGENTA);
 
     private GlyphRegistry() {
-        // --- MULTI-TEXTURE STRUCTURAL REGISTRY ---
-        // Pulls color values seamlessly from UITheme roles
         tileRegistry.put(TILE.WALL, new GlyphStyle[]{
-//                new GlyphStyle("▒", UITheme.TILE_WALL),
-//                new GlyphStyle("▒", UITheme.TILE_WALL),
                 new GlyphStyle("▓", UITheme.TILE_WALL)
         });
 
@@ -57,13 +53,10 @@ public class GlyphRegistry {
                 new GlyphStyle("⛩", UITheme.TILE_SOLID_OBSTACLE),
         });
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
-//                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-//                new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
-//                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
                 new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-//                new GlyphStyle("⚔", UITheme.TILE_PASSABLE_OBSTACLE),
-//                new GlyphStyle("\uD83D\uDDE1", UITheme.TILE_PASSABLE_OBSTACLE), // sword
                 new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
+                new GlyphStyle("⛓", UITheme.TILE_PASSABLE_OBSTACLE),
+                new GlyphStyle("⚰", UITheme.TILE_PASSABLE_OBSTACLE),
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
                 new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
@@ -73,11 +66,15 @@ public class GlyphRegistry {
         registerInteractableTile(Web.class, "#", UITheme.ITILE_WEB);
         registerInteractableTile(Coin.class, "$", UITheme.ITILE_COIN);
         registerInteractableTile(Chest.class, "C", UITheme.ITILE_CHEST);
-        registerInteractableTile(DroppedWeapon.class, "/", UITheme.ITILE_DROPPED_WEAPON);
+        registerInteractableTile(DroppedItem.class, "/", UITheme.ITILE_DROPPED_WEAPON);
         registerInteractableTile(Heart.class, "♥", UITheme.ITILE_HEART);
         registerInteractableTile(Box.class, "⮽", UITheme.ITILE_BOX);
         registerInteractableTile(BrokenBox.class, "%", UITheme.ITILE_BROKEN_BOX);
         registerInteractableTile(Fire.class, "\uD83D\uDD25", UITheme.ITILE_FIRE);
+        registerInteractableTile(LockedDoor.class, "⌸", UITheme.ITILE_LOCKED_DOOR);
+        registerInteractableTile(LevelDoor.class, "⌸", UITheme.ITILE_LEVEL_DOOR);
+        registerInteractableTile(OpenedDoor.class, "⌸", UITheme.ITILE_OPENED_DOOR);
+        registerInteractableTile(Staircase.class, "目", UITheme.ITILE_STAIRCASE);
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

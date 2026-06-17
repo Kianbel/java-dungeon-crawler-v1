@@ -25,8 +25,8 @@ public class Chest extends InteractableTile {
         else if(chestDrop instanceof Heart) {
             GUIManager.getInstance().printLog("You break open the chest and it dropped a heart", UITheme.LOG_WORLD);
         }
-        else if(chestDrop instanceof DroppedWeapon w) {
-            GUIManager.getInstance().printLog("You break open the chest and it dropped " + w.weapon, UITheme.LOG_WORLD);
+        else if(chestDrop instanceof DroppedItem droppedItem) {
+            GUIManager.getInstance().printLog("You break open the chest and it dropped " + droppedItem.item.name, UITheme.LOG_WORLD);
         }
 
         EntityRoomManager.getInstance().removeInteractableTile(this);

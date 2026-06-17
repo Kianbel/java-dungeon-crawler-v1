@@ -53,12 +53,12 @@ public class UITheme {
 //    public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
 
     public static final Color TILE_WALL = Color.web("#e36433");
-    public static final Color TILE_DOOR = Color.web("#cf492c");
+    public static final Color TILE_DOOR = Color.web("#731144");
     public static final Color TILE_FLOOR = Color.web("#731144");
     public static final Color TILE_GRASS = Color.web("#e3884e");
     public static final Color TILE_WATER = Color.web("#ecb55f");
     public static final Color TILE_BOOKSHELF = Color.web("#8c3f5d");
-    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#43434f");
+    public static final Color TILE_PASSABLE_OBSTACLE = Color.web("#731144");
     public static final Color TILE_SOLID_OBSTACLE = Color.PINK;
 
     // --- INTERACTABLE TILES ---
@@ -70,6 +70,10 @@ public class UITheme {
     public static final Color ITILE_FIRE = Color.web("#f2a65e");
     public static final Color ITILE_WEB = Color.web("#c2c2d1");
     public static final Color ITILE_CHEST = Color.web("#8c3f5d");
+    public static final Color ITILE_LOCKED_DOOR = Color.web("#e36433");
+    public static final Color ITILE_LEVEL_DOOR = Color.web("#ffffeb");
+    public static final Color ITILE_OPENED_DOOR = Color.web("#731144");
+    public static final Color ITILE_STAIRCASE = Color.web("#f2a65e");
 
     // --- ENTITIES PALETTE ---
     public static final Color ENTITY_PLAYER = Color.web("#ffe478");

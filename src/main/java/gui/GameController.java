@@ -17,7 +17,7 @@ import util.ANIMATION_CURVE;
 import util.MAP;
 import util.Position;
 import util.TILE;
-import weapon.Weapon;
+import item.weapon.Weapon;
 
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -27,10 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyCode;
-import world.Box;
-import world.Fire;
-import world.InteractableTile;
-import world.Web;
+import world.*;
 
 import java.util.*;
 
@@ -518,7 +515,9 @@ public class GameController {
                     }
 
                     InteractableTile interactable = interactableGridCache[currentY][currentX];
-                    if (interactable instanceof Web || interactable instanceof Box) {
+                    if (interactable instanceof Web
+                            || interactable instanceof Box
+                            || interactable instanceof LockedDoor) {
                         return false;
                     }
                 }

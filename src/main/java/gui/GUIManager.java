@@ -1,12 +1,11 @@
 package gui;
 
 import entity.Entity;
-import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
 import core.room.type.Room;
 import util.ANIMATION_CURVE;
 import util.Position;
-import weapon.Weapon;
+import item.weapon.Weapon;
 
 public class GUIManager {
     private static final GUIManager instance = new GUIManager();

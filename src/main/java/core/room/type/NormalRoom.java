@@ -1,18 +1,11 @@
 package core.room.type;
 
-import core.EntityRoomManager;
 import core.EntitySpawner;
 import core.room.loader.RoomLayoutRegistry;
 import entity.monster.GiantSpider;
 import entity.monster.Zombie;
-import entity.projectile.Fireball;
 import util.Position;
-import util.Randomizer;
 import util.TILE;
-import weapon.AncientSword;
-import weapon.IronBlade;
-import weapon.Weapon;
-import world.*;
 
 import java.util.Random;
 

@@ -1,9 +1,11 @@
 package core.room.type;
 
+import core.EntityRoomManager;
 import core.room.loader.RoomLayoutRegistry;
+import entity.Player;
 import util.Position;
 import util.TILE;
-import weapon.IronBlade;
+import item.weapon.IronBlade;
 import world.*;
 
 public class TreasureRoom extends Room {
@@ -24,7 +26,7 @@ public class TreasureRoom extends Room {
 
         InteractableTile chestDrop;
         double random = Math.random();
-        if(random <= 0.4) chestDrop = new DroppedWeapon(chestPosition, new IronBlade());
+        if(random <= 0.4) chestDrop = new DroppedItem(chestPosition, new IronBlade());
         else if(random <= 0.8) chestDrop = new Heart(chestPosition, 20);
         else chestDrop = new Coin(chestPosition, 20);
 

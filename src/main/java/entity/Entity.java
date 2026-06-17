@@ -6,7 +6,7 @@ import gui.GUIManager;
 import gui.UITheme;
 import javafx.scene.paint.Color;
 import util.DIRECTION;
-import weapon.Weapon;
+import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
 import core.room.type.Room;

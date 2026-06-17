@@ -4,9 +4,9 @@ import util.DIRECTION;
 import util.Position;
 import util.Randomizer;
 import util.TILE;
-import weapon.AncientSword;
-import weapon.IronBlade;
-import weapon.Weapon;
+import item.weapon.AncientSword;
+import item.weapon.IronBlade;
+import item.weapon.Weapon;
 import world.*;
 
 import java.util.*;
@@ -86,7 +86,7 @@ public abstract class Room {
                                     case 1 -> weapon = new AncientSword();
                                     case 2 -> weapon = new IronBlade();
                                 }
-                                chestDrop = new DroppedWeapon(currentPos, weapon);
+                                chestDrop = new DroppedItem(currentPos, weapon);
                             }
                         }
                         addInteractableTile(new Chest(currentPos, chestDrop));

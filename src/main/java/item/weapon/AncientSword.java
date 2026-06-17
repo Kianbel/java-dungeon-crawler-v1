@@ -1,4 +1,4 @@
-package weapon;
+package item.weapon;
 
 public class AncientSword extends Sword {
     public AncientSword() {

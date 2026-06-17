@@ -4,11 +4,9 @@ import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
 import entity.MoveAfterPlayer;
-import gui.GUIManager;
-import javafx.scene.paint.Color;
 import util.Position;
 import util.TILE;
-import weapon.GenericDamager;
+import item.weapon.GenericDamager;
 
 import java.util.List;
 

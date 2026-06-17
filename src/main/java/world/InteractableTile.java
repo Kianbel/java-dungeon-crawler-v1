@@ -1,5 +1,7 @@
 package world;
 
+import core.EntityRoomManager;
+import core.room.type.Room;
 import entity.Entity;
 import util.Position;
 

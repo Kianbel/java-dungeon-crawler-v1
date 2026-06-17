@@ -1,4 +1,4 @@
-package weapon;
+package item.weapon;
 
 public class GiantSpiderFang extends Weapon {
     public GiantSpiderFang() {

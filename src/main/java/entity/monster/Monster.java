@@ -4,7 +4,7 @@ import core.EntityRoomManager;
 import entity.Entity;
 import entity.MoveAfterPlayer;
 import entity.Player;
-import weapon.Weapon;
+import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
 import core.room.type.Room;

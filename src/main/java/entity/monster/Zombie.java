@@ -4,7 +4,7 @@ import core.EntityRoomManager;
 import entity.Entity;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
-import weapon.Fist;
+import item.weapon.Fist;
 import util.Position;
 import world.Coin;
 import world.Heart;
