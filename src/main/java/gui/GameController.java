@@ -6,7 +6,6 @@ import entity.Player;
 import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
-import entity.projectile.Projectile;
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -50,12 +49,10 @@ public class GameController {
 
     private GameCanvas gameCanvas;
     private Viewport viewport;
-
-    // --- BOOLEANS ---
-    private boolean isMapOpen = false;
+    private GameFSM gameFSM;
 
     // --- TILES ---
-    private double currentTileSize = 50;
+    private double currentTileSize = 40;
     private final double MIN_TILE_SIZE = 6.0;
     private final double MAX_TILE_SIZE = 70.0;
     private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
@@ -87,6 +84,7 @@ public class GameController {
 
         gameCanvas = new GameCanvas(canvas, currentTileSize);
         viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
+        gameFSM = new GameFSM(this);
 
         GUIManager.getInstance().registerController(this);
         DungeonManager.getInstance().generateDungeon();
@@ -102,6 +100,7 @@ public class GameController {
             handleWindowResize();
         });
 
+        gameFSM.runGame();
         attachKeyboardHandlers();
     }
 
@@ -409,66 +408,43 @@ public class GameController {
                 newScene.setOnKeyPressed(e -> {
                     KeyCode code = e.getCode();
 
-                    if (code == KeyCode.EQUALS) { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
-                    if (code == KeyCode.MINUS) { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
-
-                    Player player = (Player) EntityRoomManager.getInstance().getPlayer();
-                    if (player == null) return;
-
-                    Position movementVector = new Position(0, 0);
-                    boolean isTickAction = true;
-
                     switch (code) {
-                        case W, UP -> movementVector.y--;
-                        case A, LEFT -> movementVector.x--;
-                        case S, DOWN -> movementVector.y++;
-                        case D, RIGHT -> movementVector.x++;
-                        case T -> {
-                            player.toggleGodMode();
-                            isTickAction = false;
-                        }
-                        case SPACE -> {
-                            movementVector = new Position(0,0);
-                            GUIManager.getInstance().triggerTextPopup("wait", Color.WHITE, player.position);
-                        }
-                        case M -> {
-                            if(!isMapOpen) isTickAction = false;
-                            isMapOpen = !isMapOpen;
-                        }
+                        case EQUALS -> { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
+                        case MINUS -> { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
                         case F11 -> {
                             Stage stage = (Stage) rootContainer.getScene().getWindow();
                             stage.setFullScreen(!stage.isFullScreen());
-                            isTickAction = false;
                         }
-                        default -> isTickAction = false;
                     }
-                    if(isMapOpen) openMap();
 
-                    if (isTickAction) {
-                        isMapOpen = false;
-                        if(!player.isDead) {
-                            player.handleMove(movementVector);
-
-                            Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
-                            List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-                            for(int i = 0; i < entities.size(); i++) {
-                                Entity entity = entities.get(i);
-                                if(entity instanceof Monster monster) {
-                                    monster.makeMove();
-                                }
-                                if(entity instanceof Projectile projectile) {
-                                    projectile.makeMove();
-                                }
-                            }
-                        }
-                        updateRenderingPipeline();
-                    }
+                    gameFSM.update(code);
+                    System.out.println("-------------");
                 });
             }
         });
     }
 
-    private void openMap() {
+    public void resetGame() {
+        textPopupDataList.clear();
+        entityAnimationPixelDrawOffsets.clear();
+        clearLogContainer();
+        EntityRoomManager.getInstance().clear();
+
+        DungeonManager.getInstance().generateDungeon();
+
+        Player player = (Player) EntityRoomManager.getInstance().getPlayer();
+        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        System.out.println(player);
+        System.out.println(currentRoom);
+        final int roomWidth = currentRoom.length;
+        final int roomHeight = currentRoom.height;
+
+        viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
+
+        gameFSM.runGame();
+    }
+
+    public void openMap() {
         final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if(activeRoom == null) return;
 

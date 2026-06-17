@@ -9,14 +9,9 @@ import util.Position;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class DungeonManager {
     private static final DungeonManager instance = new DungeonManager();
-
-    private MAP[][] mapLayout;
-    private List<Room> roomList = new ArrayList<>();
-
     private DungeonManager() {}
     public static DungeonManager getInstance() {
         return instance;
@@ -26,7 +21,12 @@ public class DungeonManager {
     private final int MAP_HEIGHT = 21;
     private final int MAP_LENGTH = 21;
 
+    private MAP[][] mapLayout;
+    private List<Room> roomList = new ArrayList<>(ROOM_AMOUNT);
+
     public void generateDungeon() {
+        roomList.clear();
+
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk(MAP_HEIGHT, MAP_LENGTH));
         dungeonMapGenerator.generate(ROOM_AMOUNT);
         mapLayout = dungeonMapGenerator.getMapLayout();
@@ -39,6 +39,8 @@ public class DungeonManager {
             EntityRoomManager.getInstance().addRoom(r);
             r.populateWithEntities();
         }
+
+        dungeonMapGenerator.printMapLayout();
     }
 
     private void generateRooms() {

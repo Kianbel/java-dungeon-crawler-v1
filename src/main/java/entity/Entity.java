@@ -203,6 +203,10 @@ public abstract class Entity {
         }
     }
 
+    public boolean isInBounds(int roomHeight, int roomLength) {
+        return position.x >= 0 && position.x < roomLength && position.y >= 0 && position.y < roomHeight;
+    }
+
     public void setIlluminated(boolean b) {
         illuminationData.isIlluminated = b;
     }

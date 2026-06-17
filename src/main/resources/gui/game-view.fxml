@@ -1,83 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.GameController"
-      fx:id="rootContainer"
-      spacing="15.0">
+<HBox fx:id="rootContainer" minWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GameController">
 
     <padding>
-        <Insets top="15" right="15" bottom="15" left="15"/>
+        <Insets bottom="15" left="15" right="15" top="15" />
     </padding>
 
     <StackPane fx:id="canvasContainer" HBox.hgrow="ALWAYS">
         <Canvas fx:id="canvas" />
     </StackPane>
 
-    <VBox prefWidth="360.0" minWidth="360.0" maxWidth="360.0" spacing="15.0" HBox.hgrow="NEVER">
+    <VBox maxWidth="360.0" minWidth="360.0" prefWidth="360.0" spacing="15.0" HBox.hgrow="NEVER">
 
         <VBox fx:id="statsPanel">
             <padding>
-                <Insets top="12" right="15" bottom="12" left="15"/>
+                <Insets bottom="12" left="15" right="15" top="12" />
             </padding>
-            <Label fx:id="statsHeader" text="CHARACTER STATUS"/>
-            <Region prefHeight="10"/>
+            <Label fx:id="statsHeader" text="CHARACTER STATUS" />
+            <Region prefHeight="10" />
 
             <VBox spacing="6.0">
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label fx:id="lblHealth" text="Health:"/>
+                    <Label fx:id="lblHealth" text="Health:" />
                     <Label fx:id="healthValText" text="100/100" />
                 </HBox>
                 <Label fx:id="healthBarText" style="-fx-font-size: 14px;" text="[■■■■■■■■■■■■■■■]" />
 
-                <Region prefHeight="4"/>
+                <Region prefHeight="4" />
 
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label fx:id="lblHunger" text="Hunger:"/>
+                    <Label fx:id="lblHunger" text="Hunger:" />
                     <Label fx:id="hungerValText" text="96/100" />
                 </HBox>
                 <Label fx:id="hungerBarText" style="-fx-font-size: 14px;" text="[■■■■■■■■■■■■■■·]" />
 
-                <Region prefHeight="6"/>
+                <Region prefHeight="6" />
 
                 <Label fx:id="armorText" text="Armor: 0/10" />
                 <Label fx:id="weaponText" text="Weapon: Sword" />
 
-                <Region prefHeight="4"/>
+                <Region prefHeight="4" />
 
                 <HBox spacing="4">
-                    <Label fx:id="lblCoins" text="Coins:"/>
-                    <Label fx:id="coinsText" text="0"/>
+                    <Label fx:id="lblCoins" text="Coins:" />
+                    <Label fx:id="coinsText" text="0" />
                 </HBox>
                 <HBox spacing="4">
-                    <Label fx:id="lblPotions" text="HP Potions:"/>
-                    <Label fx:id="potionsText" text="0"/>
+                    <Label fx:id="lblPotions" text="HP Potions:" />
+                    <Label fx:id="potionsText" text="0" />
                 </HBox>
             </VBox>
         </VBox>
 
         <VBox fx:id="logsPanel" VBox.vgrow="ALWAYS">
             <padding>
-                <Insets top="12" right="15" bottom="12" left="15"/>
+                <Insets bottom="12" left="15" right="15" top="12" />
             </padding>
-            <Label fx:id="logsHeader" text="MESSAGE LOGS"/>
-            <Region prefHeight="10"/>
+            <Label fx:id="logsHeader" text="MESSAGE LOGS" />
+            <Region prefHeight="10" />
             <VBox fx:id="logContainer" spacing="6.0" VBox.vgrow="ALWAYS" />
         </VBox>
 
         <VBox fx:id="controlsPanel">
             <padding>
-                <Insets top="12" right="15" bottom="12" left="15"/>
+                <Insets bottom="12" left="15" right="15" top="12" />
             </padding>
-            <Label fx:id="controlsHeader" text="CONTROLS"/>
-            <Region prefHeight="8"/>
+            <Label fx:id="controlsHeader" text="CONTROLS" />
+            <Region prefHeight="8" />
             <VBox fx:id="controlsBox" spacing="4.0" />
         </VBox>
     </VBox>

@@ -22,6 +22,10 @@ public abstract class InteractableTile {
 
     public void onEntityBump(Entity entity) {}
 
+    public boolean isInBounds(int roomHeight, int roomLength) {
+        return roomLayoutPosition.x >= 0 && roomLayoutPosition.x < roomLength && roomLayoutPosition.y >= 0 && roomLayoutPosition.y < roomHeight;
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName();

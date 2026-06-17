@@ -48,8 +48,8 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         if (entities != null) {
             for (int i = 0; i < entities.size(); i++) {
                 Entity entity = entities.get(i);
-                if (entity instanceof Player || entity == this || entity.position == null) continue;
-                if (entity.position.y >= 0 && entity.position.y < roomHeight && entity.position.x >= 0 && entity.position.x < roomLength) {
+                if (entity instanceof Player || entity == this) continue;
+                if (entity.isInBounds(roomHeight, roomLength)) {
                     isOccupied[entity.position.y][entity.position.x] = true;
                 }
             }
@@ -59,9 +59,9 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         List<InteractableTile> interactableTiles = EntityRoomManager.getInstance().getInteractableTilesFromRoom(currentRoom);
         if (interactableTiles != null) {
             for (int i = 0; i < interactableTiles.size(); i++) {
-                InteractableTile tile = interactableTiles.get(i);
-                if (tile.roomLayoutPosition.y >= 0 && tile.roomLayoutPosition.y < roomHeight && tile.roomLayoutPosition.x >= 0 && tile.roomLayoutPosition.x < roomLength) {
-                    isOccupied[tile.roomLayoutPosition.y][tile.roomLayoutPosition.x] = true;
+                InteractableTile interactableTile = interactableTiles.get(i);
+                if (interactableTile.isInBounds(roomHeight, roomLength)) {
+                    isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
                 }
             }
         }
