@@ -9,6 +9,7 @@ import util.Position;
 public class Staircase extends InteractableTile {
     public Staircase(Position roomLayoutPosition) {
         super(roomLayoutPosition, false);
+        isLightOccluding = true;
     }
 
     @Override

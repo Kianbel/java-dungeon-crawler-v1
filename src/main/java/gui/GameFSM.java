@@ -9,6 +9,8 @@ import entity.projectile.Projectile;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import util.Position;
+import world.InteractableTile;
+import world.Spike;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class GameFSM {
     }
 
     public void update(KeyCode key) {
-        System.out.println("update");
+        // System.out.println("update");
         assert currentState != null : "Current state must be set up";
 
         switch(currentState) {
@@ -51,7 +53,7 @@ public class GameFSM {
     }
 
     public void switchState(STATE newState) {
-        System.out.println("switchstate");
+        // System.out.println("switchstate");
         currentState = newState;
 
         switch(currentState) {
@@ -67,7 +69,7 @@ public class GameFSM {
             }
             case RESET -> {
                 gameController.resetGame();
-                System.out.println("game reset");
+                // System.out.println("game reset");
             }
         }
         renderCurrentState();
@@ -83,34 +85,34 @@ public class GameFSM {
 
 
     private void renderCurrentState() {
-        System.out.println("rendercurrentstate");
+        // System.out.println("rendercurrentstate");
         switch (currentState) {
             case RUNNING -> {
-                System.out.println("running");
+                // System.out.println("running");
                 gameController.updateRenderingPipeline();
             }
             case DIED -> {
-                System.out.println("died");
+                // System.out.println("died");
                 gameController.updateRenderingPipeline();
                 // TODO: display game over / restart message
             }
             case MAP -> {
-                System.out.println("map");
+                // System.out.println("map");
                 gameController.openMap();
             }
             case EXIT -> {
-                System.out.println("exit");
+                // System.out.println("exit");
                 // TODO: quit game
             }
             case PAUSE -> {
-                System.out.println("pause");
+                // System.out.println("pause");
                 // TODO: display pause message
             }
         }
     }
 
     private void handleRunning(KeyCode key) {
-        System.out.println("handlerunning");
+        // System.out.println("handlerunning");
 
         final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
         Position movementVector = new Position(0,0);
@@ -160,6 +162,12 @@ public class GameFSM {
                 Entity entity = entities.get(i);
                 if(entity instanceof Monster monster) monster.makeMove();
                 if(entity instanceof Projectile projectile) projectile.makeMove();
+            }
+
+            List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
+            for(int i = 0; i < interactableTiles.size(); i++) {
+                InteractableTile interactableTile = interactableTiles.get(i);
+                if(interactableTile instanceof Spike spike) spike.makeMove();
             }
 
             if(player.isDead) {

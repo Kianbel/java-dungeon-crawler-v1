@@ -20,6 +20,7 @@ public class LockedDoor extends InteractableTile {
     public LockedDoor(Position roomLayoutPosition, Class<? extends Key> keyClass) {
         super(roomLayoutPosition, true);
         this.keyClass = keyClass;
+        isLightOccluding = true;
     }
 
     public LockedDoor(Position roomLayoutPosition) {

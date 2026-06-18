@@ -3,15 +3,12 @@ package core.room.loader;
 import core.room.type.*;
 import util.TILE;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RoomLayoutLoader {
     private static final RoomLayoutLoader instance = new RoomLayoutLoader();
@@ -23,27 +20,30 @@ public class RoomLayoutLoader {
         File folder = new File(layoutDirectoryPath);
         for(File file : Objects.requireNonNull(folder.listFiles())) {
             try {
-                BufferedImage image = ImageIO.read(file);
+                List<String> lines = Files.readAllLines(file.toPath());
+                if(lines.isEmpty()) continue;
 
-                final int imageWidth = image.getWidth();
-                final int imageHeight = image.getHeight();
+                final int roomHeight = lines.size();
+                final int roomWidth = lines.getFirst().split(",").length;
+                TILE[][] layout = new TILE[roomHeight][roomWidth];
+                for(TILE[] row : layout) {
+                    Arrays.fill(row, TILE.WALL);
+                }
 
-                TILE[][] layout = new TILE[imageHeight][imageWidth];
+                for(int y = 0; y < lines.size(); y++) {
+                    String[] tokens = lines.get(y).split(",");
+                    for (int x = 0; x < tokens.length; x++) {
+                        String token = tokens[x].trim(); // trim spaces just in case
 
-                // --- EXTRACT TILE LAYOUT FROM IMAGE ---
-                for(int y = 0; y < imageHeight; y++) {
-                    for(int x = 0; x < imageWidth; x++) {
-                        final int pixel = image.getRGB(x, y);
-                        final int alpha = (pixel >> 24) & 0xff;
-
-                        if(alpha <= 50) {
-                            layout[y][x] = TILE.EMPTY;
-                            continue;
+                        if (!token.isEmpty() && token.matches("\\d+")) { // Check if it's a number
+                            int tileIndex = Integer.parseInt(token);
+                            if (tileIndex >= 0 && tileIndex < TILE.values().length) {
+                                layout[y][x] = TILE.values()[tileIndex];
+                            }
                         }
-
-                        layout[y][x] = pixelToTile(pixel);
                     }
                 }
+
                 // --- GET ROOM CLASS FROM FILENAME ---
                 String fileName = file.getName();
                 int i;
@@ -55,7 +55,9 @@ public class RoomLayoutLoader {
 
                 RoomLayoutRegistry.getInstance().addLayout(roomClass, layout);
             }
-            catch (IOException _) {}
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -69,44 +71,5 @@ public class RoomLayoutLoader {
             default -> throw new RuntimeException("Invalid class string: " + classString);
         }
         return roomClass;
-    }
-
-    private TILE pixelToTile(int pixel) {
-        /* room tiles
-            WALL, = 0x000000
-            FLOOR, = 0x808080
-            DOOR, = 0x682700
-            GRASS, = 0x00FF00
-            WATER, = 0x00FFFF
-            PASSABLE_OBSTACLE, = 0xffff00
-            BOOKSHELF = 0x7f1dff
-            BOX = 0xFF00FF
-            WEB = 0xFFFFFF
-            TORCH = 0xff8000
-            CHEST = 0x56391c
-            LEVEL_DOOR = 0xff6262
-            LOCKED_DOOR = 0xff0000
-            STAIRCASE = 0x0f0038
-         */
-
-        switch (pixel & 0x00FFFFFF) {
-            case 0x000000 -> { return TILE.WALL; }
-            case 0x808080 -> { return TILE.FLOOR; }
-            case 0x682700 -> { return TILE.DOOR; }
-            case 0x00FF00 -> { return TILE.GRASS; }
-            case 0x00FFFF -> { return TILE.WATER; }
-            case 0xffff00 -> { return TILE.PASSABLE_OBSTACLE; }
-            case 0x7f1dff -> { return TILE.BOOKSHELF; }
-            case 0xFF00FF -> { return TILE.BOX; }
-            case 0xFFFFFF -> { return TILE.WEB; }
-            case 0xFF8000 -> { return TILE.TORCH; }
-            case 0x56391C -> { return TILE.CHEST; }
-
-            case 0xFF6262 -> { return TILE.LEVEL_DOOR; }
-            case 0xFF0000 -> { return TILE.LOCKED_DOOR; }
-            case 0x0F0038 -> { return TILE.STAIRCASE; }
-
-            default -> { return TILE.EMPTY; }
-        }
     }
 }

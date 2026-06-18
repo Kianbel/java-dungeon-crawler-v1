@@ -24,6 +24,8 @@ public abstract class Room {
     protected TILE[][] layout;
     protected boolean isRoomGenerated = false;
 
+    protected Random random = new Random();
+
     public Room(int height, int length, Position minimapPosition) {
         this.height = height;
         this.length = length;
@@ -60,10 +62,18 @@ public abstract class Room {
         // --- HANDLE BOX/DOOR GENERATION ---
         final double BOX_SPAWN_CHANCE = 0.6;
         final double WEB_SPAWN_CHANCE = 0.5;
+        final double CARPET_PUT_CHANCE = 0.6;
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 switch(layout[y][x]) {
+                    case CARPET -> {
+                        if(Math.random() <= CARPET_PUT_CHANCE) this.layout[y][x] = TILE.FLOOR;
+                    }
+                    case SPIKE -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new Spike(new Position(x,y)));
+                    }
                     case LOCKED_DOOR -> {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new LockedDoor(new Position(x,y)));
@@ -72,7 +82,7 @@ public abstract class Room {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new Staircase(new Position(x,y)));
                     }
-                    case TORCH -> {
+                    case FIRE -> {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new Fire(new Position(x,y)));
                     }
@@ -101,7 +111,7 @@ public abstract class Room {
                     }
                     case BOX -> {
                         layout[y][x] = TILE.FLOOR;
-                        if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Box(new Position(x, y)));
+                        if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Pot(new Position(x, y)));
                     }
                     case DOOR -> {
                         // if tile above door is not wall, door is south door

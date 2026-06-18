@@ -2,7 +2,6 @@ package util;
 
 public enum TILE {
     // Room tiles
-    EMPTY,
     WALL,
     FLOOR,
     DOOR,
@@ -13,13 +12,26 @@ public enum TILE {
     BOOKSHELF,
     BOX,
     WEB,
-    TORCH,
+    FIRE,
     CHEST,
-    LEVEL_DOOR,
     LOCKED_DOOR,
-    STAIRCASE;
+    STAIRCASE,
+    CARPET,
+    IRON_BAR,
+    SPIKE,
+    SHOOTER,
+    EMPTY;
 
     public boolean isWalkable() {
-        return this == FLOOR || this == PASSABLE_OBSTACLE || this == GRASS;
+        return this == FLOOR ||
+                this == PASSABLE_OBSTACLE ||
+                this == GRASS ||
+                this == CARPET;
+    }
+
+    public boolean isLightOccluding() {
+        return this == WALL ||
+                this == BOOKSHELF ||
+                this == DOOR;
     }
 }

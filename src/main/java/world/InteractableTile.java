@@ -3,15 +3,30 @@ package world;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import javafx.scene.paint.Color;
 import util.Position;
 
 public abstract class InteractableTile {
     public Position roomLayoutPosition;
     public boolean isSolid = false;
+    public boolean isLightOccluding = false;
+    private Color color = null;
 
     public InteractableTile(Position roomLayoutPosition, boolean isSolid) {
         this.roomLayoutPosition = roomLayoutPosition;
         this.isSolid = isSolid;
+    }
+
+    public void overrideColor(Color color) {
+        this.color = color;
+    }
+
+    public void resetColor() {
+        this.color = null;
+    }
+
+    public Color getColor() {
+        return color;
     }
 
     public void onEntityEnter(Entity entity) {}

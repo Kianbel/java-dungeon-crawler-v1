@@ -35,7 +35,7 @@ public class Player extends Entity {
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
         setIlluminated(true);
-        setIlluminationRange(100);
+        setIlluminationRange(8);
 
         setHealth(health);
         setHunger(hunger);

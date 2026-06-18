@@ -255,9 +255,6 @@ public class GameController {
 
         for (int row = 0; row < roomHeight; row++) {
             for (int col = 0; col < roomWidth; col++) {
-                if (roomLayout[row][col] == TILE.TORCH) {
-                    blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight);
-                }
                 InteractableTile interactable = interactableGridCache[row][col];
                 if (interactable instanceof Fire) {
                     blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight);
@@ -301,7 +298,10 @@ public class GameController {
                 if (currentInteractable != null) {
                     GlyphStyle interactableTileStyle = glyphRegistry.getStyle(currentInteractable);
                     activeGlyph = interactableTileStyle.glyph();
-                    activeColor = interactableTileStyle.color();
+                    if(currentInteractable.getColor() != null) {
+                        activeColor = currentInteractable.getColor();
+                    }
+                    else activeColor = interactableTileStyle.color();
                 }
 
                 // Layer 3: Living entities
@@ -440,7 +440,6 @@ public class GameController {
                     }
 
                     gameFSM.update(code);
-                    System.out.println("-------------");
                 });
             }
         });
@@ -521,14 +520,12 @@ public class GameController {
                 if (currentY >= 0 && currentY < roomLayout.length && currentX >= 0 && currentX < roomLayout[currentY].length) {
 
                     TILE tile = roomLayout[currentY][currentX];
-                    if (tile == TILE.WALL || tile == TILE.BOOKSHELF) {
+                    if (tile.isLightOccluding()) {
                         return false;
                     }
 
-                    InteractableTile interactable = interactableGridCache[currentY][currentX];
-                    if (interactable instanceof Web
-                            || interactable instanceof Box
-                            || interactable instanceof LockedDoor) {
+                    InteractableTile interactableTile = interactableGridCache[currentY][currentX];
+                    if (interactableTile != null && interactableTile.isLightOccluding) {
                         return false;
                     }
                 }

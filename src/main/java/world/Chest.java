@@ -13,6 +13,7 @@ public class Chest extends InteractableTile {
     public Chest(Position roomLayoutPosition, InteractableTile chestDrop) {
         super(roomLayoutPosition, true);
         this.chestDrop = chestDrop;
+        isLightOccluding = true;
     }
 
     @Override

@@ -55,25 +55,30 @@ public class GlyphRegistry {
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
                 new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("⛓", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("⚰", UITheme.TILE_PASSABLE_OBSTACLE),
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
                 new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
         });
+        tileRegistry.put(TILE.CARPET, new GlyphStyle[] {
+                new GlyphStyle("🏽", UITheme.TILE_CARPET),
+        });
+        tileRegistry.put(TILE.IRON_BAR, new GlyphStyle[] {
+                new GlyphStyle("⛓", UITheme.TILE_IRON_BAR),
+        });
 
         // --- INTERACTABLE TILE REGISTRY ---
-        registerInteractableTile(Web.class, "#", UITheme.ITILE_WEB);
-        registerInteractableTile(Coin.class, "$", UITheme.ITILE_COIN);
-        registerInteractableTile(Chest.class, "C", UITheme.ITILE_CHEST);
+        registerInteractableTile(Web.class, "🕸", UITheme.ITILE_WEB);
+        registerInteractableTile(Coin.class, "©", UITheme.ITILE_COIN);
+        registerInteractableTile(Chest.class, "💼", UITheme.ITILE_CHEST);
         registerInteractableTile(DroppedItem.class, "/", UITheme.ITILE_DROPPED_WEAPON);
         registerInteractableTile(Heart.class, "♥", UITheme.ITILE_HEART);
-        registerInteractableTile(Box.class, "⮽", UITheme.ITILE_BOX);
-        registerInteractableTile(BrokenBox.class, "%", UITheme.ITILE_BROKEN_BOX);
-        registerInteractableTile(Fire.class, "\uD83D\uDD25", UITheme.ITILE_FIRE);
+        registerInteractableTile(Pot.class, "⚱", UITheme.ITITLE_POT);
+        registerInteractableTile(ShatteredPot.class, "%", UITheme.ITILE_SHATTERED_POT);
+        registerInteractableTile(Fire.class, "🔥", UITheme.ITILE_FIRE);
         registerInteractableTile(LockedDoor.class, "⌸", UITheme.ITILE_LOCKED_DOOR);
         registerInteractableTile(OpenedDoor.class, "⌸", UITheme.ITILE_OPENED_DOOR);
         registerInteractableTile(Staircase.class, "目", UITheme.ITILE_STAIRCASE);
+        registerInteractableTile(Spike.class, "♒", UITheme.ITILE_SPIKE);
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

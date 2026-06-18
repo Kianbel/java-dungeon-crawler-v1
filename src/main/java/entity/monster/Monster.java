@@ -9,6 +9,7 @@ import util.Position;
 import util.TILE;
 import core.room.type.Room;
 import world.InteractableTile;
+import world.Spike;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             for (int i = 0; i < interactableTiles.size(); i++) {
                 InteractableTile interactableTile = interactableTiles.get(i);
                 if (interactableTile.isInBounds(roomHeight, roomLength)) {
+                    if(interactableTile instanceof Spike spike && !spike.isActivated) continue;
                     isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
                 }
             }

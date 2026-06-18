@@ -1,8 +1,11 @@
 package core.room.type;
 
 import core.EntityRoomManager;
+import core.EntitySpawner;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
+import entity.monster.GiantSpider;
+import entity.monster.Zombie;
 import util.Position;
 import util.TILE;
 import item.weapon.IronBlade;
@@ -32,5 +35,14 @@ public class TreasureRoom extends Room {
 
         InteractableTile chest = new Chest(chestPosition, chestDrop);
         addInteractableTile(chest);
+    }
+
+    @Override
+    public void populateWithEntities() {
+        super.populateWithEntities();
+
+        EntitySpawner entitySpawner = new EntitySpawner(this);
+        entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(5,10));
+        if(Math.random() <= 0.4) entitySpawner.spawnMonstersAmount(GiantSpider::new, random.nextInt(1,4));
     }
 }

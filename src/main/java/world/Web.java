@@ -14,6 +14,7 @@ public class Web extends InteractableTile {
 
     public Web(Position position) {
         super(position, false);
+        isLightOccluding = true;
     }
 
     @Override

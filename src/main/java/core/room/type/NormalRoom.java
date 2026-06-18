@@ -21,12 +21,13 @@ public class NormalRoom extends Room {
 
     @Override
     public void populateWithEntities() {
-        if(!isClear) return;
+        if(isClear) return;
 
         super.populateWithEntities();
+        Random random = new Random();
 
         EntitySpawner entitySpawner = new EntitySpawner(this);
-        if(Math.random() <= 0.3) entitySpawner.spawnMonstersAmount(GiantSpider::new, new Random().nextInt(1,3));
-        entitySpawner.spawnMonstersAmount(Zombie::new, new Random().nextInt(1,6));
+        if(Math.random() <= 0.3) entitySpawner.spawnMonstersAmount(GiantSpider::new, random.nextInt(1,3));
+        entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(1,6));
     }
 }

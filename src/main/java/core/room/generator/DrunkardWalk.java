@@ -31,10 +31,22 @@ public class DrunkardWalk extends Generator {
 
         while(currentRoomAmount < roomsAmount) {
             switch (Randomizer.pick(1, 2, 3, 4)) {
-                case 1 -> putRoomAt(walker.x, walker.y - 2);
-                case 2 -> putRoomAt(walker.x + 2, walker.y);
-                case 3 -> putRoomAt(walker.x, walker.y + 2);
-                case 4 -> putRoomAt(walker.x - 2, walker.y);
+                case 1 -> { // n
+                    if(mapLayout[walker.y-1][walker.x] != null && mapLayout[walker.y-1][walker.x].isCorridor()) walker.y -= 2;
+                    else putRoomAt(walker.x, walker.y - 2);
+                }
+                case 2 -> { // e
+                    if(mapLayout[walker.y][walker.x+1] != null && mapLayout[walker.y][walker.x+1].isCorridor()) walker.x += 2;
+                    else putRoomAt(walker.x + 2, walker.y);
+                }
+                case 3 -> { // s
+                    if(mapLayout[walker.y+1][walker.x] != null && mapLayout[walker.y+1][walker.x].isCorridor()) walker.y += 2;
+                    else putRoomAt(walker.x, walker.y + 2);
+                }
+                case 4 -> { // w
+                    if(mapLayout[walker.y][walker.x-1] != null && mapLayout[walker.y][walker.x-1].isCorridor()) walker.x -= 2;
+                    else putRoomAt(walker.x - 2, walker.y);
+                }
             }
         }
         bossRoomPosition = new Position(walker.x, walker.y);
@@ -45,6 +57,8 @@ public class DrunkardWalk extends Generator {
     }
 
     private void makeSpecificRooms() {
+        List<Position> roomsToChange = new ArrayList<>();
+
         for(int y = 0; y < MAP_HEIGHT; y++) {
             for(int x = 0; x < MAP_LENGTH; x++) {
                 MAP mapTile = mapLayout[y][x];
@@ -57,8 +71,14 @@ public class DrunkardWalk extends Generator {
                 else if(bossRoomPosition.equals(x,y)) {
                     mapLayout[y][x] = MAP.BOSS;
                 }
+                else roomsToChange.add(new Position(x,y));
             }
         }
+
+        // --- TREASURE ROOMS ---
+        Random random = new Random();
+        Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+        mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
     }
 
     private void putRoomAt(int x, int y) {

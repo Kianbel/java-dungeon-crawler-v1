@@ -9,9 +9,10 @@ import util.Position;
 
 import java.util.Random;
 
-public class Box extends InteractableTile {
-    public Box(Position roomLayoutPosition) {
+public class Pot extends InteractableTile {
+    public Pot(Position roomLayoutPosition) {
         super(roomLayoutPosition, true);
+        isLightOccluding = true;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class Box extends InteractableTile {
                 GUIManager.getInstance().printLog("You break open a box and it dropped some coins!", UITheme.LOG_WORLD);
             }
         }
-        else dropTile = new BrokenBox(roomLayoutPosition);
+        else dropTile = new ShatteredPot(roomLayoutPosition);
 
         currentRoom.addInteractableTile(dropTile);
     }
