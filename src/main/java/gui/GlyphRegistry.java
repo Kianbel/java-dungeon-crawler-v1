@@ -3,6 +3,7 @@ package gui;
 import entity.*;
 import entity.boss.FlareWitch;
 import entity.monster.GiantSpider;
+import entity.monster.Rat;
 import entity.monster.Zombie;
 import entity.projectile.Fireball;
 import javafx.scene.paint.Color;
@@ -51,6 +52,7 @@ public class GlyphRegistry {
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("⛩", UITheme.TILE_SOLID_OBSTACLE),
+                new GlyphStyle("目", UITheme.TILE_SOLID_OBSTACLE),
         });
         tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
@@ -64,6 +66,9 @@ public class GlyphRegistry {
         });
         tileRegistry.put(TILE.IRON_BAR, new GlyphStyle[] {
                 new GlyphStyle("⛓", UITheme.TILE_IRON_BAR),
+        });
+        tileRegistry.put(TILE.SKELETON, new GlyphStyle[] {
+                new GlyphStyle("☠", UITheme.TILE_SKELETON),
         });
 
         // --- INTERACTABLE TILE REGISTRY ---
@@ -85,6 +90,7 @@ public class GlyphRegistry {
         registerEntity(Zombie.class, "Z", UITheme.ENTITY_ZOMBIE);
         registerEntity(GiantSpider.class, "S", UITheme.ENTITY_SPIDER);
         registerEntity(FlareWitch.class, "༒", UITheme.ENTITY_FLARE_WITCH);
+        registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
 
         // --- PROJECTILE ENTITY REGISTRY ---
         registerEntity(Fireball.class, "\uD83D\uDD25", UITheme.PROJECTILE_FIREBALL);

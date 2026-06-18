@@ -31,21 +31,41 @@ public class DrunkardWalk extends Generator {
 
         while(currentRoomAmount < roomsAmount) {
             switch (Randomizer.pick(1, 2, 3, 4)) {
-                case 1 -> { // n
-                    if(mapLayout[walker.y-1][walker.x] != null && mapLayout[walker.y-1][walker.x].isCorridor()) walker.y -= 2;
-                    else putRoomAt(walker.x, walker.y - 2);
+                case 1 -> { // North
+                    if (walker.y - 2 >= 0) {
+                        if (mapLayout[walker.y - 1][walker.x] != null && mapLayout[walker.y - 1][walker.x].isCorridor()) {
+                            walker.y -= 2;
+                        } else {
+                            putRoomAt(walker.x, walker.y - 2);
+                        }
+                    }
                 }
-                case 2 -> { // e
-                    if(mapLayout[walker.y][walker.x+1] != null && mapLayout[walker.y][walker.x+1].isCorridor()) walker.x += 2;
-                    else putRoomAt(walker.x + 2, walker.y);
+                case 2 -> { // East
+                    if (walker.x + 2 < MAP_LENGTH) {
+                        if (mapLayout[walker.y][walker.x + 1] != null && mapLayout[walker.y][walker.x + 1].isCorridor()) {
+                            walker.x += 2;
+                        } else {
+                            putRoomAt(walker.x + 2, walker.y);
+                        }
+                    }
                 }
-                case 3 -> { // s
-                    if(mapLayout[walker.y+1][walker.x] != null && mapLayout[walker.y+1][walker.x].isCorridor()) walker.y += 2;
-                    else putRoomAt(walker.x, walker.y + 2);
+                case 3 -> { // South
+                    if (walker.y + 2 < MAP_HEIGHT) {
+                        if (mapLayout[walker.y + 1][walker.x] != null && mapLayout[walker.y + 1][walker.x].isCorridor()) {
+                            walker.y += 2;
+                        } else {
+                            putRoomAt(walker.x, walker.y + 2);
+                        }
+                    }
                 }
-                case 4 -> { // w
-                    if(mapLayout[walker.y][walker.x-1] != null && mapLayout[walker.y][walker.x-1].isCorridor()) walker.x -= 2;
-                    else putRoomAt(walker.x - 2, walker.y);
+                case 4 -> { // West
+                    if (walker.x - 2 >= 0) {
+                        if (mapLayout[walker.y][walker.x - 1] != null && mapLayout[walker.y][walker.x - 1].isCorridor()) {
+                            walker.x -= 2;
+                        } else {
+                            putRoomAt(walker.x - 2, walker.y);
+                        }
+                    }
                 }
             }
         }
@@ -79,6 +99,13 @@ public class DrunkardWalk extends Generator {
         Random random = new Random();
         Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
         mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
+
+        // --- PUT NORMAL ROOMS ---
+        final double NORMAL_ROOM_AMOUNT = 0.3 * roomsToChange.size();
+        for(int i = 0; i < NORMAL_ROOM_AMOUNT; i++) {
+            Position normalRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+            mapLayout[normalRoomPos.y][normalRoomPos.x] = MAP.NORMAL;
+        }
     }
 
     private void putRoomAt(int x, int y) {
@@ -92,8 +119,8 @@ public class DrunkardWalk extends Generator {
 
         walker.x = x;
         walker.y = y;
-        if(mapLayout[y][x] != MAP.NORMAL) {
-            mapLayout[y][x] = MAP.NORMAL;
+        if(mapLayout[y][x] != MAP.EXTRA) {
+            mapLayout[y][x] = MAP.EXTRA;
             currentRoomAmount++;
         }
     }

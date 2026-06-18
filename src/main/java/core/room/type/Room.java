@@ -26,19 +26,12 @@ public abstract class Room {
 
     protected Random random = new Random();
 
-    public Room(int height, int length, Position minimapPosition) {
-        this.height = height;
-        this.length = length;
-        this.minimapPosition = minimapPosition;
-        layout = new TILE[height][length];
-
-        for(TILE[] row : layout) {
-            Arrays.fill(row, TILE.FLOOR);
-        }
-    }
-
     public Room(TILE[][] layout, Position minimapPosition) {
         this.layout = layout;
+        int randomRotationAmount = random.nextInt(4);
+        for(int i = 0; i < randomRotationAmount; i++) {
+            rotateLayout90Degrees(this.layout);
+        }
         this.minimapPosition = minimapPosition;
         this.height = layout.length;
         this.length = layout[0].length;
@@ -61,12 +54,20 @@ public abstract class Room {
 
         // --- HANDLE BOX/DOOR GENERATION ---
         final double BOX_SPAWN_CHANCE = 0.6;
+        final double BOOKSHELF_SPAWN_CHANCE = 0.6;
+        final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.5;
         final double WEB_SPAWN_CHANCE = 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 switch(layout[y][x]) {
+                    case SOLID_OBSTACLE -> {
+                        if(Math.random() > SOLID_OBSTACLE_SPAWN_CHANCE) this.layout[y][x] = TILE.FLOOR;
+                    }
+                    case BOOKSHELF -> {
+                        if(Math.random() > BOOKSHELF_SPAWN_CHANCE) this.layout[y][x] = TILE.FLOOR;
+                    }
                     case CARPET -> {
                         if(Math.random() <= CARPET_PUT_CHANCE) this.layout[y][x] = TILE.FLOOR;
                     }
@@ -171,6 +172,12 @@ public abstract class Room {
         return interactableTiles;
     }
 
+    public void addSkeletonTileAt(Position position) {
+        if(layout[position.y][position.x].isWalkable()) {
+            layout[position.y][position.x] = TILE.SKELETON;
+        }
+    }
+
     public boolean addInteractableTile(InteractableTile tile) {
         Position targetPosition = tile.roomLayoutPosition;
         if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
@@ -214,5 +221,42 @@ public abstract class Room {
             }
             default -> throw new RuntimeException("Invalid fromDirection: " + fromDirection);
         }
+    }
+
+    private void rotateLayout90Degrees(TILE[][] matrix) {
+        int n = matrix.length;
+        int blockSize = 64; // Optimized for typical CPU cache lines
+
+        // 1. Cache-friendly Transpose using Tiling
+        for (int r = 0; r < n; r += blockSize) {
+            for (int c = 0; c < n; c += blockSize) {
+
+                // Process the current block
+                for (int i = r; i < Math.min(r + blockSize, n); i++) {
+                    for (int j = c; j < Math.min(c + blockSize, n); j++) {
+                        if (i < j) {
+                            TILE temp = matrix[i][j];
+                            matrix[i][j] = matrix[j][i];
+                            matrix[j][i] = temp;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        // 2. Reverse rows
+        for (int i = 0; i < n; i++) {
+            int left = 0;
+            int right = n - 1;
+            while (left < right) {
+                TILE temp = matrix[i][left];
+                matrix[i][left] = matrix[i][right];
+                matrix[i][right] = temp;
+                left++;
+                right--;
+            }
+        }
+
     }
 }

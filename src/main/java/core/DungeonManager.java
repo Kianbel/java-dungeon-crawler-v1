@@ -17,7 +17,7 @@ public class DungeonManager {
         return instance;
     }
 
-    private final int ROOM_AMOUNT = 3;
+    private final int ROOM_AMOUNT = 10;
     private final int MAP_HEIGHT = 21;
     private final int MAP_LENGTH = 21;
 
@@ -71,6 +71,7 @@ public class DungeonManager {
                     case MAP.TREASURE -> newRoom = new TreasureRoom(minimapPosition);
                     case MAP.BOSS -> newRoom = new BossRoom(minimapPosition);
                     case MAP.NORMAL -> newRoom = new NormalRoom(minimapPosition);
+                    case MAP.EXTRA -> newRoom = new ExtraRoom(minimapPosition);
                     default -> {
                         continue;
                     }

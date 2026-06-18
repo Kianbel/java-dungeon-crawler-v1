@@ -5,6 +5,7 @@ public enum MAP {
     BOSS,
     NORMAL,
     TREASURE,
+    EXTRA,
     VCORRIDOR,
     HCORRIDOR,
     EMPTY;

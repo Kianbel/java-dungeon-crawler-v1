@@ -13,7 +13,7 @@ import world.Staircase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Boss extends Monster {
+public abstract class Boss extends Monster {
     protected final List<Entity> summonedEntities = new ArrayList<>();
 
     public Boss(String name, int health, int armor, Weapon weapon, Position position) {

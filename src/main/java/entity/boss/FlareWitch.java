@@ -46,4 +46,9 @@ public class FlareWitch extends Boss {
     public void makeMove() {
         stateMachine.update();
     }
+
+    @Override
+    protected void makeSoundTextPopup() {
+        // do nothing
+    }
 }

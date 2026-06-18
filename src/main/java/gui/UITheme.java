@@ -51,9 +51,10 @@ public class UITheme {
     public static Color TILE_WATER = Color.web("#ecb55f");
     public static Color TILE_BOOKSHELF = Color.web("#8c3f5d");
     public static Color TILE_PASSABLE_OBSTACLE = Color.web("#731144");
-    public static Color TILE_SOLID_OBSTACLE = Color.PINK;
+    public static Color TILE_SOLID_OBSTACLE = Color.web("#8c3f5d");
     public static Color TILE_CARPET = Color.web("#8c3f5d");
     public static Color TILE_IRON_BAR = Color.web("#e36433");
+    public static Color TILE_SKELETON = Color.web("#731144");
 
 
     // --- INTERACTABLE TILES ---
@@ -75,6 +76,7 @@ public class UITheme {
     public static Color ENTITY_ZOMBIE = Color.web("#3ca370");
     public static Color ENTITY_SPIDER = Color.web("#8c3f5d");
     public static Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
+    public static Color ENTITY_RAT = Color.web("#ba6156");
 
     // --- PROJECTILES
     public static Color PROJECTILE_FIREBALL = Color.web("#f2a65e");

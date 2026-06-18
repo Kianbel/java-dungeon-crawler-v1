@@ -20,13 +20,16 @@ public enum TILE {
     IRON_BAR,
     SPIKE,
     SHOOTER,
+    HOLE,
+    SKELETON,
     EMPTY;
 
     public boolean isWalkable() {
         return this == FLOOR ||
                 this == PASSABLE_OBSTACLE ||
                 this == GRASS ||
-                this == CARPET;
+                this == CARPET ||
+                this == SKELETON;
     }
 
     public boolean isLightOccluding() {

@@ -132,7 +132,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         return null;
     }
 
-    protected void makeSoundTextPopup() {}
+    protected abstract void makeSoundTextPopup();
 
     public Position pathfindToPlayerPosition() {
         return pathfindToPlayerPosition(false);

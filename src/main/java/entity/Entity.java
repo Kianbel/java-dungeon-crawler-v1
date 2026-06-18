@@ -14,6 +14,7 @@ import world.InteractableTile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public abstract class Entity {
     public String name;
@@ -27,6 +28,8 @@ public abstract class Entity {
 
     private Color color;
     private final IlluminationData illuminationData;
+
+    protected Random random = new Random();
 
     public Entity(String name, int health, int armor, Weapon weapon, Position position) {
         this.name = name;
@@ -73,6 +76,7 @@ public abstract class Entity {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(currentRoom == null) return;
+        currentRoom.addSkeletonTileAt(position);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
     }
 
