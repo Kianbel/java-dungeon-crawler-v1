@@ -1,6 +1,7 @@
 package core.room.type;
 
 import core.EntityRoomManager;
+import core.Game;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
 import item.weapon.IronBlade;
@@ -24,6 +25,10 @@ public class SpawnRoom extends Room {
     public void populateWithEntities() {
         super.populateWithEntities();
 
-        EntityRoomManager.getInstance().addEntityToRoom(new Player(new Position(length/2, height/2)), this);
+        if(Game.getInstance().getPlayer() == null) {
+            Player player = new Player(new Position(length/2, height/2));
+            EntityRoomManager.getInstance().addEntityToRoom(player, this);
+            Game.getInstance().setPlayer(player);
+        }
     }
 }

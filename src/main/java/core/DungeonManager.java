@@ -17,14 +17,17 @@ public class DungeonManager {
         return instance;
     }
 
-    private final int ROOM_AMOUNT = 10;
+    private final int ROOM_AMOUNT = 3;
     private final int MAP_HEIGHT = 21;
     private final int MAP_LENGTH = 21;
 
     private MAP[][] mapLayout;
     private List<Room> roomList = new ArrayList<>(ROOM_AMOUNT);
 
-    public void generateDungeon() {
+    /**
+     * @return Spawn room
+     */
+    public Room generateDungeon() {
         roomList.clear();
 
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk(MAP_HEIGHT, MAP_LENGTH));
@@ -35,12 +38,15 @@ public class DungeonManager {
 
         generateRooms();
 
+        Room spawnRoom = null;
         for(Room r : roomList) {
             EntityRoomManager.getInstance().addRoom(r);
+            if(r instanceof SpawnRoom) spawnRoom = r;
             r.populateWithEntities();
         }
 
         dungeonMapGenerator.printMapLayout();
+        return spawnRoom;
     }
 
     private void generateRooms() {

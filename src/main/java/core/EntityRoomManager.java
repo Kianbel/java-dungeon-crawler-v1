@@ -49,6 +49,18 @@ public class EntityRoomManager {
         return hashmap.get(room).add(entity);
     }
 
+    public boolean replaceEntityInRoom(Entity oldEntity, Entity newEntity, Room room) {
+        if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
+        List<Entity> entities = hashmap.get(room);
+        if(entities.isEmpty()) return false;
+
+        int oldEntityIndex = entities.indexOf(oldEntity);
+        if(oldEntityIndex == -1) return false;
+
+        entities.set(oldEntityIndex, newEntity);
+        return true;
+    }
+
     public boolean removeEntityFromRoom(Entity entity, Room room) {
         if(!hashmap.containsKey(room)) throw new RuntimeException("Room: " + room + " not found");
         return hashmap.get(room).remove(entity);

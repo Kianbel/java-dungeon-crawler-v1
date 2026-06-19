@@ -1,6 +1,7 @@
 package entity;
 
 import core.EntityRoomManager;
+import core.Game;
 import entity.monster.Monster;
 import gui.GUIManager;
 import gui.UITheme;
@@ -8,6 +9,7 @@ import item.HealthPotion;
 import item.Item;
 import item.key.LevelKey;
 import item.key.RoomKey;
+import item.weapon.DevOneShotWeapon;
 import javafx.scene.paint.Color;
 import item.weapon.Weapon;
 import item.weapon.AncientSword;
@@ -34,6 +36,7 @@ public class Player extends Entity {
 
     public Player(Position position) {
         super("Player", 100, 0, new AncientSword(), position);
+
         setIlluminated(true);
         setIlluminationRange(8);
 
@@ -57,6 +60,7 @@ public class Player extends Entity {
             armor = 1000;
             hungerDecreaseCounter = 9999999;
             hunger = 99999999;
+            setWeapon(new DevOneShotWeapon());
             overrideColor(Color.RED);
         }
         else {
@@ -64,6 +68,7 @@ public class Player extends Entity {
             armor = 0;
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
+            setWeapon(new AncientSword());
             resetColor();
         }
     }
