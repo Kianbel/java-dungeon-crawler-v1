@@ -5,13 +5,12 @@ import util.Position;
 public class Viewport {
     private int screenWidth;
     private int screenHeight;
-    private final int trackingMargin;
     private final Position cameraOffset = new Position(0, 0);
 
     public Viewport(int screenWidth, int screenHeight, int trackingMargin) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.trackingMargin = trackingMargin;
+        // trackingMargin is preserved to prevent breaking existing code instantiation instantiations
     }
 
     public void updateScreenDimensions(int width, int height) {
@@ -19,33 +18,32 @@ public class Viewport {
         this.screenHeight = height;
     }
 
+    /**
+     * Instantly centers the camera on the focus point, securely clamped within room boundaries.
+     */
     public void updateCameraFocus(Position focusPoint, int worldMaxW, int worldMaxH) {
         if (focusPoint == null) return;
 
-        // --- Horizontal Tracking Pipeline ---
+        // --- Horizontal Centering Logic ---
         if (worldMaxW >= screenWidth) {
-            int localizedTargetX = focusPoint.x - cameraOffset.x;
-            if (localizedTargetX < trackingMargin) {
-                cameraOffset.x = focusPoint.x - trackingMargin;
-            } else if (localizedTargetX >= screenWidth - trackingMargin) {
-                cameraOffset.x = focusPoint.x - (screenWidth - 1 - trackingMargin);
-            }
+            // Instantly offset the camera so the focus point lands dead center
+            cameraOffset.x = focusPoint.x - (screenWidth / 2);
+            // Secure bounds clamp
             cameraOffset.x = Math.max(0, Math.min(cameraOffset.x, worldMaxW - screenWidth));
         } else {
-            cameraOffset.x = -(screenWidth - worldMaxW) >> 1; // Optimized bitwise division by 2
+            // Center smaller rooms horizontally on the canvas screen
+            cameraOffset.x = -(screenWidth - worldMaxW) >> 1;
         }
 
-        // --- Vertical Tracking Pipeline ---
+        // --- Vertical Centering Logic ---
         if (worldMaxH >= screenHeight) {
-            int localizedTargetY = focusPoint.y - cameraOffset.y;
-            if (localizedTargetY < trackingMargin) {
-                cameraOffset.y = focusPoint.y - trackingMargin;
-            } else if (localizedTargetY >= screenHeight - trackingMargin) {
-                cameraOffset.y = focusPoint.y - (screenHeight - 1 - trackingMargin);
-            }
+            // Instantly offset the camera so the focus point lands dead center
+            cameraOffset.y = focusPoint.y - (screenHeight / 2);
+            // Secure bounds clamp
             cameraOffset.y = Math.max(0, Math.min(cameraOffset.y, worldMaxH - screenHeight));
         } else {
-            cameraOffset.y = -(screenHeight - worldMaxH) >> 1; // Optimized bitwise division by 2
+            // Center smaller rooms vertically on the canvas screen
+            cameraOffset.y = -(screenHeight - worldMaxH) >> 1;
         }
     }
 

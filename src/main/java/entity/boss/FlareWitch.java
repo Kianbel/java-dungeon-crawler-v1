@@ -1,22 +1,11 @@
 package entity.boss;
 
-import core.EntityRoomManager;
-import core.room.type.Room;
 import entity.Entity;
-import entity.monster.Monster;
-import gui.GUIManager;
-import gui.UITheme;
-import item.key.LevelKey;
-import javafx.geometry.Pos;
-import javafx.scene.paint.Color;
+import gui.dataclass.UITheme;
 import util.Position;
 import item.weapon.Fist;
-import world.DroppedItem;
 import world.InteractableTile;
-import world.Staircase;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class FlareWitch extends Boss {

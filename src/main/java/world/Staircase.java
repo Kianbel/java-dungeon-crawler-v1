@@ -4,7 +4,7 @@ import core.Game;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.Position;
 
@@ -19,7 +19,7 @@ public class Staircase extends InteractableTile {
         if(entity instanceof Player p) {
             GUIManager.getInstance().printLog("You go down deeper into the dungeon...", UITheme.LOG_PLAYER_ACTION);
             Game.getInstance().nextFloor();
-            GUIManager.getInstance().triggerColorFlash(Color.BLACK, 1000, 0, 1);
+            GUIManager.getInstance().triggerColorFlash(Color.BLACK, 1000);
         }
     }
 }

@@ -4,7 +4,7 @@ import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import util.Position;
 
 public class Chest extends InteractableTile {

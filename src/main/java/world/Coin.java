@@ -4,7 +4,6 @@ import core.EntityRoomManager;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
-import gui.UITheme;
 import javafx.scene.paint.Color;
 import util.Position;
 

@@ -2,7 +2,7 @@ package world;
 
 import entity.Entity;
 import entity.MoveAfterPlayer;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import util.Position;
 
 import java.util.Random;

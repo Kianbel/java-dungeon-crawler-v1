@@ -3,7 +3,7 @@ package entity;
 import core.EntityRoomManager;
 import core.IlluminationData;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.DIRECTION;
 import item.weapon.Weapon;

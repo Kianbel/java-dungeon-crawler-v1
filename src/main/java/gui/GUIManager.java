@@ -1,6 +1,7 @@
 package gui;
 
 import entity.Entity;
+import gui.dataclass.TextPopupData;
 import item.Item;
 import javafx.scene.paint.Color;
 import core.room.type.Room;
@@ -42,28 +43,24 @@ public class GUIManager {
         if (isPipelineOperational()) controller.clearLogContainer();
     }
 
-    public void triggerHurtFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.DARKRED, 50, 0.3, 0);
-    }
-
-    public void triggerHealFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.GREEN, 200, 0.3, 0);
-    }
-
     public void triggerColorFlash(Color color, int durationMilis) {
-        if (isPipelineOperational()) controller.flashScreenEffect(color, durationMilis, 0.3, 0);
+        if (isPipelineOperational())
+            controller.triggerScreenFadeSequence(
+                    color,
+                    0,
+                    durationMilis,
+                    durationMilis*2,
+                    null,
+                    null
+            );
     }
 
-    public void triggerColorFlash(Color color, int durationMilis, double fromOpacity, double toOpacity) {
-        if (isPipelineOperational()) controller.flashScreenEffect(color, durationMilis, fromOpacity, toOpacity);
-    }
-
-    public void triggerColorFlash(Color color) {
-        controller.flashScreenEffect(color, 60, 0.3, 0);
+    public void triggerHurtFlash() {
+        if (isPipelineOperational()) triggerColorFlash(Color.RED, 60);
     }
 
     public void triggerRoomTransitionFlash() {
-        if (isPipelineOperational()) controller.flashScreenEffect(Color.BLACK, 500, 0.8, 0);
+        if (isPipelineOperational()) triggerColorFlash(Color.BLACK, 60);
     }
 
     public void triggerAttackAnimation(Entity attacker, Position targetPosition) {
@@ -82,7 +79,6 @@ public class GUIManager {
             controller.triggerTextPopup(textPopupData, durationMs);
         }
     }
-
 
     public void triggerAttackAnimation(Entity attacker, Entity target) {
         triggerAttackAnimation(attacker, target.position);

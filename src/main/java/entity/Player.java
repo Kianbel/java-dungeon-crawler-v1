@@ -1,10 +1,9 @@
 package entity;
 
 import core.EntityRoomManager;
-import core.Game;
 import entity.monster.Monster;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import item.HealthPotion;
 import item.Item;
 import item.key.LevelKey;

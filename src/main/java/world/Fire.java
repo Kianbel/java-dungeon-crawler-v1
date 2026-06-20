@@ -5,7 +5,7 @@ import core.room.type.Room;
 import entity.Entity;
 import entity.Player;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import util.Position;
 
 public class Fire extends InteractableTile {

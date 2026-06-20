@@ -3,9 +3,8 @@ package entity.monster;
 import core.EntityRoomManager;
 import entity.Entity;
 import gui.GUIManager;
-import gui.UITheme;
+import gui.dataclass.UITheme;
 import item.weapon.Fist;
-import item.weapon.Weapon;
 import javafx.scene.paint.Color;
 import util.Position;
 

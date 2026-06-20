@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.kirk.javadungeoncrawlerv1/gui.GameApplication
+                            <mainClass>com.kirk.javadungeoncrawlerv1/gui.app.GameApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

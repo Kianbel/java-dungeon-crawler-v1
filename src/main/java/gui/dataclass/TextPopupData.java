@@ -1,4 +1,4 @@
-package gui;
+package gui.dataclass;
 
 import javafx.scene.paint.Color;
 import util.Position;

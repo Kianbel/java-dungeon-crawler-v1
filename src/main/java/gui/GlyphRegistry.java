@@ -6,6 +6,8 @@ import entity.monster.GiantSpider;
 import entity.monster.Rat;
 import entity.monster.Zombie;
 import entity.projectile.Fireball;
+import gui.dataclass.GlyphStyle;
+import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;

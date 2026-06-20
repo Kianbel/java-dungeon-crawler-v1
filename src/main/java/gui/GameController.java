@@ -1,819 +1,393 @@
-    package gui;
-    
-    import core.Game;
-    import entity.Entity;
-    import entity.monster.Monster;
-    import entity.Player;
-    import core.DungeonManager;
-    import core.EntityRoomManager;
-    import core.room.type.Room;
-    import item.Item;
-    import javafx.animation.AnimationTimer;
-    import javafx.animation.FadeTransition;
-    import javafx.animation.KeyFrame;
-    import javafx.animation.Timeline;
-    import javafx.scene.shape.Rectangle;
-    import javafx.stage.Stage;
-    import javafx.util.Duration;
-    import util.ANIMATION_CURVE;
-    import util.MAP;
-    import util.Position;
-    import util.TILE;
-    import item.weapon.Weapon;
-    
-    import javafx.fxml.FXML;
-    import javafx.scene.canvas.Canvas;
-    import javafx.scene.control.Label;
-    import javafx.scene.layout.StackPane;
-    import javafx.scene.layout.VBox;
-    import javafx.scene.layout.HBox;
-    import javafx.scene.paint.Color;
-    import javafx.scene.input.KeyCode;
-    import world.*;
-    
-    import java.util.*;
-    
-    public class GameController {
-    
-        @FXML private HBox rootContainer;
-        @FXML private StackPane canvasContainer;
-        @FXML private Canvas canvas;
-        @FXML private VBox logContainer;
-        @FXML private VBox statsPanel, logsPanel, controlsPanel, controlsBox;
-        @FXML private Label statsHeader, logsHeader, controlsHeader;
-        @FXML private Label lblHealth, lblHunger, lblCoins, lblArmor, lblWeapon;
-        @FXML private Label healthBar, healthValText;
-        @FXML private Label hungerBar, hungerValText;
-        @FXML private Label armorText, weaponText, coinsText;
-        @FXML private VBox inventoryPanel, inventoryBox;
-        @FXML private Label inventoryHeader;
-    
-        private GameCanvas gameCanvas;
-        private Viewport viewport;
-        private GameFSM gameFSM;
-    
-        // --- TILES ---
-        private double currentTileSize = 40;
-        private final double MIN_TILE_SIZE = 6.0;
-        private final double MAX_TILE_SIZE = 70.0;
-        private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
-    
-        // --- DARKNESS ---
-        private enum LIGHT_LEVEL {
-            ILLUMINATED,
-            DIM,
-            PURE_DARKNESS,
-        }
-    
-        // --- PERSISTENT ZERO-ALLOCATION SPATIAL CACHES ---
-        private InteractableTile[][] interactableGridCache;
-        private Entity[][] entityGridCache;
-        private LIGHT_LEVEL[][] lightGridCache;
-    
-        // --- LOGS ---
-        private final int MAX_LOG_LINES = 6;
-    
-        // --- ENEMY ATTACK SLIDE OFFSET ANIMATION ---
-        private final Map<Entity, RenderOffset> entityAnimationPixelDrawOffsets = new HashMap<>();
-    
-        // --- TEXT POP UPS ---
-        private final List<TextPopupData> textPopupDataList = new ArrayList<>();
+package gui;
 
-        private Rectangle currentFlashOverlay = null;
-    
-        @FXML
-        public void initialize() {
-            canvas.setManaged(false);
-            gameCanvas = new GameCanvas(canvas, currentTileSize);
-            viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
-            gameFSM = new GameFSM(this);
-            Game.initialize(this);
-    
-            GUIManager.getInstance().registerController(this);
-            applyInterfaceTheme();
-    
-            setup();
-    
-            canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
-                canvas.setWidth(newVal.doubleValue());
-                handleWindowResize();
-            });
-            canvasContainer.heightProperty().addListener((obs, oldVal, newVal) -> {
-                canvas.setHeight(newVal.doubleValue());
-                handleWindowResize();
-            });
-    
-            gameFSM.runGame();
-            attachKeyboardHandlers();
-        }
-    
-        private void setup() {
-            textPopupDataList.clear();
-            entityAnimationPixelDrawOffsets.clear();
-            clearLogContainer();
-            EntityRoomManager.getInstance().clear();
-            Game.getInstance().reset();
-    
-            DungeonManager.getInstance().generateDungeon();
-    
-            Player player = (Player) EntityRoomManager.getInstance().getPlayer();
-            Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
-            final int roomWidth = currentRoom.length;
-            final int roomHeight = currentRoom.height;
-    
-            viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
-        }
-    
-        private void applyInterfaceTheme() {
-            rootContainer.setStyle("-fx-background-color: " + UITheme.BG_ROOT + "; " + UITheme.CSS_FONT_FAMILY);
-            canvasContainer.setStyle("-fx-border-color: " + UITheme.BORDER_HIGHLIGHT + "; -fx-border-width: 2; -fx-background-color: #000000;");
-    
-            String subPanelStyle = "-fx-border-color: " + UITheme.BORDER_NORMAL + "; -fx-border-width: 2; -fx-background-color: " + UITheme.BG_CARD + ";";
-            statsPanel.setStyle(subPanelStyle);
-            logsPanel.setStyle(subPanelStyle);
-            controlsPanel.setStyle(subPanelStyle);
-    
-            String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: #ede6c8;";
-            statsHeader.setStyle(headerStyle);
-            logsHeader.setStyle(headerStyle);
-            controlsHeader.setStyle(headerStyle);
-    
-            lblHealth.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
-            lblHunger.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
-            lblCoins.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_COIN) + ";");
-            lblArmor.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_ARMOR) + ";");
-            lblWeapon.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_WEAPON) + ";");
-    
-            String activeMetricStyle = UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + "; -fx-font-weight: bold;";
-            healthValText.setStyle(activeMetricStyle);
-            hungerValText.setStyle(activeMetricStyle);
-            coinsText.setStyle(activeMetricStyle);
-    
-            healthBar.setStyle(UITheme.STYLE_BAR + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
-            hungerBar.setStyle(UITheme.STYLE_BAR + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HUNGER) + ";");
-            armorText.setStyle(activeMetricStyle);
-            weaponText.setStyle(activeMetricStyle);
-            coinsText.setStyle(activeMetricStyle);
-    
-            // Add this inside applyInterfaceTheme() alongside the other panels
-            inventoryPanel.setStyle(subPanelStyle);
-            inventoryHeader.setStyle(headerStyle);
-    
-            buildControlsReferenceHud();
-        }
-    
-        private void handleWindowResize() {
-            if (gameCanvas == null) return;
-            gameCanvas.updateFontSize(currentTileSize);
-            int cols = gameCanvas.getGridColumns();
-            int rows = gameCanvas.getGridRows();
-            viewport.updateScreenDimensions(cols, rows);
-    
-            updateRenderingPipeline();
-        }
-    
-        public void adjustTileSize(double delta) {
-            double newSize = currentTileSize + delta;
-            if (newSize < MIN_TILE_SIZE || newSize > MAX_TILE_SIZE) return;
-            this.currentTileSize = newSize;
+import core.Game;
+import entity.Entity;
+import entity.monster.Monster;
+import entity.Player;
+import core.DungeonManager;
+import core.EntityRoomManager;
+import core.room.type.Room;
+import gui.dataclass.GlyphStyle;
+import gui.dataclass.RenderOffset;
+import gui.dataclass.TextPopupData;
+import gui.dataclass.UITheme;
+import item.weapon.Weapon;
+import javafx.stage.Stage;
+import util.ANIMATION_CURVE;
+import util.MAP;
+import util.Position;
+import util.TILE;
+
+import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.input.KeyCode;
+import world.*;
+
+import java.util.*;
+
+public class GameController {
+
+    @FXML HBox rootContainer;
+    @FXML StackPane canvasContainer;
+    @FXML Canvas canvas;
+    @FXML VBox logContainer;
+    @FXML VBox statsPanel, logsPanel, controlsPanel, controlsBox;
+    @FXML Label statsHeader, logsHeader, controlsHeader;
+    @FXML Label lblHealth, lblHunger, lblCoins, lblArmor, lblWeapon;
+    @FXML Label healthBar, healthValText;
+    @FXML Label hungerBar, hungerValText;
+    @FXML Label armorText, weaponText, coinsText;
+    @FXML VBox inventoryPanel, inventoryBox;
+    @FXML Label inventoryHeader;
+
+    private GameCanvas gameCanvas;
+    private Viewport viewport;
+    private GameFSM gameFSM;
+
+    // --- DELEGATED SUBSYSTEM MANAGERS ---
+    private LightingEngine lightingEngine;
+    private AnimationManager animationManager;
+    private HUDManager hudManager;
+
+    private double currentTileSize = 40;
+    private final double MIN_TILE_SIZE = 6.0;
+    private final double MAX_TILE_SIZE = 70.0;
+    private final double TILE_SIZE_CHANGE_AMOUNT = 2.0;
+
+    private InteractableTile[][] interactableGridCache;
+    private Entity[][] entityGridCache;
+
+    @FXML
+    public void initialize() {
+        canvas.setManaged(false);
+        gameCanvas = new GameCanvas(canvas, currentTileSize);
+        viewport = new Viewport(gameCanvas.getGridColumns(), gameCanvas.getGridRows(), 6);
+        gameFSM = new GameFSM(this);
+
+        // Subsystem Initializations
+        lightingEngine = new LightingEngine();
+        animationManager = new AnimationManager(canvasContainer, canvas, this::updateRenderingPipeline);
+        hudManager = new HUDManager(this);
+
+        Game.initialize(this);
+        GUIManager.getInstance().registerController(this);
+
+        hudManager.applyInterfaceTheme();
+        setup();
+
+        canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setWidth(newVal.doubleValue());
             handleWindowResize();
+        });
+        canvasContainer.heightProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setHeight(newVal.doubleValue());
+            handleWindowResize();
+        });
+
+        gameFSM.runGame();
+        attachKeyboardHandlers();
+    }
+
+    private void setup() {
+        animationManager.clearAllAnimations();
+        hudManager.clearLogContainer();
+        EntityRoomManager.getInstance().clear();
+        Game.getInstance().reset();
+
+        DungeonManager.getInstance().generateDungeon();
+
+        Player player = (Player) EntityRoomManager.getInstance().getPlayer();
+        Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
+
+        viewport.updateCameraFocus(player.position, currentRoom.length, currentRoom.height);
+    }
+
+    private void handleWindowResize() {
+        if (gameCanvas == null) return;
+        gameCanvas.updateFontSize(currentTileSize);
+        viewport.updateScreenDimensions(gameCanvas.getGridColumns(), gameCanvas.getGridRows());
+        updateRenderingPipeline();
+    }
+
+    public void adjustTileSize(double delta) {
+        double newSize = currentTileSize + delta;
+        if (newSize < MIN_TILE_SIZE || newSize > MAX_TILE_SIZE) return;
+        this.currentTileSize = newSize;
+        handleWindowResize();
+    }
+
+    private void synchronizeSpatialCaches(int width, int height) {
+        if (interactableGridCache == null || interactableGridCache.length != height || interactableGridCache[0].length != width) {
+            interactableGridCache = new InteractableTile[height][width];
+            entityGridCache = new Entity[height][width];
         }
-    
-        /**
-         * Prepares and resets memory spaces natively to completely isolate heap allocations.
-         * Fixed to ensure brand-new cache matrices are fully populated with baseline values.
-         */
-        private void synchronizeSpatialCaches(int width, int height) {
-            // 1. Allocate arrays if they are null or if room dimensions changed
-            if (interactableGridCache == null || interactableGridCache.length != height || interactableGridCache[0].length != width) {
-                interactableGridCache = new InteractableTile[height][width];
-                entityGridCache = new Entity[height][width];
-                lightGridCache = new LIGHT_LEVEL[height][width];
-            }
-    
-            // 2. Clear or reset all indices to prevent NullPointerExceptions across frames
-            for (int row = 0; row < height; row++) {
-                Arrays.fill(interactableGridCache[row], null);
-                Arrays.fill(entityGridCache[row], null);
-                Arrays.fill(lightGridCache[row], LIGHT_LEVEL.PURE_DARKNESS);
-            }
+        for (int row = 0; row < height; row++) {
+            Arrays.fill(interactableGridCache[row], null);
+            Arrays.fill(entityGridCache[row], null);
         }
-    
-        public void updateRenderingPipeline() {
-            final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
-            if (activeRoom == null) return;
-            final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
-    
-            final TILE[][] roomLayout = activeRoom.getLayout();
-            final int roomHeight = roomLayout.length;
-            final int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
-    
-            if (player != null) {
-                viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
-            }
-    
-            gameCanvas.clearCanvas();
-            GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
-    
-            // Initialize or wipe persistent matrices without spawning fresh objects
-            synchronizeSpatialCaches(roomWidth, roomHeight);
-    
-            // Map interactable layers instantly
-            List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
-            if (interactableTiles != null) {
-                for (int i = 0; i < interactableTiles.size(); i++) {
-                    InteractableTile interactable = interactableTiles.get(i);
-                    Position pos = interactable.roomLayoutPosition;
-                    if (pos.y >= 0 && pos.y < roomHeight && pos.x >= 0 && pos.x < roomWidth) {
-                        interactableGridCache[pos.y][pos.x] = interactable;
-                    }
-                }
-            }
-    
-            // Map moving entities into matrix coordinates
-            List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
-            if (entitiesInRoom != null) {
-                for (int i = 0; i < entitiesInRoom.size(); i++) {
-                    Entity entity = entitiesInRoom.get(i);
-                    if (entity.position != null && entity.position.y >= 0 && entity.position.y < roomHeight && entity.position.x >= 0 && entity.position.x < roomWidth) {
-                        entityGridCache[entity.position.y][entity.position.x] = entity;
-                    }
-                }
-            }
-    
-            // --- FORWARD BLITTING LIGHT ENGINE: Project light outwards from emitters ---
-            if (player != null && player.isIlluminated()) {
-                blitLightSource(player.position.x, player.position.y, player.getIlluminationRange(), roomLayout, roomWidth, roomHeight);
-            }
-    
-            if (entitiesInRoom != null) {
-                for (int i = 0; i < entitiesInRoom.size(); i++) {
-                    Entity entity = entitiesInRoom.get(i);
-                    if (entity.position != null && entity.isIlluminated()) {
-                        blitLightSource(entity.position.x, entity.position.y, entity.getIlluminationRange(), roomLayout, roomWidth, roomHeight);
-                    }
-                }
-            }
-    
-            for (int row = 0; row < roomHeight; row++) {
-                for (int col = 0; col < roomWidth; col++) {
-                    InteractableTile interactable = interactableGridCache[row][col];
-                    if (interactable instanceof Fire) {
-                        blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight);
-                    }
-                }
-            }
-    
-            List<Position> travelledPositions = activeRoom.getPlayerTravelledPositions();
-            double memoryThreshold = (player != null) ? player.getIlluminationRange() : 0.0;
-    
-            // --- VIEWPORT RENDERING CYCLE: Direct grid rendering using O(1) lookups ---
-            for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
-                for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
-    
-                    Position worldPosition = viewport.toWorldPosition(screenX, screenY);
-    
-                    boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < roomWidth && worldPosition.y >= 0 && worldPosition.y < roomHeight;
-                    if (!isWithinRoomBounds) {
-                        gameCanvas.drawCharacter(screenX, screenY, glyphRegistry.getVoidStyle().glyph(), UITheme.CANVAS_VOID, 0.0, 0.0);
-                        continue;
-                    }
-    
-                    String activeGlyph = glyphRegistry.getVoidStyle().glyph();
-                    Color activeColor = UITheme.CANVAS_VOID;
-    
-                    // Layer 1: Layout structure maps
-                    TILE tile = roomLayout[worldPosition.y][worldPosition.x];
-                    if (tile != null) {
-                        GlyphStyle tileStyle;
-                        if (tile == TILE.WATER) {
-                            tileStyle = glyphRegistry.getStyle(tile);
-                        } else {
-                            tileStyle = glyphRegistry.getStyle(tile, worldPosition.x, worldPosition.y, activeRoom.id);
-                        }
-                        activeGlyph = tileStyle.glyph();
-                        activeColor = tileStyle.color();
-                    }
-    
-                    // Layer 2: Interactable objects
-                    InteractableTile currentInteractable = interactableGridCache[worldPosition.y][worldPosition.x];
-                    if (currentInteractable != null) {
-                        GlyphStyle interactableTileStyle = glyphRegistry.getStyle(currentInteractable);
-                        activeGlyph = interactableTileStyle.glyph();
-                        if(currentInteractable.getColor() != null) {
-                            activeColor = currentInteractable.getColor();
-                        }
-                        else activeColor = interactableTileStyle.color();
-                    }
-    
-                    // Layer 3: Living entities
-                    Monster damagedMonsterOverlayTarget = null;
-                    double entityPixelOffsetX = 0.0;
-                    double entityPixelOffsetY = 0.0;
-    
-                    Entity entity = entityGridCache[worldPosition.y][worldPosition.x];
-                    if (entity != null) {
-                        GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
-                        activeGlyph = entityStyle.glyph();
-    
-                        if (entityAnimationPixelDrawOffsets.containsKey(entity)) {
-                            RenderOffset animationOffset = entityAnimationPixelDrawOffsets.get(entity);
-                            entityPixelOffsetX = animationOffset.x;
-                            entityPixelOffsetY = animationOffset.y;
-                        }
-    
-                        if (entity instanceof Player) {
-                            activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
-                        } else {
-                            if (entity.getColor() != null) {
-                                activeColor = entity.getColor();
-                            } else {
-                                double hue = entityStyle.color().getHue();
-                                double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
-                                double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
-                                activeColor = Color.hsb(hue, saturation, brightness);
-                            }
-    
-                            if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
-                                damagedMonsterOverlayTarget = (Monster) entity;
-                            }
-                        }
-                    }
-    
-                    // Gather illumination from our pre-blitted matrix
-                    LIGHT_LEVEL lightLevel = lightGridCache[worldPosition.y][worldPosition.x];
-    
-                    // Parse map exploration traces
-                    boolean isTravelled = false;
-                    if (player != null && travelledPositions != null) {
-                        for (int i = 0; i < travelledPositions.size(); i++) {
-                            Position previousTravelledPos = travelledPositions.get(i);
-                            double dx = worldPosition.x - previousTravelledPos.x;
-                            double dy = worldPosition.y - previousTravelledPos.y;
-                            if ((dx * dx + dy * dy) <= (memoryThreshold * memoryThreshold) &&
-                                    isPathClear(previousTravelledPos.x, previousTravelledPos.y, worldPosition.x, worldPosition.y, roomLayout)) {
-                                isTravelled = true;
-                                break;
-                            }
-                        }
-                    }
-    
-                    switch (lightLevel) {
-                        case ILLUMINATED -> {}
-                        case DIM -> activeColor = activeColor.darker();
-                        default -> activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
-                    }
-    
-                    gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
-    
-                    if (damagedMonsterOverlayTarget != null) {
-                        double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
-                        gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
-                    }
-                }
-            }
-    
-            // SCREEN OVERLAY RENDERING
-            for (int i = 0; i < textPopupDataList.size(); i++) {
-                TextPopupData textPopup = textPopupDataList.get(i);
-                Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
-    
-                if (screenPos != null) {
-                    Color blendedPopupColor = new Color(
-                            textPopup.color.getRed(),
-                            textPopup.color.getGreen(),
-                            textPopup.color.getBlue(),
-                            textPopup.opacity
-                    );
-    
-                    final double offsetX = (double) (textPopup.hashCode() * 17 % 101) % 20;
-                    gameCanvas.drawString(screenPos.x, screenPos.y - 1, textPopup.text, 22, blendedPopupColor, offsetX, textPopup.pixelOffsetY);
-                }
-            }
-        }
-    
-        /**
-         * Blits light outwards onto our lighting cache inside an emitter's localized bounding box.
-         */
-        private void blitLightSource(int sourceX, int sourceY, int brightRange, TILE[][] roomLayout, int roomWidth, int roomHeight) {
-            final int dimRange = 2;
-            final int maximumRange = brightRange + dimRange;
-    
-            int startX = Math.max(0, sourceX - maximumRange);
-            int endX = Math.min(roomWidth - 1, sourceX + maximumRange);
-            int startY = Math.max(0, sourceY - maximumRange);
-            int endY = Math.min(roomHeight - 1, sourceY + maximumRange);
-    
-            for (int y = startY; y <= endY; y++) {
-                for (int x = startX; x <= endX; x++) {
-                    // If a tile is already directly illuminated, bypass calculation steps
-                    if (lightGridCache[y][x] == LIGHT_LEVEL.ILLUMINATED) continue;
-    
-                    int dx = x - sourceX;
-                    int dy = y - sourceY;
-                    double distanceSquared = (dx * dx) + (dy * dy);
-    
-                    if (distanceSquared <= (maximumRange * maximumRange)) {
-                        if (isPathClear(sourceX, sourceY, x, y, roomLayout)) {
-                            LIGHT_LEVEL generatedLevel = (distanceSquared <= (brightRange * brightRange)) ? LIGHT_LEVEL.ILLUMINATED : LIGHT_LEVEL.DIM;
-    
-                            if (generatedLevel == LIGHT_LEVEL.ILLUMINATED || lightGridCache[y][x] == LIGHT_LEVEL.PURE_DARKNESS) {
-                                lightGridCache[y][x] = generatedLevel;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    
-        private void attachKeyboardHandlers() {
-            canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
-                if (newScene != null) {
-                    newScene.setOnKeyPressed(e -> {
-                        KeyCode code = e.getCode();
-    
-                        switch (code) {
-                            case EQUALS -> { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
-                            case MINUS -> { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
-                            case F11 -> {
-                                Stage stage = (Stage) rootContainer.getScene().getWindow();
-                                stage.setFullScreen(!stage.isFullScreen());
-                            }
-                        }
-    
-                        gameFSM.update(code);
-                    });
-                }
-            });
-        }
-    
-        public void resetGame() {
-            setup();
-    
-            gameFSM.runGame();
-        }
-    
-        public void loadNextLevel() {
-            textPopupDataList.clear();
-            entityAnimationPixelDrawOffsets.clear();
-            EntityRoomManager.getInstance().clear();
-    
-            Room spawnRoom = DungeonManager.getInstance().generateDungeon();
-    
-            Player player = Game.getInstance().getPlayer();
-            player.position.x = spawnRoom.length/2;
-            player.position.y = spawnRoom.height/2;
-            EntityRoomManager.getInstance().addEntityToRoom(player, spawnRoom);
-    
-            final int roomWidth = spawnRoom.length;
-            final int roomHeight = spawnRoom.height;
-    
+        lightingEngine.synchronizeCache(width, height);
+    }
+
+    public void updateRenderingPipeline() {
+        final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        if (activeRoom == null) return;
+        final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
+
+        final TILE[][] roomLayout = activeRoom.getLayout();
+        final int roomHeight = roomLayout.length;
+        final int roomWidth = (roomHeight > 0) ? roomLayout[0].length : 0;
+
+        // This now instantly recalibrates and centers the focus offset matrix on every call
+        if (player != null) {
             viewport.updateCameraFocus(player.position, roomWidth, roomHeight);
-            updateRenderingPipeline();
         }
-    
-        public void openMap() {
-            final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
-            if(activeRoom == null) return;
-    
-            final MAP[][] mapLayout = DungeonManager.getInstance().getMapLayout();
-    
-            final int mapHeight = mapLayout.length;
-            final int mapLength = mapLayout[0].length;
-            viewport.updateCameraFocus(activeRoom.minimapPosition, mapLength, mapHeight);
-    
-            gameCanvas.clearCanvas();
-    
-            for(int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
-                for(int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
-                    Position worldPosition = viewport.toWorldPosition(screenX, screenY);
-    
-                    boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < mapLength && worldPosition.y >= 0 && worldPosition.y < mapHeight;
-                    if (!isWithinRoomBounds) {
-                        gameCanvas.drawCharacter(screenX, screenY, " ", Color.BLACK, 0.0, 0.0);
-                        continue;
-                    }
-    
-                    MAP mapTile = mapLayout[worldPosition.y][worldPosition.x];
-                    String minimapGlyph = "?";
-                    Color tileColor = Color.GRAY;
-                    if(activeRoom.minimapPosition.equals(worldPosition)) tileColor = Color.YELLOW;
-                    if(mapTile != null) {
-                        switch(mapTile) {
-                            case SPAWN, NORMAL, TREASURE -> minimapGlyph = "□";
-                            case BOSS -> {
-                                minimapGlyph = "□";
-                                tileColor = Color.RED;
-                            }
-                            case VCORRIDOR -> minimapGlyph = "|";
-                            case HCORRIDOR -> minimapGlyph = "-";
-                        }
-                    }
-                    else tileColor = Color.BLACK;
-    
-                    gameCanvas.drawCharacter(screenX, screenY, minimapGlyph, tileColor, 0,0);
+
+        gameCanvas.clearCanvas();
+        GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
+        synchronizeSpatialCaches(roomWidth, roomHeight);
+
+        // Map interactables
+        List<InteractableTile> interactables = activeRoom.getInteractableTiles();
+        if (interactables != null) {
+            for (InteractableTile interactable : interactables) {
+                Position pos = interactable.roomLayoutPosition;
+                if (pos.y >= 0 && pos.y < roomHeight && pos.x >= 0 && pos.x < roomWidth) {
+                    interactableGridCache[pos.y][pos.x] = interactable;
                 }
             }
         }
-    
-        /**
-         * Bresenham's Line-Of-Sight Implementation.
-         * Evaluated using primitive integer parameters to completely eliminate heap object generation overhead.
-         */
-        private boolean isPathClear(int startX, int startY, int targetX, int targetY, TILE[][] roomLayout) {
-            if (startX == targetX && startY == targetY) return true;
-    
-            int currentX = startX;
-            int currentY = startY;
-    
-            final int deltaX = Math.abs(targetX - currentX);
-            final int deltaY = Math.abs(targetY - currentY);
-            final int stepX = currentX < targetX ? 1 : -1;
-            final int stepY = currentY < targetY ? 1 : -1;
-            int errorValue = deltaX - deltaY;
-    
-            while (true) {
-                if (currentX != startX || currentY != startY) {
-                    if (currentX == targetX && currentY == targetY) {
-                        break;
+
+        // Map moving entities
+        List<Entity> entitiesInRoom = EntityRoomManager.getInstance().getEntitiesInRoom(activeRoom);
+        if (entitiesInRoom != null) {
+            for (Entity entity : entitiesInRoom) {
+                if (entity.position != null && entity.position.y >= 0 && entity.position.y < roomHeight && entity.position.x >= 0 && entity.position.x < roomWidth) {
+                    entityGridCache[entity.position.y][entity.position.x] = entity;
+                }
+            }
+        }
+
+        // Process lighting calculations
+        if (player != null && player.isIlluminated()) {
+            lightingEngine.blitLightSource(player.position.x, player.position.y, player.getIlluminationRange(), roomLayout, roomWidth, roomHeight, interactableGridCache);
+        }
+        if (entitiesInRoom != null) {
+            for (Entity entity : entitiesInRoom) {
+                if (entity.position != null && entity.isIlluminated()) {
+                    lightingEngine.blitLightSource(entity.position.x, entity.position.y, entity.getIlluminationRange(), roomLayout, roomWidth, roomHeight, interactableGridCache);
+                }
+            }
+        }
+        for (int row = 0; row < roomHeight; row++) {
+            for (int col = 0; col < roomWidth; col++) {
+                if (interactableGridCache[row][col] instanceof Fire) {
+                    lightingEngine.blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight, interactableGridCache);
+                }
+            }
+        }
+
+        List<Position> travelledPositions = activeRoom.getPlayerTravelledPositions();
+        double memoryThreshold = (player != null) ? player.getIlluminationRange() : 0.0;
+        Map<Entity, RenderOffset> animationOffsets = animationManager.getEntityOffsets();
+
+        // Core Screen Space Render Loop
+        for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
+            for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
+
+                Position worldPosition = viewport.toWorldPosition(screenX, screenY);
+                boolean isWithinRoomBounds = worldPosition.x >= 0 && worldPosition.x < roomWidth && worldPosition.y >= 0 && worldPosition.y < roomHeight;
+
+                if (!isWithinRoomBounds) {
+                    gameCanvas.drawCharacter(screenX, screenY, glyphRegistry.getVoidStyle().glyph(), UITheme.CANVAS_VOID, 0.0, 0.0);
+                    continue;
+                }
+
+                String activeGlyph = glyphRegistry.getVoidStyle().glyph();
+                Color activeColor = UITheme.CANVAS_VOID;
+
+                TILE tile = roomLayout[worldPosition.y][worldPosition.x];
+                if (tile != null) {
+                    GlyphStyle tileStyle = (tile == TILE.WATER) ? glyphRegistry.getStyle(tile) : glyphRegistry.getStyle(tile, worldPosition.x, worldPosition.y, activeRoom.id);
+                    activeGlyph = tileStyle.glyph();
+                    activeColor = tileStyle.color();
+                }
+
+                InteractableTile currentInteractable = interactableGridCache[worldPosition.y][worldPosition.x];
+                if (currentInteractable != null) {
+                    GlyphStyle interactableStyle = glyphRegistry.getStyle(currentInteractable);
+                    activeGlyph = interactableStyle.glyph();
+                    activeColor = (currentInteractable.getColor() != null) ? currentInteractable.getColor() : interactableStyle.color();
+                }
+
+                Monster damagedMonsterOverlayTarget = null;
+                double entityPixelOffsetX = 0.0;
+                double entityPixelOffsetY = 0.0;
+
+                Entity entity = entityGridCache[worldPosition.y][worldPosition.x];
+                if (entity != null) {
+                    GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
+                    activeGlyph = entityStyle.glyph();
+
+                    if (animationOffsets.containsKey(entity)) {
+                        RenderOffset animationOffset = animationOffsets.get(entity);
+                        entityPixelOffsetX = animationOffset.x;
+                        entityPixelOffsetY = animationOffset.y;
                     }
-    
-                    if (currentY >= 0 && currentY < roomLayout.length && currentX >= 0 && currentX < roomLayout[currentY].length) {
-    
-                        TILE tile = roomLayout[currentY][currentX];
-                        if (tile.isLightOccluding()) {
-                            return false;
+
+                    if (entity instanceof Player) {
+                        activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
+                    } else {
+                        if (entity.getColor() != null) {
+                            activeColor = entity.getColor();
+                        } else {
+                            double hue = entityStyle.color().getHue();
+                            double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
+                            double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
+                            activeColor = Color.hsb(hue, saturation, brightness);
                         }
-    
-                        InteractableTile interactableTile = interactableGridCache[currentY][currentX];
-                        if (interactableTile != null && interactableTile.isLightOccluding) {
-                            return false;
+                        if (entity instanceof Monster && entity.health > 0 && entity.health < entity.maxHealth) {
+                            damagedMonsterOverlayTarget = (Monster) entity;
                         }
                     }
                 }
-    
-                if (currentX == targetX && currentY == targetY) break;
-    
-                int errorDoubleAdjustment = 2 * errorValue;
-                if (errorDoubleAdjustment > -deltaY) {
-                    errorValue -= deltaY;
-                    currentX += stepX;
-                }
-                if (errorDoubleAdjustment < deltaX) {
-                    errorValue += deltaX;
-                    currentY += stepY;
-                }
-            }
-            return true;
-        }
-    
-        public void addLog(String txt, Color col) {
-            Label element = new Label(txt);
-            element.setStyle(UITheme.STYLE_LOG + " -fx-text-fill: " + toHexWebColor(col) + ";");
-            element.setWrapText(true);
-    
-            if (logContainer.getChildren().size() >= MAX_LOG_LINES) logContainer.getChildren().removeFirst();
-            logContainer.getChildren().add(element);
-        }
-    
-        public void clearLogContainer() { logContainer.getChildren().clear(); }
-    
-        public void triggerTextPopup(TextPopupData textPopupData, double durationMs) {
-            textPopupDataList.add(textPopupData);
-    
-            final double MAX_FLOAT_DISTANCE_PIXELS = -30.0;
-    
-            new AnimationTimer() {
-                private long startTime = -1;
-    
-                @Override
-                public void handle(long now) {
-                    if (startTime < 0) {
-                        startTime = now;
-                    }
-    
-                    double elapsedMs = (now - startTime) / 1_000_000.0;
-                    double progress = Math.min(1.0, elapsedMs / durationMs);
-    
-                    double curve = 1.0 - progress;
-                    textPopupData.opacity = Math.clamp(curve, 0.0, 1.0);
-                    textPopupData.pixelOffsetY = progress * MAX_FLOAT_DISTANCE_PIXELS;
-    
-                    updateRenderingPipeline();
-    
-                    if (progress >= 1.0) {
-                        textPopupDataList.remove(textPopupData);
-                        updateRenderingPipeline();
-                        this.stop();
+
+                LightingEngine.LIGHT_LEVEL lightLevel = lightingEngine.getLightLevel(worldPosition.x, worldPosition.y);
+                boolean isTravelled = false;
+                if (player != null && travelledPositions != null) {
+                    for (Position previousTravelledPos : travelledPositions) {
+                        double dx = worldPosition.x - previousTravelledPos.x;
+                        double dy = worldPosition.y - previousTravelledPos.y;
+                        if ((dx * dx + dy * dy) <= (memoryThreshold * memoryThreshold) &&
+                                lightingEngine.isPathClear(previousTravelledPos.x, previousTravelledPos.y, worldPosition.x, worldPosition.y, roomLayout, interactableGridCache)) {
+                            isTravelled = true;
+                            break;
+                        }
                     }
                 }
-            }.start();
-        }
 
-        /**
-         * Executes a highly flexible, multiphase screen fade sequence.
-         * * @param color       The Color to fade to.
-         * @param fadeInMs    Duration of the fade-in phase (translucent to solid).
-         * @param holdMs      Duration to hold the screen at full opacity.
-         * @param fadeOutMs   Duration of the fade-out phase. If 0, the overlay stays on screen.
-         * @param midAction   Callback run at peak opacity (before the hold duration starts).
-         * @param postAction  Callback run when the entire animation sequence finishes.
-         */
-        public void triggerScreenFadeSequence(Color color, double fadeInMs, double holdMs, double fadeOutMs, Runnable midAction, Runnable postAction) {
-            // Clean up any lingering overlay from a prior interrupted sequence
-            if (currentFlashOverlay != null) {
-                canvasContainer.getChildren().remove(currentFlashOverlay);
-            }
-
-            currentFlashOverlay = new Rectangle();
-            currentFlashOverlay.widthProperty().bind(canvasContainer.widthProperty());
-            currentFlashOverlay.heightProperty().bind(canvasContainer.heightProperty());
-            currentFlashOverlay.setFill(color);
-            currentFlashOverlay.setOpacity(fadeInMs > 0 ? 0.0 : 1.0);
-            currentFlashOverlay.setMouseTransparent(true);
-            currentFlashOverlay.setManaged(false);
-
-            canvasContainer.getChildren().add(currentFlashOverlay);
-
-            new AnimationTimer() {
-                private long startTime = -1;
-                private boolean midActionExecuted = false;
-
-                @Override
-                public void handle(long now) {
-                    if (startTime < 0) {
-                        startTime = now;
-                    }
-
-                    double elapsedMs = (now - startTime) / 1_000_000.0;
-
-                    // Phase 1: Fade In
-                    if (elapsedMs < fadeInMs) {
-                        double progress = elapsedMs / fadeInMs;
-                        currentFlashOverlay.setOpacity(progress);
-                    }
-                    // Phase 2: Hold Darkness
-                    else if (elapsedMs < (fadeInMs + holdMs)) {
-                        currentFlashOverlay.setOpacity(1.0);
-                        if (!midActionExecuted) {
-                            midActionExecuted = true;
-                            if (midAction != null) midAction.run();
-                        }
-                    }
-                    // Phase 3: Fade Out (Only runs if a fade out duration is specified)
-                    else if (fadeOutMs > 0 && elapsedMs < (fadeInMs + holdMs + fadeOutMs)) {
-                        if (!midActionExecuted) {
-                            midActionExecuted = true;
-                            if (midAction != null) midAction.run();
-                        }
-                        double fadeOutElapsed = elapsedMs - (fadeInMs + holdMs);
-                        double progress = fadeOutElapsed / fadeOutMs;
-                        currentFlashOverlay.setOpacity(Math.clamp(1.0 - progress, 0.0, 1.0));
-                    }
-                    // Sequence Finished
-                    else {
-                        // Safety check to ensure midAction fired if hold/fadeout values were 0
-                        if (!midActionExecuted) {
-                            midActionExecuted = true;
-                            if (midAction != null) midAction.run();
-                        }
-
-                        // Only auto-remove the black overlay if we are explicitly instructed to fade out
-                        if (fadeOutMs > 0) {
-                            canvasContainer.getChildren().remove(currentFlashOverlay);
-                            currentFlashOverlay = null;
-                        }
-
-                        if (postAction != null) {
-                            postAction.run();
-                        }
-
-                        updateRenderingPipeline();
-                        this.stop();
-                    }
+                switch (lightLevel) {
+                    case ILLUMINATED -> {}
+                    case DIM -> activeColor = activeColor.darker();
+                    default -> activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
                 }
-            }.start();
+
+                gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
+
+                if (damagedMonsterOverlayTarget != null) {
+                    double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
+                    gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
+                }
+            }
         }
 
-        /**
-         * Manually removes any persistent screen overlay.
-         * Use this to clear the screen if you performed a permanent fade-to-black.
-         */
-        public void clearScreenEffect() {
-            if (currentFlashOverlay != null) {
-                canvasContainer.getChildren().remove(currentFlashOverlay);
-                currentFlashOverlay = null;
-                updateRenderingPipeline();
+        // Text popups rendering remains uniform
+        List<TextPopupData> popups = animationManager.getTextPopups();
+        for (TextPopupData textPopup : popups) {
+            Position screenPos = viewport.toScreenPosition(textPopup.position.x, textPopup.position.y);
+            if (screenPos != null) {
+                Color blendedPopupColor = new Color(textPopup.color.getRed(), textPopup.color.getGreen(), textPopup.color.getBlue(), textPopup.opacity);
+                final double offsetX = (double) (textPopup.hashCode() * 17 % 101) % 20;
+                gameCanvas.drawString(screenPos.x, screenPos.y - 1, textPopup.text, 22, blendedPopupColor, offsetX, textPopup.pixelOffsetY);
             }
-        }
-    
-        public void triggerEntitySlideReverse(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
-            triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, true);
-        }
-    
-        public void triggerEntitySlide(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve) {
-            triggerEntitySlideAnimation(entity, targetPosition, slidePixelMultiplier, animationDurationMs, animationCurve, false);
-        }
-    
-        private void triggerEntitySlideAnimation(Entity entity, Position targetPosition, double slidePixelMultiplier, double animationDurationMs, ANIMATION_CURVE animationCurve, boolean isReverse) {
-            int dx = targetPosition.x - entity.position.x;
-            int dy = targetPosition.y - entity.position.y;
-    
-            double targetPixelX;
-            if (gameCanvas.getGridColumns() > 0) {
-                targetPixelX = dx * (canvas.getWidth() / gameCanvas.getGridColumns()) * slidePixelMultiplier;
-            }
-            else targetPixelX = dx * currentTileSize * slidePixelMultiplier;
-            double targetPixelY = dy * currentTileSize * slidePixelMultiplier;
-    
-            Timeline timeline = new Timeline();
-    
-            final int TOTAL_FRAMES = 10;
-    
-            for(int i = 0; i <= TOTAL_FRAMES; i++) {
-                final int frame = i;
-                KeyFrame keyframe = new KeyFrame(
-                        Duration.millis(animationDurationMs / TOTAL_FRAMES * frame),
-                        event -> {
-                            double progress = (double) frame / TOTAL_FRAMES;
-                            double curve;
-                            switch(animationCurve) {
-                                case TRIANGLE -> curve = 1.0 - Math.abs(2.0 * progress - 1.0);
-                                case EASE_OUT -> curve = 1.0 - (1 - progress) * (1 - progress);
-                                default -> curve = progress;
-                            }
-                            if(isReverse) curve = Math.abs(curve - 1.0);
-    
-                            double entityAnimationPosX = targetPixelX * curve;
-                            double entityAnimationPosY = targetPixelY * curve;
-    
-                            if(frame == TOTAL_FRAMES) {
-                                entityAnimationPixelDrawOffsets.remove(entity);
-                            }
-                            else {
-                                entityAnimationPixelDrawOffsets.put(entity, new RenderOffset(entityAnimationPosX, entityAnimationPosY));
-                            }
-                            updateRenderingPipeline();
-                        }
-                );
-                timeline.getKeyFrames().add(keyframe);
-            }
-            timeline.play();
-        }
-    
-        public void updateHealth(int health) { healthValText.setText(health + "/100"); healthBar.setText(buildBarMeter(health)); }
-        public void updateHunger(int hunger) { hungerValText.setText(hunger + "/100"); hungerBar.setText(buildBarMeter(hunger)); }
-        public void updateArmor(int armor) { armorText.setText(armor + "/10"); }
-        public void updateWeapon(Weapon weapon) { weaponText.setText(weapon + ""); }
-        public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
-        public void updateInventory(List<item.Item> inventory) {
-            inventoryBox.getChildren().clear();
-    
-            if (inventory == null || inventory.isEmpty()) {
-                Label emptyLabel = new Label("Empty");
-                emptyLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
-                inventoryBox.getChildren().add(emptyLabel);
-                return;
-            }
-    
-            // Group matching items and count their quantities
-            Map<String, Integer> itemCounts = new LinkedHashMap<>();
-            for (item.Item item : inventory) {
-                String itemName = item.name;
-                itemCounts.put(itemName, itemCounts.getOrDefault(itemName, 0) + 1);
-            }
-    
-            // Populate the inventory UI list
-            for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
-                Label itemLabel = new Label(String.format("- %s ( x%d )", entry.getKey(), entry.getValue()));
-                itemLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + ";");
-                inventoryBox.getChildren().add(itemLabel);
-            }
-        }
-    
-    
-        private void buildControlsReferenceHud() {
-            controlsBox.getChildren().clear();
-            String[] mappings = {
-                    "[WASD]  Move Explorer          [M] Open Map",
-                    "[SPACE] Rest / Skip Turn       [+/-] Zoom",
-            };
-            for (String item : mappings) {
-                Label element = new Label(item);
-                element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
-                controlsBox.getChildren().add(element);
-            }
-        }
-    
-        private String buildBarMeter(int value) {
-            final int BARS_AMOUNT = 25;
-            int fill = (int) Math.round((Math.max(0, Math.min(100, value)) / 100.0) * BARS_AMOUNT);
-            StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < BARS_AMOUNT; i++) sb.append(i < fill ? "■" : "·");
-            return sb.append("]").toString();
-        }
-    
-        private String toHexWebColor(Color color) {
-            return String.format("#%02X%02X%02X", (int)(color.getRed()*255), (int)(color.getGreen()*255), (int)(color.getBlue()*255));
         }
     }
+
+    private void attachKeyboardHandlers() {
+        canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnKeyPressed(e -> {
+                    KeyCode code = e.getCode();
+                    switch (code) {
+                        case EQUALS -> { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
+                        case MINUS -> { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
+                        case F11 -> {
+                            Stage stage = (Stage) rootContainer.getScene().getWindow();
+                            stage.setFullScreen(!stage.isFullScreen());
+                        }
+                    }
+                    gameFSM.update(code);
+                });
+            }
+        });
+    }
+
+    public void resetGame() { setup(); gameFSM.runGame(); }
+
+    public void loadNextLevel() {
+        animationManager.clearAllAnimations();
+        EntityRoomManager.getInstance().clear();
+
+        Room spawnRoom = DungeonManager.getInstance().generateDungeon();
+        Player player = Game.getInstance().getPlayer();
+        player.position.x = spawnRoom.length / 2;
+        player.position.y = spawnRoom.height / 2;
+        EntityRoomManager.getInstance().addEntityToRoom(player, spawnRoom);
+
+        viewport.updateCameraFocus(player.position, spawnRoom.length, spawnRoom.height);
+        updateRenderingPipeline();
+    }
+
+    public void openMap() {
+        final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
+        if (activeRoom == null) return;
+
+        final MAP[][] mapLayout = DungeonManager.getInstance().getMapLayout();
+        viewport.updateCameraFocus(activeRoom.minimapPosition, mapLayout[0].length, mapLayout.length);
+        gameCanvas.clearCanvas();
+
+        for (int screenY = 0; screenY < viewport.getScreenHeight(); screenY++) {
+            for (int screenX = 0; screenX < viewport.getScreenWidth(); screenX++) {
+                Position worldPosition = viewport.toWorldPosition(screenX, screenY);
+
+                if (!(worldPosition.x >= 0 && worldPosition.x < mapLayout[0].length && worldPosition.y >= 0 && worldPosition.y < mapLayout.length)) {
+                    gameCanvas.drawCharacter(screenX, screenY, " ", Color.BLACK, 0.0, 0.0);
+                    continue;
+                }
+
+                MAP mapTile = mapLayout[worldPosition.y][worldPosition.x];
+                String minimapGlyph = "?"; Color tileColor = activeRoom.minimapPosition.equals(worldPosition) ? Color.YELLOW : Color.GRAY;
+
+                if (mapTile != null) {
+                    switch (mapTile) {
+                        case SPAWN, NORMAL, TREASURE -> minimapGlyph = "□";
+                        case BOSS -> { minimapGlyph = "□"; tileColor = Color.RED; }
+                        case VCORRIDOR -> minimapGlyph = "|";
+                        case HCORRIDOR -> minimapGlyph = "-";
+                    }
+                } else tileColor = Color.BLACK;
+
+                gameCanvas.drawCharacter(screenX, screenY, minimapGlyph, tileColor, 0, 0);
+            }
+        }
+    }
+
+    // --- DELEGATION SHIMS FOR BACKWARD COMPATIBILITY ---
+    public void addLog(String txt, Color col) { hudManager.addLog(txt, col); }
+    public void clearLogContainer() { hudManager.clearLogContainer(); }
+    public void updateHealth(int health) { hudManager.updateHealth(health); }
+    public void updateHunger(int hunger) { hudManager.updateHunger(hunger); }
+    public void updateArmor(int armor) { hudManager.updateArmor(armor); }
+    public void updateWeapon(Weapon weapon) { hudManager.updateWeapon(weapon); }
+    public void updateCoins(int count) { hudManager.updateCoins(count); }
+    public void updateInventory(List<item.Item> inventory) { hudManager.updateInventory(inventory); }
+
+    public void triggerTextPopup(TextPopupData textPopupData, double durationMs) {
+        animationManager.triggerTextPopup(textPopupData, durationMs);
+    }
+    public void triggerScreenFadeSequence(Color color, double fadeInMs, double holdMs, double fadeOutMs, Runnable mid, Runnable post) {
+        animationManager.triggerScreenFadeSequence(color, fadeInMs, holdMs, fadeOutMs, mid, post);
+    }
+    public void clearScreenEffect() { animationManager.clearScreenEffect(); }
+
+    public void triggerEntitySlideReverse(Entity entity, Position target, double mult, double ms, ANIMATION_CURVE curve) {
+        animationManager.triggerEntitySlide(entity, target, mult, ms, curve, currentTileSize, gameCanvas.getGridColumns(), true);
+    }
+    public void triggerEntitySlide(Entity entity, Position target, double mult, double ms, ANIMATION_CURVE curve) {
+        animationManager.triggerEntitySlide(entity, target, mult, ms, curve, currentTileSize, gameCanvas.getGridColumns(), false);
+    }
+}

@@ -1,9 +1,8 @@
-package gui;
+package gui.app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.io.IOException;
 public class GameApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(GameApplication.class.getResource("game-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GameApplication.class.getResource("/gui/game-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("dungeon crawler 1.0");
         stage.setScene(scene);
