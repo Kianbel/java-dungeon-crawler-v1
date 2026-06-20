@@ -1,6 +1,7 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import util.WeightedObject;
 import entity.Entity;
 import entity.RangeAttack;
 import gui.GUIManager;
@@ -28,12 +29,7 @@ public class GiantSpider extends Monster implements RangeAttack {
 
 
     public GiantSpider(Position position) {
-        super("Giant Spider",
-                20,
-                0,
-                new GiantSpiderFang(),
-                position
-        );
+        super("Giant Spider", 20, 0, new GiantSpiderFang(), position);
     }
 
     @Override
@@ -71,13 +67,14 @@ public class GiantSpider extends Monster implements RangeAttack {
 
     @Override
     public void die() {
-        Map<InteractableTile, Double> drops = new HashMap<>(Map.of(
-                new DroppedItem(position, new GiantSpiderFang()), 0.05,
-                new Heart(position, 5), 0.4,
-                new Coin(position, 5), 0.8
+        List<WeightedObject> lootTable = new ArrayList<>(List.of(
+                new WeightedObject(new GiantSpiderFang(), position, 1),
+                new WeightedObject(new Heart(position, 5), 3),
+                new WeightedObject(new Coin(position, 5), 3),
+                new WeightedObject(null, 5)
         ));
-        dropOnDeath(drops);
 
+        dropOnDeath(lootTable);
         super.die();
     }
 

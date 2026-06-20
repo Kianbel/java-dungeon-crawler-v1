@@ -2,11 +2,12 @@ package item.weapon;
 
 import item.Item;
 
+import java.util.Random;
+
 public abstract class Weapon extends Item {
     public int baseAttackDamage;
     public double critRate;
-    public final int CRIT_MULTIPLIER = 2;
-    private final int ATTACK_DAMAGE_ERROR_RANGE = 1;
+    public final double CRIT_MULTIPLIER = 1.5;
 
     public Weapon(String name, int baseAttackDamage, double critRate) {
         super(name);
@@ -21,14 +22,13 @@ public abstract class Weapon extends Item {
     }
 
     public int getCalculatedAttackDamage() {
-        int damageError = (int) (Math.random() * 100 % ATTACK_DAMAGE_ERROR_RANGE*2+1);
-        damageError = damageError - ATTACK_DAMAGE_ERROR_RANGE;
-        int attackDamage = baseAttackDamage + damageError;
-        if(attackDamage < 0) attackDamage = 0;
+        final int error = (int) (baseAttackDamage * 0.3);
+
+        int damageError = new Random().nextInt(-error, error+1);
+        int attackDamage = Math.max(0, baseAttackDamage + damageError);
 
         if(Math.random() <= critRate) {
-//            System.out.println("crit damage: " + attackDamage * CRIT_MULTIPLIER);
-            return attackDamage * CRIT_MULTIPLIER;
+            return Math.toIntExact(Math.round(attackDamage * CRIT_MULTIPLIER));
         }
         return attackDamage;
     }
@@ -39,6 +39,6 @@ public abstract class Weapon extends Item {
 
     @Override
     public String toString() {
-        return String.format("%s (ATK: %d)", name, baseAttackDamage);
+        return String.format("%s (ATK:%d | CRIT%%:%.1f)", name, baseAttackDamage, critRate);
     }
 }

@@ -108,14 +108,12 @@ public class GameController {
             handleWindowResize();
         });
 
-
-
-
         gameFSM.runGame();
         attachKeyboardHandlers();
     }
 
     private void setup() {
+        AudioManager.getInstance().setSFXVolume(0);
         animationManager.clearAllAnimations();
         hudManager.clearLogContainer();
         EntityRoomManager.getInstance().clear();
@@ -127,6 +125,7 @@ public class GameController {
         Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
 
         viewport.updateCameraFocus(player.position, currentRoom.length, currentRoom.height);
+        AudioManager.getInstance().setSFXVolume(0.5);
     }
 
     private void handleWindowResize() {

@@ -5,7 +5,7 @@ import gui.GameController;
 
 public class Game {
     private static GameController gameController;
-    private int currentFloor = 1;
+    private int currentFloor = 2;
     private Player player;
 
     private static final Game instance = new Game();
@@ -20,7 +20,7 @@ public class Game {
 
     public void reset() {
         player = null;
-        currentFloor = 1;
+        currentFloor = 2;
     }
 
     public Player getPlayer() {

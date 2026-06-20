@@ -1,12 +1,18 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.weapon.Fist;
 import javafx.scene.paint.Color;
 import util.Position;
+import world.Coin;
+import world.Heart;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rat extends Monster {
     public Rat(Position position) {
@@ -17,6 +23,18 @@ public class Rat extends Monster {
     @Override
     protected void makeSoundTextPopup() {
         GUIManager.getInstance().triggerTextPopup("squeaks", Color.WHITE, position);
+    }
+
+    @Override
+    public void die() {
+        List<WeightedObject> lootTable = new ArrayList<>(List.of(
+                new WeightedObject(new Heart(position, 5), 3),
+                new WeightedObject(new Coin(position, 5), 3),
+                new WeightedObject(null, 5)
+        ));
+
+        dropOnDeath(lootTable);
+        super.die();
     }
 
     @Override

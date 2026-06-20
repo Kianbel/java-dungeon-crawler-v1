@@ -10,24 +10,17 @@ import util.TILE;
 import java.util.Random;
 
 public class NormalRoom extends Room {
-    private boolean isClear = false;
-
     public NormalRoom(Position minimapPosition) {
         TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(NormalRoom.class);
         super(layout, minimapPosition);
-
-        if(Math.random() <= 0.2) isClear = true;
     }
 
     @Override
     public void populateWithEntities() {
-        if(isClear) return;
-
         super.populateWithEntities();
-        Random random = new Random();
 
         EntitySpawner entitySpawner = new EntitySpawner(this);
         if(Math.random() <= 0.3) entitySpawner.spawnMonstersAmount(GiantSpider::new, random.nextInt(1,3));
-        entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(1,6));
+        else entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(1,6));
     }
 }

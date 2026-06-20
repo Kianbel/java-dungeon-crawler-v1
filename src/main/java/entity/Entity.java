@@ -11,11 +11,10 @@ import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
 import core.room.type.Room;
+import util.WeightedObject;
 import world.InteractableTile;
 
-import javax.sound.sampled.AudioInputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public abstract class Entity {
@@ -84,16 +83,23 @@ public abstract class Entity {
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
     }
 
-    /** NOTE: THE VALUES MUST BE IN ASCENDING ORDER
-     * @param map a hashmap of all droppable tiles of an entity on death
-     *            where KEY: InteractableTile and VALUE: drop chance
-     */
-    protected void dropOnDeath(Map<InteractableTile, Double> map) {
-        double random = Math.random();
-        for(Map.Entry<InteractableTile, Double> set : map.entrySet()) {
-            if(random <= set.getValue()) {
+    protected void dropOnDeath(List<WeightedObject> lootTable) {
+        if(lootTable == null || lootTable.isEmpty()) return;
+
+        double totalWeight = 0;
+        for(WeightedObject weightedObject : lootTable) {
+            totalWeight += weightedObject.weight;
+        }
+
+        double roll = random.nextDouble() * totalWeight;
+        double cumulativeWeight = 0;
+        for(WeightedObject weightedObject : lootTable) {
+            cumulativeWeight += weightedObject.weight;
+            if(roll <= cumulativeWeight) {
                 Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-                if(currentRoom != null) currentRoom.addInteractableTile(set.getKey());
+                if(weightedObject.object != null) {
+                    currentRoom.addInteractableTile((InteractableTile) weightedObject.object);
+                }
                 return;
             }
         }

@@ -26,7 +26,7 @@ public class DroppedItem extends InteractableTile {
         if(entity instanceof Player p) {
             Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
             GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
-            GUIManager.getInstance().triggerTextPopup("+" + item, Color.LIGHTBLUE, p.position, 1000);
+            GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, p.position, 1000);
             AudioManager.getInstance().playSFX("pickup");
 
             if(item instanceof Weapon w) {

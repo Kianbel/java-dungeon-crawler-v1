@@ -1,6 +1,7 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
@@ -8,10 +9,9 @@ import item.weapon.Fist;
 import util.Position;
 import world.Coin;
 import world.Heart;
-import world.InteractableTile;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Zombie extends Monster {
     public Zombie(Position position) {
@@ -42,12 +42,13 @@ public class Zombie extends Monster {
 
     @Override
     public void die() {
-        Map<InteractableTile, Double> drops = new HashMap<>(Map.of(
-                new Heart(position, 10), 0.5,
-                new Coin(position, 5), 0.8
+        List<WeightedObject> lootTable = new ArrayList<>(List.of(
+                new WeightedObject(new Heart(position, 10), 3),
+                new WeightedObject(new Coin(position, 5), 3),
+                new WeightedObject(null, 5)
         ));
-        dropOnDeath(drops);
 
+        dropOnDeath(lootTable);
         super.die();
     }
 }
