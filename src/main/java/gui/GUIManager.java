@@ -90,6 +90,12 @@ public class GUIManager {
         }
     }
 
+    public void triggerScreenShake(double intensity, double durationMs) {
+        if (isPipelineOperational()) {
+            controller.triggerScreenShake(intensity, durationMs);
+        }
+    }
+
     public void setHP(int current) { if (isPipelineOperational()) controller.updateHealth(current); }
     public void setHunger(int current) { if (isPipelineOperational()) controller.updateHunger(current); }
     public void setArmor(int current) { if (isPipelineOperational()) controller.updateArmor(current); }

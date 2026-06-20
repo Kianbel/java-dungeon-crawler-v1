@@ -145,6 +145,11 @@ public class Player extends Entity {
 
     @Override
     public void hurt(int damage) {
+        hurt(damage, null);
+    }
+
+    @Override
+    public void hurt(int damage, Entity attacker) {
         damage -= armor;
         if(damage < 0) damage = 0;
         health -= damage;
@@ -154,37 +159,19 @@ public class Player extends Entity {
             GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
             return;
         }
-        if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
 
-        GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+        if(attacker != null) {
+            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
+            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+        }
+        else {
+            GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+        }
 
+        GUIManager.getInstance().triggerScreenShake(4, 200);
         GUIManager.getInstance().setHP(health);
 
         if(health == 0) die();
-    }
-
-    @Override
-    public void hurt(int damage, Entity attacker) {
-        Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
-            damage -= armor;
-            if(damage < 0) damage = 0;
-            health -= damage;
-            if(health < 0) health = 0;
-
-            if(damage == 0) {
-                GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
-                return;
-            }
-            if(health <= 30) GUIManager.getInstance().triggerHurtFlash();
-
-            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
-            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
-
-            GUIManager.getInstance().setHP(health);
-
-            if(health == 0) die();
-        }
     }
 
     @Override

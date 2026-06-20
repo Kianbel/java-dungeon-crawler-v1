@@ -24,6 +24,8 @@ public class AnimationManager {
     private final Canvas canvas;
     private final Runnable renderPipelineUpdater;
 
+    private AnimationTimer activeShakeTimer = null;
+
     public AnimationManager(StackPane canvasContainer, Canvas canvas, Runnable renderPipelineUpdater) {
         this.canvasContainer = canvasContainer;
         this.canvas = canvas;
@@ -162,6 +164,55 @@ public class AnimationManager {
             timeline.getKeyFrames().add(keyframe);
         }
         timeline.play();
+    }
+
+    /**
+     * Triggers a hardware-accelerated screenshake sequence on the canvas layout node.
+     * @param intensityPx   The maximum offset displacement radius in pixels.
+     * @param durationMs  Total lifespan duration of the shake effect in milliseconds.
+     */
+    public void triggerScreenShake(double intensityPx, double durationMs) {
+        // 1. Clean up and halt any running shake sequence immediately to prevent stack drift
+        if (activeShakeTimer != null) {
+            activeShakeTimer.stop();
+        }
+
+        activeShakeTimer = new AnimationTimer() {
+            private long startTime = -1;
+            private final Random random = new Random();
+
+            @Override
+            public void handle(long now) {
+                if (startTime < 0) {
+                    startTime = now;
+                }
+
+                double elapsedMs = (now - startTime) / 1_000_000.0;
+                double progress = Math.min(1.0, elapsedMs / durationMs);
+
+                // Sequence Finished: Reset the canvas position safely back to zero origin point
+                if (progress >= 1.0) {
+                    canvas.setTranslateX(0);
+                    canvas.setTranslateY(0);
+                    activeShakeTimer = null;
+                    this.stop();
+                    return;
+                }
+
+                // Smooth Decay Curve: Reduces shake intensity linearly as progress nears completion
+                double currentIntensity = intensityPx * (1.0 - progress);
+
+                // Compute randomized translation offsets across both coordinate directions
+                double shakeX = (random.nextDouble() * 2.0 - 1.0) * currentIntensity;
+                double shakeY = (random.nextDouble() * 2.0 - 1.0) * currentIntensity;
+
+                // Shift the display node transformation vectors directly
+                canvas.setTranslateX(shakeX);
+                canvas.setTranslateY(shakeY);
+            }
+        };
+
+        activeShakeTimer.start();
     }
 
     public void clearAllAnimations() {

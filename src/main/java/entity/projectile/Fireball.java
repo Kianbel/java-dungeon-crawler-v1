@@ -25,7 +25,7 @@ public class Fireball extends Projectile {
         super.attack(targetEntity);
 
         if(targetEntity instanceof Player) {
-            GUIManager.getInstance().triggerColorFlash(UITheme.PROJECTILE_FIREBALL, 1000);
+            GUIManager.getInstance().triggerColorFlash(UITheme.PROJECTILE_FIREBALL, 60);
         }
     }
 }

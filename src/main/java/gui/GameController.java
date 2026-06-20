@@ -390,4 +390,8 @@ public class GameController {
     public void triggerEntitySlide(Entity entity, Position target, double mult, double ms, ANIMATION_CURVE curve) {
         animationManager.triggerEntitySlide(entity, target, mult, ms, curve, currentTileSize, gameCanvas.getGridColumns(), false);
     }
+
+    public void triggerScreenShake(double intensity, double durationMs) {
+        animationManager.triggerScreenShake(intensity, durationMs);
+    }
 }
