@@ -3,6 +3,7 @@ package core.room.type;
 import core.EntitySpawner;
 import core.room.loader.RoomLayoutRegistry;
 import entity.monster.Rat;
+import entity.monster.Zombie;
 import util.Position;
 import util.TILE;
 
@@ -16,5 +17,6 @@ public class ExtraRoom extends Room {
     public void populateWithEntities() {
         EntitySpawner entitySpawner = new EntitySpawner(this);
         entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(0,5));
+        if(Math.random() <= 0.5) entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(0,5));
     }
 }

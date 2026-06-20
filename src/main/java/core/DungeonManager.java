@@ -17,9 +17,9 @@ public class DungeonManager {
         return instance;
     }
 
-    private final int ROOM_AMOUNT = 3;
-    private final int MAP_HEIGHT = 21;
-    private final int MAP_LENGTH = 21;
+    private final int ROOM_AMOUNT = 10;
+    private final int MAP_HEIGHT = 31;
+    private final int MAP_LENGTH = 31;
 
     private MAP[][] mapLayout;
     private List<Room> roomList = new ArrayList<>(ROOM_AMOUNT);
