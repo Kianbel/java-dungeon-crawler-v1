@@ -2,6 +2,7 @@ package world;
 
 import entity.Entity;
 import entity.MoveAfterPlayer;
+import gui.AudioManager;
 import gui.dataclass.UITheme;
 import util.Position;
 
@@ -36,7 +37,10 @@ public class Spike extends InteractableTile implements MoveAfterPlayer {
         if(tick == 2) {
             isActivated = !isActivated;
             if(!isActivated) overrideColor(UITheme.TILE_FLOOR);
-            else resetColor();
+            else {
+                resetColor();
+//                AudioManager.getInstance().playSFX("spike_activate");
+            }
             tick = 0;
             return;
         }

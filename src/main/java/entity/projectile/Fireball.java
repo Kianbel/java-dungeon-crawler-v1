@@ -2,6 +2,7 @@ package entity.projectile;
 
 import entity.Entity;
 import entity.Player;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import util.Position;
@@ -26,6 +27,7 @@ public class Fireball extends Projectile {
 
         if(targetEntity instanceof Player) {
             GUIManager.getInstance().triggerColorFlash(UITheme.PROJECTILE_FIREBALL, 60);
+            AudioManager.getInstance().playSFX("burn");
         }
     }
 }

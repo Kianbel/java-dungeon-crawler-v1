@@ -90,7 +90,7 @@ public class GlyphRegistry {
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);
         registerEntity(Zombie.class, "Z", UITheme.ENTITY_ZOMBIE);
-        registerEntity(GiantSpider.class, "S", UITheme.ENTITY_SPIDER);
+        registerEntity(GiantSpider.class, "🕷", UITheme.ENTITY_SPIDER);
         registerEntity(FlareWitch.class, "༒", UITheme.ENTITY_FLARE_WITCH);
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
 

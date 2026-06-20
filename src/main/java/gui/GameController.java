@@ -74,6 +74,25 @@ public class GameController {
         animationManager = new AnimationManager(canvasContainer, canvas, this::updateRenderingPipeline);
         hudManager = new HUDManager(this);
 
+        // Audio
+        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
+        AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3");
+        AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3");
+        AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3");
+//        AudioManager.getInstance().registerSFX("spike_activate", "/audio/spike_activate.mp3");
+        AudioManager.getInstance().registerSFX("web_sling", "/audio/web_sling.mp3");
+        AudioManager.getInstance().registerSFX("chest_open", "/audio/chest_open.mp3");
+        AudioManager.getInstance().registerSFX("burn", "/audio/temp_burn.mp3");
+        AudioManager.getInstance().registerSFX("pickup", "/audio/pickup.mp3");
+        AudioManager.getInstance().registerSFX("stun", "/audio/stun.mp3");
+        AudioManager.getInstance().registerSFX("enemy_die", "/audio/enemy_die.mp3");
+        AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3");
+
+        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
+
+        AudioManager.getInstance().setSFXVolume(0.5);
+        AudioManager.getInstance().setBGMVolume(0.3);
+
         Game.initialize(this);
         GUIManager.getInstance().registerController(this);
 
@@ -88,6 +107,9 @@ public class GameController {
             canvas.setHeight(newVal.doubleValue());
             handleWindowResize();
         });
+
+
+
 
         gameFSM.runGame();
         attachKeyboardHandlers();

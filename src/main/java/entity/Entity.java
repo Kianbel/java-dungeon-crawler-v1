@@ -2,6 +2,7 @@ package entity;
 
 import core.EntityRoomManager;
 import core.IlluminationData;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
@@ -12,6 +13,7 @@ import util.TILE;
 import core.room.type.Room;
 import world.InteractableTile;
 
+import javax.sound.sampled.AudioInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,6 +61,7 @@ public abstract class Entity {
             Position oldPos = position;
             position = dPos;
             GUIManager.getInstance().triggerMoveAnimation(this, oldPos);
+            AudioManager.getInstance().playSFX("walk");
             handleOnEntityEnterInteractableTiles();
         }
         else if(tile == TILE.DOOR) {
@@ -68,6 +71,7 @@ public abstract class Entity {
             fixEntityPositionAfterTransferFromUnitPos(oldUnitPos);
             if(this instanceof Player) {
                 GUIManager.getInstance().triggerRoomTransitionFlash();
+                AudioManager.getInstance().playSFX("door_enter");
             }
         }
     }

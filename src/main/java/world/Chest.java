@@ -3,6 +3,7 @@ package world;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import util.Position;
@@ -31,6 +32,7 @@ public class Chest extends InteractableTile {
         }
 
         EntityRoomManager.getInstance().removeInteractableTile(this);
+        AudioManager.getInstance().playSFX("chest_open");
         currentRoom.addInteractableTile(chestDrop);
     }
 }

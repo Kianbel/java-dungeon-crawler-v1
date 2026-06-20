@@ -32,7 +32,7 @@ public abstract class Boss extends Monster {
         }
         summonedEntities.clear();
 
-        GUIManager.getInstance().triggerColorFlash(Color.WHITESMOKE, 1000);
+        GUIManager.getInstance().triggerColorFlash(Color.WHITESMOKE, 500);
         Position playerPosition = EntityRoomManager.getInstance().getPlayer().position;
 
         Position stairSpawnPos = new Position(currentRoom.length/2, currentRoom.height/2);

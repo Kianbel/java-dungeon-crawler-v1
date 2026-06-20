@@ -90,6 +90,10 @@ public class GUIManager {
         }
     }
 
+    public void triggerScreenShake() {
+        triggerScreenShake(4, 200);
+    }
+
     public void triggerScreenShake(double intensity, double durationMs) {
         if (isPipelineOperational()) {
             controller.triggerScreenShake(intensity, durationMs);

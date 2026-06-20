@@ -21,11 +21,6 @@ public class FlareWitch extends Boss {
     }
 
     @Override
-    protected void dropOnDeath(Map<InteractableTile, Double> map) {
-        super.dropOnDeath(map);
-    }
-
-    @Override
     public void hurt(int damage, Entity attacker) {
         super.hurt(damage, attacker);
         stateMachine.tryTeleport();

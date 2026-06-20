@@ -3,6 +3,7 @@ package world;
 import core.EntityRoomManager;
 import entity.Entity;
 import entity.Player;
+import gui.AudioManager;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
 import util.Position;
@@ -22,6 +23,7 @@ public class Coin extends InteractableTile {
             GUIManager.getInstance().setCoins(p.coins);
             GUIManager.getInstance().printLog("+" + amount + " coins.", Color.GOLD);
             GUIManager.getInstance().triggerTextPopup("+" + amount, Color.GOLD, p.position);
+            AudioManager.getInstance().playSFX("pickup");
             EntityRoomManager.getInstance().removeInteractableTile(this);
         }
     }

@@ -2,6 +2,7 @@ package entity;
 
 import core.EntityRoomManager;
 import entity.monster.Monster;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.HealthPotion;
@@ -37,7 +38,7 @@ public class Player extends Entity {
         super("Player", 100, 0, new AncientSword(), position);
 
         setIlluminated(true);
-        setIlluminationRange(8);
+        setIlluminationRange(5);
 
         setHealth(health);
         setHunger(hunger);
@@ -81,6 +82,7 @@ public class Player extends Entity {
         if(stunCounter > 0) {
             GUIManager.getInstance().triggerTextPopup("stunned", Color.YELLOW, position);
             GUIManager.getInstance().printLog("Can't move! You are stunned for " + stunCounter + " more turns.", UITheme.LOG_PLAYER_ACTION);
+            AudioManager.getInstance().playSFX("stun");
             stunCounter--;
             return;
         }
@@ -132,6 +134,9 @@ public class Player extends Entity {
             if(!targetEntity.isAlive()) {
                 GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
             }
+            else {
+                AudioManager.getInstance().playSFX("attack");
+            }
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
     }
@@ -168,7 +173,8 @@ public class Player extends Entity {
             GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
         }
 
-        GUIManager.getInstance().triggerScreenShake(4, 200);
+        GUIManager.getInstance().triggerScreenShake();
+        AudioManager.getInstance().playSFX("hurt");
         GUIManager.getInstance().setHP(health);
 
         if(health == 0) die();

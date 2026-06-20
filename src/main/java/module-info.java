@@ -3,6 +3,7 @@ module gui {
     requires javafx.fxml;
     requires java.desktop;
     requires javafx.graphics;
+    requires javafx.media;
 
     opens gui to javafx.fxml;
     exports gui;

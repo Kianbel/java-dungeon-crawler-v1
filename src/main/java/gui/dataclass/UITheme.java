@@ -43,7 +43,7 @@ public class UITheme {
     public static final Color TEXT_PARCHMENT   = Color.WHITE;
     public static final Color TEXT_MUTED       = Color.DARKGRAY;
 
-    // --- TILES ---
+    // --- TILES --- https://lospec.com/palette-list/micro-roguelike
     public static Color TILE_WALL = Color.web("#e36433");
     public static Color TILE_DOOR = Color.web("#731144");
     public static Color TILE_FLOOR = Color.web("#731144");

@@ -4,6 +4,7 @@ import core.EntityRoomManager;
 import entity.Entity;
 import entity.MoveAfterPlayer;
 import entity.Player;
+import gui.AudioManager;
 import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
@@ -18,6 +19,12 @@ import java.util.List;
 public abstract class Monster extends Entity implements MoveAfterPlayer {
     public Monster(String name, int health, int armor, Weapon weapon, Position position) {
         super(name, health, armor, weapon, position);
+    }
+
+    @Override
+    public void die() {
+        super.die();
+        AudioManager.getInstance().playSFX("enemy_die");
     }
 
     @Override

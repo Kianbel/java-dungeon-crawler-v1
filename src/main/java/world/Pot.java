@@ -3,6 +3,7 @@ package world;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import util.Position;
@@ -19,6 +20,7 @@ public class Pot extends InteractableTile {
     public void onEntityBump(Entity entity) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
         EntityRoomManager.getInstance().removeInteractableTile(this);
+        AudioManager.getInstance().playSFX("pot_break");
 
         final double DROP_CHANCE = 0.2;
         final double COIN_CHANCE = 0.75;
