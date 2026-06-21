@@ -133,6 +133,7 @@ public class GiantSpider extends Monster implements RangeAttack {
         InteractableTile web = new Web(webPosition);
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         webShootCooldown = WEB_SHOOT_MOVE_COOLDOWN;
-        return currentRoom.addInteractableTile(web);
+        currentRoom.addInteractableTile(web);
+        return true;
     }
 }

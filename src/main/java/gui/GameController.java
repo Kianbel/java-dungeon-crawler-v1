@@ -1,6 +1,6 @@
 package gui;
 
-import core.Game;
+import core.GameManager;
 import entity.Entity;
 import entity.monster.Monster;
 import entity.Player;
@@ -11,6 +11,7 @@ import gui.dataclass.GlyphStyle;
 import gui.dataclass.RenderOffset;
 import gui.dataclass.TextPopupData;
 import gui.dataclass.UITheme;
+import item.armor.Armor;
 import item.weapon.Weapon;
 import javafx.stage.Stage;
 import util.ANIMATION_CURVE;
@@ -93,7 +94,7 @@ public class GameController {
         AudioManager.getInstance().setSFXVolume(0.5);
         AudioManager.getInstance().setBGMVolume(0.3);
 
-        Game.initialize(this);
+        GameManager.initialize(this);
         GUIManager.getInstance().registerController(this);
 
         hudManager.applyInterfaceTheme();
@@ -117,7 +118,7 @@ public class GameController {
         animationManager.clearAllAnimations();
         hudManager.clearLogContainer();
         EntityRoomManager.getInstance().clear();
-        Game.getInstance().reset();
+        GameManager.getInstance().reset();
 
         DungeonManager.getInstance().generateDungeon();
 
@@ -241,7 +242,7 @@ public class GameController {
                 InteractableTile currentInteractable = interactableGridCache[worldPosition.y][worldPosition.x];
                 if (currentInteractable != null) {
                     GlyphStyle interactableStyle = glyphRegistry.getStyle(currentInteractable);
-                    activeGlyph = interactableStyle.glyph();
+                    activeGlyph = (currentInteractable.getCharacter() != null) ? currentInteractable.getCharacter() : interactableStyle.glyph();
                     activeColor = (currentInteractable.getColor() != null) ? currentInteractable.getColor() : interactableStyle.color();
                 }
 
@@ -260,12 +261,16 @@ public class GameController {
                         entityPixelOffsetY = animationOffset.y;
                     }
 
-                    if (entity instanceof Player) {
+                    if (entity instanceof Player p) {
                         activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
-                    } else {
+                        if(tile == TILE.GRASS) p.setIlluminationRange(1);
+                        else p.setIlluminationRange(5);
+                    }
+                    else {
                         if (entity.getColor() != null) {
                             activeColor = entity.getColor();
-                        } else {
+                        }
+                        else {
                             double hue = entityStyle.color().getHue();
                             double saturation = Math.abs((double) (entity.id * 13 % 7 * 19 % 50) / 100) + 0.5;
                             double brightness = Math.abs((double) (entity.id * 19 % 13 * 23 % 50) / 100) + 0.5;
@@ -344,7 +349,7 @@ public class GameController {
         EntityRoomManager.getInstance().clear();
 
         Room spawnRoom = DungeonManager.getInstance().generateDungeon();
-        Player player = Game.getInstance().getPlayer();
+        Player player = GameManager.getInstance().getPlayer();
         player.position.x = spawnRoom.length / 2;
         player.position.y = spawnRoom.height / 2;
         EntityRoomManager.getInstance().addEntityToRoom(player, spawnRoom);
@@ -375,7 +380,7 @@ public class GameController {
 
                 if (mapTile != null) {
                     switch (mapTile) {
-                        case SPAWN, NORMAL, TREASURE, EXTRA -> minimapGlyph = "□";
+                        case SPAWN, NORMAL, TREASURE -> minimapGlyph = "□";
                         case BOSS -> { minimapGlyph = "□"; tileColor = Color.RED; }
                         case VCORRIDOR -> minimapGlyph = "|";
                         case HCORRIDOR -> minimapGlyph = "-";
@@ -393,7 +398,7 @@ public class GameController {
     public void clearLogContainer() { hudManager.clearLogContainer(); }
     public void updateHealth(int health) { hudManager.updateHealth(health); }
     public void updateHunger(int hunger) { hudManager.updateHunger(hunger); }
-    public void updateArmor(int armor) { hudManager.updateArmor(armor); }
+    public void updateArmor(Armor armor) { hudManager.updateArmor(armor); }
     public void updateWeapon(Weapon weapon) { hudManager.updateWeapon(weapon); }
     public void updateCoins(int count) { hudManager.updateCoins(count); }
     public void updateInventory(List<item.Item> inventory) { hudManager.updateInventory(inventory); }

@@ -7,6 +7,8 @@ import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.HealthPotion;
 import item.Item;
+import item.armor.Armor;
+import item.armor.BareLeatherTunic;
 import item.key.LevelKey;
 import item.key.RoomKey;
 import item.weapon.DevOneShotWeapon;
@@ -23,12 +25,17 @@ import java.util.List;
 public class Player extends Entity {
     public int coins = 0;
     public int hunger = 100;
+    public Armor armor = new BareLeatherTunic();
     public boolean isDead = false;
     private List<Item> inventory = new ArrayList<>();
 
     private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
-    private final int HUNGER_DECREASE_AMOUNT = 5;
+
+    private final int NATURAL_HEALING_MOVE_COOLDOWN = 15;
+    private int naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
+
+    private final double ARMOR_PENETRATION_CHANCE = 0.3;
 
     private int putTravelledPositionCtr = 0;
 
@@ -57,7 +64,7 @@ public class Player extends Entity {
         godModeEnabled = !godModeEnabled;
         if(godModeEnabled) {
             GUIManager.getInstance().printDevLog("GOD MODE ENABLED");
-            armor = 1000;
+//            armor = 1000;
             hungerDecreaseCounter = 9999999;
             hunger = 99999999;
             setWeapon(new DevOneShotWeapon());
@@ -65,7 +72,7 @@ public class Player extends Entity {
         }
         else {
             GUIManager.getInstance().printDevLog("DISABLED GOD MODE");
-            armor = 0;
+//            armor = 0;
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
             setWeapon(new AncientSword());
@@ -87,6 +94,7 @@ public class Player extends Entity {
             return;
         }
 
+        handleNaturalHealing();
         handleHungerDecrease();
 
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
@@ -155,10 +163,10 @@ public class Player extends Entity {
 
     @Override
     public void hurt(int damage, Entity attacker) {
-        damage -= armor;
-        if(damage < 0) damage = 0;
-        health -= damage;
-        if(health < 0) health = 0;
+        naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
+
+        if(Math.random() <= ARMOR_PENETRATION_CHANCE) damage = Math.max(0, damage - this.armor.armorPoints);
+        setHealth(health - damage);
 
         if(damage == 0) {
             GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
@@ -191,8 +199,8 @@ public class Player extends Entity {
         GUIManager.getInstance().setHP(this.health);
     }
 
-    public void setArmor(int armor) {
-        this.armor = Math.clamp(armor, 0, 10);
+    public void setArmor(Armor armor) {
+        this.armor = armor;
         GUIManager.getInstance().setArmor(this.armor);
     }
 
@@ -211,19 +219,29 @@ public class Player extends Entity {
         GUIManager.getInstance().setHunger(hunger);
     }
 
+    private void handleNaturalHealing() {
+        if(hunger <= 0 || health >= maxHealth) return;
+
+        if(naturalHealingDecreaseCounter > 0) {
+            naturalHealingDecreaseCounter--;
+            return;
+        }
+
+        setHealth(health + random.nextInt(5,10));
+        setHunger(hunger - random.nextInt(1,5));
+        naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
+    }
+
     private void handleHungerDecrease() {
         if(hungerDecreaseCounter > 0) {
             hungerDecreaseCounter--;
             return;
         }
-        hunger -= HUNGER_DECREASE_AMOUNT;
+        setHunger(hunger - random.nextInt(1,5));
         if(hunger < 0) {
-            hunger = 0;
             setHealth(health - 5);
             GUIManager.getInstance().printLog("You are starving", Color.ORANGE);
         }
-        GUIManager.getInstance().setHunger(hunger);
-
         hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     }
 

@@ -1,16 +1,12 @@
 package core.room.type;
 
 import core.EntitySpawner;
-import core.Game;
+import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.monster.*;
 import util.Position;
 import util.Randomizer;
 import util.TILE;
-import util.WeightedObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ExtraRoom extends Room {
     public ExtraRoom(Position minimapPosition) {
@@ -25,7 +21,7 @@ public class ExtraRoom extends Room {
         EntitySpawner entitySpawner = new EntitySpawner(this);
         entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(0,5));
 
-        final int floor = Game.getInstance().getCurrentFloor();
+        final int floor = GameManager.getInstance().getCurrentFloor();
         switch(floor) {
             case 1 -> {
                 if(Math.random() <= 0.5) {

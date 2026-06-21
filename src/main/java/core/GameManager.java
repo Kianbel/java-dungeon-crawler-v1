@@ -3,24 +3,25 @@ package core;
 import entity.Player;
 import gui.GameController;
 
-public class Game {
+public class GameManager {
     private static GameController gameController;
-    private int currentFloor = 2;
+    private int START_FLOOR = 1;
+    private int currentFloor = START_FLOOR;
     private Player player;
 
-    private static final Game instance = new Game();
-    private Game() {}
+    private static final GameManager instance = new GameManager();
+    private GameManager() {}
     public static void initialize(GameController gameController) {
-        Game.gameController = gameController;
+        GameManager.gameController = gameController;
     }
-    public static Game getInstance() {
+    public static GameManager getInstance() {
         assert gameController != null : "Game controller not yet initialized";
         return instance;
     }
 
     public void reset() {
         player = null;
-        currentFloor = 2;
+        currentFloor = START_FLOOR;
     }
 
     public Player getPlayer() {

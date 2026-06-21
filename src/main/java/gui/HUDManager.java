@@ -1,6 +1,7 @@
 package gui;
 
 import gui.dataclass.UITheme;
+import item.armor.Armor;
 import item.weapon.Weapon;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -92,7 +93,7 @@ public class HUDManager {
     public void clearLogContainer() { logContainer.getChildren().clear(); }
     public void updateHealth(int health) { healthValText.setText(health + "/100"); healthBar.setText(buildBarMeter(health)); }
     public void updateHunger(int hunger) { hungerValText.setText(hunger + "/100"); hungerBar.setText(buildBarMeter(hunger)); }
-    public void updateArmor(int armor) { armorText.setText(armor + "/10"); }
+    public void updateArmor(Armor armor) { armorText.setText(armor + ""); }
     public void updateWeapon(Weapon weapon) { weaponText.setText(weapon + ""); }
     public void updateCoins(int count) { coinsText.setText(String.valueOf(count)); }
 

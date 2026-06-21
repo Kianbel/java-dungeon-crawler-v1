@@ -3,6 +3,7 @@ package gui;
 import entity.Entity;
 import gui.dataclass.TextPopupData;
 import item.Item;
+import item.armor.Armor;
 import javafx.scene.paint.Color;
 import core.room.type.Room;
 import util.ANIMATION_CURVE;
@@ -102,7 +103,7 @@ public class GUIManager {
 
     public void setHP(int current) { if (isPipelineOperational()) controller.updateHealth(current); }
     public void setHunger(int current) { if (isPipelineOperational()) controller.updateHunger(current); }
-    public void setArmor(int current) { if (isPipelineOperational()) controller.updateArmor(current); }
+    public void setArmor(Armor armor) { if (isPipelineOperational()) controller.updateArmor(armor); }
     public void setWeapon(Weapon weapon) { if (isPipelineOperational()) controller.updateWeapon(weapon); }
     public void setCoins(int amount) { if (isPipelineOperational()) controller.updateCoins(amount); }
     public void updateInventory(List<Item> inventory) {

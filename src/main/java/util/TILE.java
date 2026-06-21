@@ -35,6 +35,7 @@ public enum TILE {
     public boolean isLightOccluding() {
         return this == WALL ||
                 this == BOOKSHELF ||
-                this == DOOR;
+                this == DOOR ||
+                this == GRASS;
     }
 }

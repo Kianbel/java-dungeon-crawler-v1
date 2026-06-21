@@ -33,21 +33,23 @@ public class GlyphRegistry {
 
         tileRegistry.put(TILE.FLOOR, new GlyphStyle[]{
                 new GlyphStyle("·", UITheme.TILE_FLOOR),
-                new GlyphStyle(".", UITheme.TILE_FLOOR),
-                new GlyphStyle(".", UITheme.TILE_FLOOR),
-                new GlyphStyle("░", UITheme.TILE_FLOOR)
+                new GlyphStyle(" ", UITheme.TILE_FLOOR),
+                new GlyphStyle(" ", UITheme.TILE_FLOOR),
+//                new GlyphStyle(".", UITheme.TILE_FLOOR),
+//                new GlyphStyle("░", UITheme.TILE_FLOOR)
         });
 
         tileRegistry.put(TILE.DOOR, new GlyphStyle[]{
                 new GlyphStyle("⌸", UITheme.TILE_DOOR)
         });
         tileRegistry.put(TILE.GRASS, new GlyphStyle[] {
-                new GlyphStyle("\"", UITheme.TILE_GRASS),
-                new GlyphStyle("'", UITheme.TILE_GRASS),
-                new GlyphStyle("⚘", UITheme.TILE_GRASS),
-                new GlyphStyle(".", UITheme.TILE_GRASS),
-                new GlyphStyle("*", UITheme.TILE_GRASS),
-                new GlyphStyle("⊹", UITheme.TILE_GRASS),
+//                new GlyphStyle("\"", UITheme.TILE_GRASS),
+//                new GlyphStyle("'", UITheme.TILE_GRASS),
+//                new GlyphStyle("⚘", UITheme.TILE_GRASS),
+//                new GlyphStyle(".", UITheme.TILE_GRASS),
+//                new GlyphStyle("*", UITheme.TILE_GRASS),
+//                new GlyphStyle("⊹", UITheme.TILE_GRASS),
+                new GlyphStyle("🌾", UITheme.TILE_GRASS),
         });
         tileRegistry.put(TILE.WATER, new GlyphStyle[] {
                 new GlyphStyle("▓", UITheme.TILE_WATER),

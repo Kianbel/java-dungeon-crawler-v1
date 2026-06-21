@@ -2,6 +2,7 @@ package entity;
 
 import core.EntityRoomManager;
 import core.IlluminationData;
+import entity.projectile.Projectile;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
@@ -21,7 +22,7 @@ public abstract class Entity {
     public String name;
     public int health;
     public int maxHealth;
-    public int armor;
+    public int defense;
     public Weapon weapon;
     public Position position;
     public final int id;
@@ -32,9 +33,9 @@ public abstract class Entity {
 
     protected Random random = new Random();
 
-    public Entity(String name, int health, int armor, Weapon weapon, Position position) {
+    public Entity(String name, int health, int defense, Weapon weapon, Position position) {
         this.name = name;
-        this.armor = armor;
+        this.defense = defense;
         this.health = health;
         this.maxHealth = health;
         this.weapon = weapon;
@@ -79,7 +80,7 @@ public abstract class Entity {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(currentRoom == null) return;
-        currentRoom.addSkeletonTileAt(position);
+        if(!(this instanceof Projectile)) currentRoom.addSkeletonTileAt(position);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
     }
 
@@ -117,7 +118,7 @@ public abstract class Entity {
     }
 
     public void hurt(int damage) {
-        damage -= armor;
+        damage -= defense;
         if(damage < 0) {
             damage = 0;
         }
@@ -134,7 +135,7 @@ public abstract class Entity {
     public void hurt(int damage, Entity attacker) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(attacker, currentRoom)) {
-            damage -= armor;
+            damage -= defense;
             if(damage < 0) {
                 damage = 0;
             }
@@ -251,6 +252,6 @@ public abstract class Entity {
 
     @Override
     public String toString() {
-        return String.format("Entity: %s(A:%d,H:%d,W:%s,POS:%s)", name, armor, health, weapon.name, position);
+        return String.format("Entity: %s(A:%d,H:%d,W:%s,POS:%s)", name, defense, health, weapon.name, position);
     }
 }

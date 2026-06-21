@@ -43,7 +43,7 @@
 
                 <HBox spacing="4">
                     <Label fx:id="lblArmor" text="Armor:" />
-                    <Label fx:id="armorText" text="0/10" />
+                    <Label fx:id="armorText" text="Tunic" />
                 </HBox>
 
                 <HBox spacing="4">

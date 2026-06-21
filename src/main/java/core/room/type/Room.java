@@ -39,15 +39,17 @@ public abstract class Room {
 
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
         // --- RANDOM PASSABLE_OBSTACLES (FOR DECORATIONS) ---
-        final Random rand = new Random();
-        final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.05);
-        for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
-            final int x = rand.nextInt(1, length-1);
-            final int y = rand.nextInt(1, height-1);
-            if(layout[y][x] == TILE.FLOOR) {
-                switch(Randomizer.pick(1,2)) {
-                    case 1 -> layout[y][x] = TILE.GRASS;
-                    case 2 -> layout[y][x] = TILE.PASSABLE_OBSTACLE;
+
+        if(this instanceof ExtraRoom) {
+            final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.1);
+            for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
+                final int x = random.nextInt(1, length-1);
+                final int y = random.nextInt(1, height-1);
+                if(layout[y][x] == TILE.FLOOR) {
+                    switch(Randomizer.pick(1)) {
+                        case 1 -> layout[y][x] = TILE.GRASS;
+                        case 2 -> layout[y][x] = TILE.PASSABLE_OBSTACLE;
+                    }
                 }
             }
         }
@@ -178,13 +180,19 @@ public abstract class Room {
         }
     }
 
-    public boolean addInteractableTile(InteractableTile tile) {
+    public void addInteractableTile(InteractableTile tile) {
         Position targetPosition = tile.roomLayoutPosition;
         if(targetPosition.x < 0 || targetPosition.x >= length) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
         if(targetPosition.y < 0 || targetPosition.y >= height) throw new RuntimeException("Cannot put interactable tile to room due to invalid position");
 
-        if(interactableTiles.contains(tile)) return false;
-        return interactableTiles.add(tile);
+        for(int i = 0; i < interactableTiles.size(); i++) {
+            InteractableTile interactableTile = interactableTiles.get(i);
+            if(interactableTile.roomLayoutPosition.equals(tile.roomLayoutPosition)) {
+                interactableTiles.set(i, tile);
+                return;
+            }
+        }
+        interactableTiles.add(tile);
     }
 
     public boolean removeInteractableTile(InteractableTile tile) {

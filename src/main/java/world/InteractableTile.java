@@ -11,6 +11,7 @@ public abstract class InteractableTile {
     public boolean isSolid = false;
     public boolean isLightOccluding = false;
     private Color color = null;
+    private String character = null;
 
     public InteractableTile(Position roomLayoutPosition, boolean isSolid) {
         this.roomLayoutPosition = roomLayoutPosition;
@@ -18,6 +19,7 @@ public abstract class InteractableTile {
     }
 
     public void overrideColor(Color color) {
+        if(color == null) return;
         this.color = color;
     }
 
@@ -27,6 +29,19 @@ public abstract class InteractableTile {
 
     public Color getColor() {
         return color;
+    }
+
+    public void overrideCharacter(String character) {
+        if(character == null) return;
+        this.character = character;
+    }
+
+    public void resetCharacter() {
+        this.character = null;
+    }
+
+    public String getCharacter() {
+        return character;
     }
 
     public void onEntityEnter(Entity entity) {}
