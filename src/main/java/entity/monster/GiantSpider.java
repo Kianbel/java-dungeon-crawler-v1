@@ -1,6 +1,7 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import gui.dataclass.UITheme;
 import util.WeightedObject;
 import entity.Entity;
 import entity.RangeAttack;
@@ -34,7 +35,7 @@ public class GiantSpider extends Monster implements RangeAttack {
 
     @Override
     protected void makeSoundTextPopup() {
-        GUIManager.getInstance().triggerTextPopup("hiss", Color.DARKRED, position);
+        GUIManager.getInstance().triggerTextPopup("hiss", UITheme.ENTITY_SPIDER, position);
     }
 
     @Override

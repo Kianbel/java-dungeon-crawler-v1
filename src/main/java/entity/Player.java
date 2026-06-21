@@ -17,6 +17,7 @@ import item.weapon.Weapon;
 import item.weapon.AncientSword;
 import util.Position;
 import core.room.type.Room;
+import util.TILE;
 import world.InteractableTile;
 
 import java.util.ArrayList;

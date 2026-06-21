@@ -1,10 +1,12 @@
-package entity.boss;
+package entity.fsm;
 
-import core.EntityFSM;
+import core.GameManager;
+import entity.boss.FlareWitch;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
 import entity.monster.GiantSpider;
+import entity.monster.Monster;
 import entity.monster.Zombie;
 import entity.projectile.Fireball;
 import gui.GUIManager;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
+public class FlareWitchFSM extends MonsterFSM<FlareWitchFSM.STATE> {
 
     public enum STATE {
         IDLE,
@@ -33,8 +35,6 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
 
     private final Random random;
     private Room currentRoom;
-    private Entity player;
-    private final FlareWitch owner;
 
     private boolean isPhase2 = false;
     private int distanceToPlayer = 0;
@@ -54,9 +54,8 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
     private final int SUMMON_DISTANCE = 10;
     private final int MAX_SUMMON_COOLDOWN = 200;
 
-    public FlareWitchFSM(FlareWitch owner) {
+    public FlareWitchFSM(Monster owner) {
         super(owner);
-        this.owner = owner;
         this.random = new Random();
     }
 
@@ -68,7 +67,7 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
     @Override
     public void update() {
         if (currentRoom == null) currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(owner);
-        if (player == null) player = EntityRoomManager.getInstance().getPlayer();
+        if (player == null) player = GameManager.getInstance().getPlayer();
         if (player == null) return;
 
         if (owner.health <= owner.maxHealth / 2 && !isPhase2) {
@@ -173,7 +172,7 @@ public class FlareWitchFSM extends EntityFSM<FlareWitchFSM.STATE> {
             summon.setIlluminated(true);
             summon.setIlluminationRange(3);
 
-            owner.addSummon(summon);
+            ((FlareWitch)owner).addSummon(summon);
         }
 
         switchState(STATE.ANGERED);

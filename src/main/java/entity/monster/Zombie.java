@@ -1,6 +1,7 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import gui.dataclass.UITheme;
 import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
@@ -20,7 +21,7 @@ public class Zombie extends Monster {
 
     @Override
     protected void makeSoundTextPopup() {
-        GUIManager.getInstance().triggerTextPopup("groans", Color.DARKGREEN, position);
+        GUIManager.getInstance().triggerTextPopup("groans", UITheme.ENTITY_ZOMBIE, position);
     }
 
     public void makeMove() {

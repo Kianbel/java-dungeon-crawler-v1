@@ -32,7 +32,57 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         if (Math.random() <= 0.1) makeSoundTextPopup();
     }
 
-    public List<Position> getAStarPathPositions(Position fromPos, Position toPos) {
+    public boolean hasLineOfSight(Position start, Position end) {
+        // Track the ray as it moves step-by-step across the grid
+        int currentX = start.x;
+        int currentY = start.y;
+
+        int targetX = end.x;
+        int targetY = end.y;
+
+        // Calculate the total grid distance to travel on each axis
+        int deltaX = Math.abs(targetX - currentX);
+        int deltaY = Math.abs(targetY - currentY);
+
+        // Determine the direction of the steps (+1 means right/down, -1 means left/up)
+        int stepX = currentX < targetX ? 1 : -1;
+        int stepY = currentY < targetY ? 1 : -1;
+
+        // The error tracking variable determines when it's time to step diagonally
+        // vs. stepping along a single axis to stay true to the visual ray.
+        int lineError = deltaX - deltaY;
+
+        final TILE[][] roomLayout = EntityRoomManager.getInstance().getRoomFromEntity(this).getLayout();
+
+        while (true) {
+            // If the ray safely reaches the target position without hitting a wall, sight is clear!
+            if (currentX == targetX && currentY == targetY) {
+                return true;
+            }
+
+            // Check for obstructions (ignoring the tile the monster is currently standing on)
+            if (currentX != start.x || currentY != start.y) {
+                if(!roomLayout[currentY][currentX].isWalkable()) return false;
+            }
+
+            // We double the error margin to perform integer-based math instead of floating-point math
+            int doubleError = 2 * lineError;
+
+            // Decide whether to step horizontally
+            if (doubleError > -deltaY) {
+                lineError -= deltaY;
+                currentX += stepX;
+            }
+
+            // Decide whether to step vertically
+            if (doubleError < deltaX) {
+                lineError += deltaX;
+                currentY += stepY;
+            }
+        }
+    }
+
+    private List<Position> getAStarPathPositions(Position fromPos, Position toPos) {
         final Node startNode = new Node(fromPos.x, fromPos.y);
         final Node goalNode = new Node(toPos.x, toPos.y);
 

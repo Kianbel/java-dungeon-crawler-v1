@@ -82,29 +82,6 @@ public class GameCanvas {
         gc.restore();
     }
 
-//    public void updateFontSize(double fontSize) {
-//        this.font = Font.font(UITheme.GENERAL_FONT_FAMILY, fontSize);
-//        this.cellHeight = fontSize;
-//        this.cellWidth = fontSize * 0.60;
-//
-//        this.gridColumns = (int) Math.floor(nativeCanvas.getWidth() / cellWidth);
-//        this.gridRows = (int) Math.floor(nativeCanvas.getHeight() / cellHeight);
-//
-//        this.fontAscent = cellHeight * 0.78;
-//    }
-//
-//    public void drawCharacter(int gridX, int gridY, String character, Color textColor, double offsetX, double offsetY) {
-//        if (gridX < 0 || gridX >= gridColumns || gridY < 0 || gridY >= gridRows) return;
-//
-//        // Add the pixel offsets directly to the layout position
-//        double renderPixelX = (gridX * cellWidth) + offsetX;
-//        double renderPixelY = (gridY * cellHeight) + offsetY;
-//
-//        gc.setFont(this.font);
-//        gc.setFill(textColor);
-//        gc.fillText(character, renderPixelX, renderPixelY + fontAscent);
-//    }
-
     public void drawString(int x, int y, String text, double fontSize, Color color, double offsetX, double offsetY) {
         if (x < 0 || x >= gridColumns || y < 0 || y >= gridRows) return;
         final double renderPixelX = (x * cellWidth) + (cellWidth/2.0) + offsetX;

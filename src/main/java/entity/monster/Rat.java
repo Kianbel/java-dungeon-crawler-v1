@@ -1,12 +1,12 @@
 package entity.monster;
 
-import core.EntityRoomManager;
+import entity.Player;
+import entity.fsm.RatFSM;
+import item.weapon.GenericDamager;
 import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
-import item.weapon.Fist;
-import javafx.scene.paint.Color;
 import util.Position;
 import world.Coin;
 import world.Heart;
@@ -15,14 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rat extends Monster {
+    private final RatFSM stateMachine;
+
     public Rat(Position position) {
-        // TODO: change weapon
-        super("Rat", 5, 0, new Fist(), position);
+        super("Rat", 5, 0, new GenericDamager(2, 0.1), position);
+        stateMachine = new RatFSM(this);
     }
 
     @Override
     protected void makeSoundTextPopup() {
-        GUIManager.getInstance().triggerTextPopup("squeaks", Color.WHITE, position);
+        GUIManager.getInstance().triggerTextPopup("squeaks", UITheme.ENTITY_RAT, position);
     }
 
     @Override
@@ -35,6 +37,12 @@ public class Rat extends Monster {
 
         dropOnDeath(lootTable);
         super.die();
+    }
+
+    @Override
+    public void hurt(int damage, Entity attacker) {
+        super.hurt(damage, attacker);
+        if(attacker instanceof Player) stateMachine.doAngered();
     }
 
     @Override
@@ -51,12 +59,6 @@ public class Rat extends Monster {
 
         if(isValidTargetPosition(position.add(unitPos))) {
             walk(unitPos);
-        }
-
-        Entity player = EntityRoomManager.getInstance().getPlayer();
-        if(position.equals(player.position)) {
-            player.hurt(random.nextInt(1,3));
-            GUIManager.getInstance().printLog("You feel something pinched your legs...", UITheme.LOG_MONSTER_ACTION);
         }
     }
 }

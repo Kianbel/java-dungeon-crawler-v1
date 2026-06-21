@@ -77,6 +77,8 @@ public class UITheme {
     public static Color ENTITY_SPIDER = Color.web("#8c3f5d");
     public static Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
     public static Color ENTITY_RAT = Color.web("#ba6156");
+    public static Color ENTITY_BAT = Color.web("#ba6156");
+    public static Color ENTITY_KOBOLD = Color.web("#ba6156");
 
     // --- PROJECTILES
     public static Color PROJECTILE_FIREBALL = Color.web("#f2a65e");

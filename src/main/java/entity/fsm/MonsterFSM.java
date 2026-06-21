@@ -1,12 +1,14 @@
-package core;
+package entity.fsm;
 
-import entity.Entity;
+import entity.Player;
+import entity.monster.Monster;
 
-public abstract class EntityFSM<T extends Enum<T>> {
-    protected final Entity owner;
+public abstract class MonsterFSM<T extends Enum<T>> {
+    protected final Monster owner;
     protected T currentState;
+    protected Player player;
 
-    public EntityFSM(Entity owner) {
+    public MonsterFSM(Monster owner) {
         this.owner = owner;
     }
 
@@ -19,4 +21,4 @@ public abstract class EntityFSM<T extends Enum<T>> {
     public T getCurrentState() {
         return currentState;
     }
-}
+    }

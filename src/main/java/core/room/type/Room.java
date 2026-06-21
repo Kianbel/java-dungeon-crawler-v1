@@ -46,9 +46,9 @@ public abstract class Room {
                 final int x = random.nextInt(1, length-1);
                 final int y = random.nextInt(1, height-1);
                 if(layout[y][x] == TILE.FLOOR) {
-                    switch(Randomizer.pick(1)) {
+                    switch(Randomizer.pick(1,2)) {
                         case 1 -> layout[y][x] = TILE.GRASS;
-                        case 2 -> layout[y][x] = TILE.PASSABLE_OBSTACLE;
+                        case 2 -> layout[y][x] = TILE.WEB;
                     }
                 }
             }

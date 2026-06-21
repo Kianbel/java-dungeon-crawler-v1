@@ -1,5 +1,8 @@
 package entity.monster;
 
+import entity.fsm.KoboldFSM;
+import gui.GUIManager;
+import gui.dataclass.UITheme;
 import util.WeightedObject;
 import item.weapon.Dagger;
 import util.Position;
@@ -10,8 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Kobold extends Monster {
+
+    private final KoboldFSM stateMachine;
+
     public Kobold(Position position) {
         super("Kobold", 20, 2, new Dagger(), position);
+        stateMachine = new KoboldFSM(this);
     }
 
     @Override
@@ -28,7 +35,13 @@ public class Kobold extends Monster {
     }
 
     @Override
-    protected void makeSoundTextPopup() {
+    public void makeMove() {
+        super.makeMove();
+        stateMachine.update();
+    }
 
+    @Override
+    protected void makeSoundTextPopup() {
+        GUIManager.getInstance().triggerTextPopup("kobold noise", UITheme.ENTITY_KOBOLD, position);
     }
 }

@@ -28,53 +28,64 @@ public class DrunkardWalk extends Generator {
 
     @Override
     public MAP[][] start(int roomsAmount) {
-        mapLayout[walker.y][walker.x] = MAP.SPAWN;
-        spawnRoomPosition = new Position(walker.x, walker.y);
+        while(true) {
+            mapLayout[walker.y][walker.x] = MAP.SPAWN;
+            spawnRoomPosition = new Position(walker.x, walker.y);
 
-        while(currentRoomAmount < roomsAmount) {
-            switch (Randomizer.pick(1, 2, 3, 4)) {
-                case 1 -> { // North
-                    if (walker.y - 2 >= 0) {
-                        if (mapLayout[walker.y - 1][walker.x] != MAP.EMPTY && mapLayout[walker.y - 1][walker.x].isCorridor()) {
+            while(currentRoomAmount < roomsAmount) {
+                switch (Randomizer.pick(1, 2, 3, 4)) {
+                    case 1 -> { // North
+                        if (walker.y - 2 >= 0) {
+                            if (mapLayout[walker.y - 1][walker.x] != MAP.EMPTY && mapLayout[walker.y - 1][walker.x].isCorridor()) {
 //                            walker.y -= 2;
-                        } else {
-                            putRoomAt(walker.x, walker.y - 2);
+                            } else {
+                                putRoomAt(walker.x, walker.y - 2);
+                            }
                         }
                     }
-                }
-                case 2 -> { // East
-                    if (walker.x + 2 < MAP_LENGTH) {
-                        if (mapLayout[walker.y][walker.x + 1] != MAP.EMPTY && mapLayout[walker.y][walker.x + 1].isCorridor()) {
+                    case 2 -> { // East
+                        if (walker.x + 2 < MAP_LENGTH) {
+                            if (mapLayout[walker.y][walker.x + 1] != MAP.EMPTY && mapLayout[walker.y][walker.x + 1].isCorridor()) {
 //                            walker.x += 2;
-                        } else {
-                            putRoomAt(walker.x + 2, walker.y);
+                            } else {
+                                putRoomAt(walker.x + 2, walker.y);
+                            }
                         }
                     }
-                }
-                case 3 -> { // South
-                    if (walker.y + 2 < MAP_HEIGHT) {
-                        if (mapLayout[walker.y + 1][walker.x] != MAP.EMPTY && mapLayout[walker.y + 1][walker.x].isCorridor()) {
+                    case 3 -> { // South
+                        if (walker.y + 2 < MAP_HEIGHT) {
+                            if (mapLayout[walker.y + 1][walker.x] != MAP.EMPTY && mapLayout[walker.y + 1][walker.x].isCorridor()) {
 //                            walker.y += 2;
-                        } else {
-                            putRoomAt(walker.x, walker.y + 2);
+                            } else {
+                                putRoomAt(walker.x, walker.y + 2);
+                            }
                         }
                     }
-                }
-                case 4 -> { // West
-                    if (walker.x - 2 >= 0) {
-                        if (mapLayout[walker.y][walker.x - 1] != MAP.EMPTY && mapLayout[walker.y][walker.x - 1].isCorridor()) {
+                    case 4 -> { // West
+                        if (walker.x - 2 >= 0) {
+                            if (mapLayout[walker.y][walker.x - 1] != MAP.EMPTY && mapLayout[walker.y][walker.x - 1].isCorridor()) {
 //                            walker.x -= 2;
-                        } else {
-                            putRoomAt(walker.x - 2, walker.y);
+                            } else {
+                                putRoomAt(walker.x - 2, walker.y);
+                            }
                         }
                     }
                 }
             }
+            bossRoomPosition = new Position(walker.x, walker.y);
+
+            // ensure spawn and boss rooms aren't adjacent
+            int spawnX = spawnRoomPosition.x;
+            int spawnY = spawnRoomPosition.y;
+            int bossX = bossRoomPosition.x;
+            int bossY = bossRoomPosition.y;
+            if(spawnX+2 != bossX && spawnY != bossY ||
+                    spawnX-2 != bossX && spawnY != bossY ||
+                    spawnX != bossX && spawnY+2 != bossY ||
+                    spawnX != bossX && spawnY-2 != bossY
+            ) break;
         }
-        bossRoomPosition = new Position(walker.x, walker.y);
-
         makeSpecificRooms();
-
         return mapLayout;
     }
 

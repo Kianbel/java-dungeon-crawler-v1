@@ -14,14 +14,14 @@ public class SpawnRoom extends Room {
         TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(SpawnRoom.class);
         super(layout, minimapPosition);
 
-        addInteractableTile(new Staircase(new Position(5, 3)));
-        addInteractableTile(new Chest(new Position(6,3)));
-        addInteractableTile(new Chest(new Position(7,3)));
-        addInteractableTile(new Chest(new Position(8,3)));
-        addInteractableTile(new Chest(new Position(6,4)));
-        addInteractableTile(new Chest(new Position(7,4)));
-        addInteractableTile(new Chest(new Position(8,4)));
-        addInteractableTile(new Chest(new Position(9,4)));
+//        addInteractableTile(new Staircase(new Position(5, 3)));
+//        addInteractableTile(new Chest(new Position(6,3)));
+//        addInteractableTile(new Chest(new Position(7,3)));
+//        addInteractableTile(new Chest(new Position(8,3)));
+//        addInteractableTile(new Chest(new Position(6,4)));
+//        addInteractableTile(new Chest(new Position(7,4)));
+//        addInteractableTile(new Chest(new Position(8,4)));
+//        addInteractableTile(new Chest(new Position(9,4)));
     }
 
     @Override

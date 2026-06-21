@@ -2,9 +2,7 @@ package gui;
 
 import entity.*;
 import entity.boss.FlareWitch;
-import entity.monster.GiantSpider;
-import entity.monster.Rat;
-import entity.monster.Zombie;
+import entity.monster.*;
 import entity.projectile.Fireball;
 import gui.dataclass.GlyphStyle;
 import gui.dataclass.UITheme;
@@ -95,6 +93,9 @@ public class GlyphRegistry {
         registerEntity(GiantSpider.class, "🕷", UITheme.ENTITY_SPIDER);
         registerEntity(FlareWitch.class, "༒", UITheme.ENTITY_FLARE_WITCH);
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
+        registerEntity(Bat.class, "b", UITheme.ENTITY_BAT);
+        registerEntity(Kobold.class, "k", UITheme.ENTITY_KOBOLD);
+
 
         // --- PROJECTILE ENTITY REGISTRY ---
         registerEntity(Fireball.class, "\uD83D\uDD25", UITheme.PROJECTILE_FIREBALL);
