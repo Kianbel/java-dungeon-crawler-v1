@@ -1,9 +1,7 @@
 package core.room.type;
 
-import core.EntityRoomManager;
 import core.EntitySpawner;
 import core.room.loader.RoomLayoutRegistry;
-import entity.Player;
 import entity.monster.GiantSpider;
 import entity.monster.Zombie;
 import util.Position;
@@ -11,7 +9,12 @@ import util.TILE;
 import item.weapon.IronBlade;
 import world.*;
 
+import java.util.Random;
+
 public class TreasureRoom extends Room {
+
+    private Random random = new Random();
+
     public TreasureRoom(Position minimapPosition) {
         TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(TreasureRoom.class);
         super(layout, minimapPosition);

@@ -1,6 +1,6 @@
 package entity.monster;
 
-import entity.fsm.BatFSM;
+import entity.Monster;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import util.WeightedObject;

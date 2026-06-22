@@ -1,7 +1,6 @@
 package entity;
 
 import core.EntityRoomManager;
-import entity.monster.Monster;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
@@ -17,7 +16,6 @@ import item.weapon.Weapon;
 import item.weapon.AncientSword;
 import util.Position;
 import core.room.type.Room;
-import util.TILE;
 import world.InteractableTile;
 
 import java.util.ArrayList;
@@ -29,6 +27,8 @@ public class Player extends Entity {
     public Armor armor = new BareLeatherTunic();
     public boolean isDead = false;
     private List<Item> inventory = new ArrayList<>();
+
+    private final int DEFAULT_ILLUMINATION_RANGE = 5;
 
     private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
@@ -46,7 +46,7 @@ public class Player extends Entity {
         super("Player", 100, 0, new AncientSword(), position);
 
         setIlluminated(true);
-        setIlluminationRange(5);
+        setIlluminationRange(DEFAULT_ILLUMINATION_RANGE);
 
         setHealth(health);
         setHunger(hunger);
@@ -258,5 +258,9 @@ public class Player extends Entity {
     public void removeItemFromInventory(Item item) {
         inventory.remove(item);
         GUIManager.getInstance().updateInventory(inventory);
+    }
+
+    public void resetIlluminationRange() {
+        setIlluminationRange(DEFAULT_ILLUMINATION_RANGE);
     }
 }

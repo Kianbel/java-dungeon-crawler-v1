@@ -1,7 +1,6 @@
 package entity.boss;
 
 import entity.Entity;
-import entity.fsm.FlareWitchFSM;
 import gui.dataclass.UITheme;
 import util.Position;
 import item.weapon.Fist;

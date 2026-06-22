@@ -3,6 +3,7 @@ package world;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import entity.Player;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
@@ -14,6 +15,11 @@ public class Pot extends InteractableTile {
     public Pot(Position roomLayoutPosition) {
         super(roomLayoutPosition, true);
         isLightOccluding = true;
+    }
+
+    @Override
+    public void onEntityEnter(Entity entity) {
+        onEntityBump(entity);
     }
 
     @Override
@@ -31,11 +37,11 @@ public class Pot extends InteractableTile {
         if(Math.random() <= DROP_CHANCE) {
             if(Math.random() <= HEART_CHANCE) {
                 dropTile = new Heart(roomLayoutPosition, random.nextInt(5,16));
-                GUIManager.getInstance().printLog("You break open a box and it dropped a heart!", UITheme.LOG_WORLD);
+                if(entity instanceof Player) GUIManager.getInstance().printLog("You break open a box and it dropped a heart!", UITheme.LOG_WORLD);
             }
             else {
                 dropTile = new Coin(roomLayoutPosition, random.nextInt(5, 11));
-                GUIManager.getInstance().printLog("You break open a box and it dropped some coins!", UITheme.LOG_WORLD);
+                if(entity instanceof Player) GUIManager.getInstance().printLog("You break open a box and it dropped some coins!", UITheme.LOG_WORLD);
             }
         }
         else dropTile = new ShatteredPot(roomLayoutPosition);

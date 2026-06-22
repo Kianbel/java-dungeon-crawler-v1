@@ -1,17 +1,13 @@
-package entity.fsm;
+package entity.monster;
 
 import core.GameManager;
-import entity.Entity;
+import entity.Monster;
 import entity.Player;
-import entity.monster.Kobold;
-import entity.monster.Monster;
-import gui.GUIManager;
-import gui.dataclass.UITheme;
-import javafx.scene.paint.Color;
+import entity.StandardMonsterFSM;
 import util.Position;
 import util.Randomizer;
 
-public class KoboldFSM extends MonsterFSM<KoboldFSM.STATE> {
+public class RatFSM extends StandardMonsterFSM<RatFSM.STATE> {
     public enum STATE {
         IDLE,
         FOLLOW,
@@ -19,12 +15,17 @@ public class KoboldFSM extends MonsterFSM<KoboldFSM.STATE> {
         ANGERED,
     }
 
-    final int FOLLOW_RANGE = 6;
-
-    public KoboldFSM(Monster owner) {
+    public RatFSM(Monster owner) {
         super(owner);
         setupInitialState();
     }
+
+    @Override protected int getFollowRange() {return 10;}
+    @Override protected STATE getIdleState() {return STATE.IDLE;}
+    @Override protected STATE getAngeredState() {return STATE.ANGERED;}
+    @Override protected STATE getFollowState() {return STATE.FOLLOW;}
+    @Override protected STATE getAttackState() {return STATE.ATTACK;}
+    @Override protected STATE getBackOffState() {return null;}
 
     @Override
     public void setupInitialState() {
@@ -33,8 +34,6 @@ public class KoboldFSM extends MonsterFSM<KoboldFSM.STATE> {
 
     @Override
     public void update() {
-        if(player == null) player = GameManager.getInstance().getPlayer();
-
         switch (currentState) {
             case IDLE -> handleIdle();
             case FOLLOW -> handleFollow();
@@ -43,14 +42,11 @@ public class KoboldFSM extends MonsterFSM<KoboldFSM.STATE> {
         }
     }
 
-    private void handleIdle() {
-        if(owner.hasLineOfSight(owner.position, player.position)) {
-            switchState(STATE.ANGERED);
-            GUIManager.getInstance().printLog(owner.name + " found you.", UITheme.LOG_MONSTER_ACTION);
-            GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);
-            return;
-        }
+    public void doAngered() {
+        if(currentState == STATE.IDLE) switchState(STATE.ANGERED);
+    }
 
+    protected void handleIdle() {
         Position unitPos = new Position(0,0);
         switch(Randomizer.pick(1,2,3,4)) {
             case 1: unitPos.x = 1; break;
@@ -61,35 +57,26 @@ public class KoboldFSM extends MonsterFSM<KoboldFSM.STATE> {
 
         Position targetPos = owner.position.add(unitPos);
         if(owner.isValidTargetPosition(targetPos)) owner.walk(unitPos);
-
     }
 
-    private void handleAngered() {
-        if(owner.getDistanceFromPlayer() <= FOLLOW_RANGE) {
-            switchState(STATE.FOLLOW);
-        }
-        else switchState(STATE.ANGERED);
-    }
 
-    private void handleFollow() {
-        Position moveVector = owner.pathfindToPlayerPosition();
-
-        if(player.position.equals(owner.position.add(moveVector))) {
+    protected void handleFollow() {
+        if(owner.getDistanceFromPlayer() == 1) {
             switchState(STATE.ATTACK);
             return;
         }
 
+        Position moveVector = owner.pathfindToPlayerPosition();
         if(owner.isValidTargetPosition(owner.position.add(moveVector))) {
             owner.walk(moveVector);
         }
     }
 
-    private void handleAttack() {
+    protected void handleAttack() {
         Player player = GameManager.getInstance().getPlayer();
         owner.attack(player);
         switchState(STATE.FOLLOW);
     }
-
 
     @Override
     public void switchState(STATE newState) {

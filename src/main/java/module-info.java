@@ -15,6 +15,10 @@ module gui {
     opens gui.app to javafx.fxml;
     exports gui.dataclass;
     opens gui.dataclass to javafx.fxml;
-    exports entity.fsm;
-    opens entity.fsm to javafx.fxml;
+    exports entity.boss;
+    opens entity.boss to javafx.fxml;
+    exports entity.monster;
+    opens entity.monster to javafx.fxml;
+    exports entity;
+    opens entity to javafx.fxml;
 }

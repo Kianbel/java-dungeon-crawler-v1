@@ -1,7 +1,7 @@
 package core;
 
 import core.room.type.Room;
-import entity.monster.Monster;
+import entity.Monster;
 import util.Position;
 
 import java.util.List;

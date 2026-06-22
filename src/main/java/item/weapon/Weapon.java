@@ -7,7 +7,7 @@ import java.util.Random;
 public abstract class Weapon extends Item {
     public int baseAttackDamage;
     public double critRate;
-    public final double CRIT_MULTIPLIER = 1.5;
+    public final double CRIT_MULTIPLIER = 2;
 
     public Weapon(String name, int baseAttackDamage, double critRate) {
         super(name);

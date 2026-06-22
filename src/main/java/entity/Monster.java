@@ -1,9 +1,6 @@
-package entity.monster;
+package entity;
 
 import core.EntityRoomManager;
-import entity.Entity;
-import entity.MoveAfterPlayer;
-import entity.Player;
 import gui.AudioManager;
 import item.weapon.Weapon;
 import util.Position;
@@ -52,7 +49,14 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         // vs. stepping along a single axis to stay true to the visual ray.
         int lineError = deltaX - deltaY;
 
-        final TILE[][] roomLayout = EntityRoomManager.getInstance().getRoomFromEntity(this).getLayout();
+        final Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
+        final TILE[][] roomLayout = currentRoom.getLayout();
+
+        final boolean[][] interactableTileCache = new boolean[currentRoom.height][currentRoom.length];
+        List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
+        for(InteractableTile interactableTile : interactableTiles) {
+            interactableTileCache[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
+        }
 
         while (true) {
             // If the ray safely reaches the target position without hitting a wall, sight is clear!
@@ -63,6 +67,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             // Check for obstructions (ignoring the tile the monster is currently standing on)
             if (currentX != start.x || currentY != start.y) {
                 if(!roomLayout[currentY][currentX].isWalkable()) return false;
+                if(interactableTileCache[currentY][currentX]) return false;
             }
 
             // We double the error margin to perform integer-based math instead of floating-point math

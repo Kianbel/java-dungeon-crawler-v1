@@ -1,7 +1,7 @@
 package entity.monster;
 
+import entity.Monster;
 import entity.Player;
-import entity.fsm.RatFSM;
 import item.weapon.GenericDamager;
 import util.WeightedObject;
 import entity.Entity;

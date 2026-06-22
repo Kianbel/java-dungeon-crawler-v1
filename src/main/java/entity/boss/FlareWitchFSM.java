@@ -1,12 +1,12 @@
-package entity.fsm;
+package entity.boss;
 
 import core.GameManager;
-import entity.boss.FlareWitch;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
+import entity.MonsterFSM;
 import entity.monster.GiantSpider;
-import entity.monster.Monster;
+import entity.Monster;
 import entity.monster.Zombie;
 import entity.projectile.Fireball;
 import gui.GUIManager;

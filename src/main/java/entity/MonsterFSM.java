@@ -1,7 +1,4 @@
-package entity.fsm;
-
-import entity.Player;
-import entity.monster.Monster;
+package entity;
 
 public abstract class MonsterFSM<T extends Enum<T>> {
     protected final Monster owner;

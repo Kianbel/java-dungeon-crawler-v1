@@ -11,12 +11,6 @@ public abstract class Item {
         this.name = name;
     }
 
-    public Item(String name, String character, Color color) {
-        this.name = name;
-        this.character = character;
-        this.color = color;
-    }
-
     @Override
     public String toString() {
         return name;

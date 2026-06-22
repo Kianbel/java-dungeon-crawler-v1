@@ -1,11 +1,11 @@
 package entity.monster;
 
 import core.EntityRoomManager;
+import entity.Monster;
 import gui.dataclass.UITheme;
 import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
-import javafx.scene.paint.Color;
 import item.weapon.Fist;
 import util.Position;
 import world.Coin;

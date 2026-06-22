@@ -1,4 +1,4 @@
-package entity.monster;
+package entity;
 
 import util.Position;
 

@@ -26,6 +26,14 @@ public class Position {
         return this.x == x && this.y == y;
     }
 
+    public Position reverse() {
+        return new Position(-x, -y);
+    }
+
+    public Position add(int x, int y) {
+        return new Position(this.x+x, this.y+y);
+    }
+
     public Position add(Position otherPos) {
         return new Position(x+otherPos.x, y+otherPos.y);
     }

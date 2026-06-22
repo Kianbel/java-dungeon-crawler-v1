@@ -4,7 +4,7 @@ import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
 import entity.Player;
-import entity.monster.Monster;
+import entity.Monster;
 import entity.projectile.Projectile;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;

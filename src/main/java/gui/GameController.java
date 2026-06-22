@@ -2,11 +2,12 @@ package gui;
 
 import core.GameManager;
 import entity.Entity;
-import entity.monster.Monster;
+import entity.Monster;
 import entity.Player;
 import core.DungeonManager;
 import core.EntityRoomManager;
 import core.room.type.Room;
+import entity.projectile.Projectile;
 import gui.dataclass.GlyphStyle;
 import gui.dataclass.RenderOffset;
 import gui.dataclass.TextPopupData;
@@ -76,7 +77,7 @@ public class GameController {
         hudManager = new HUDManager(this);
 
         // Audio
-        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
+//        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
         AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3");
         AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3");
         AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3");
@@ -152,7 +153,7 @@ public class GameController {
             Arrays.fill(interactableGridCache[row], null);
             Arrays.fill(entityGridCache[row], null);
         }
-        lightingEngine.synchronizeCache(width, height);
+        lightingEngine.setupLightGridCache(width, height);
     }
 
     public void updateRenderingPipeline() {
@@ -205,15 +206,20 @@ public class GameController {
                 }
             }
         }
+
+        List<Position> travelledPositions = activeRoom.getPlayerTravelledPositions();
         for (int row = 0; row < roomHeight; row++) {
             for (int col = 0; col < roomWidth; col++) {
-                if (interactableGridCache[row][col] instanceof Fire) {
-                    lightingEngine.blitLightSource(col, row, 1, roomLayout, roomWidth, roomHeight, interactableGridCache);
+                if (interactableGridCache[row][col] instanceof Fire && travelledPositions.contains(new Position(col, row))) {
+                    lightingEngine.blitLightSource(col, row, 2, roomLayout, roomWidth, roomHeight, interactableGridCache);
+                }
+
+                if(roomLayout[row][col] == TILE.DOOR) {
+                    lightingEngine.blitLightSource(col, row, -3, roomLayout, roomWidth, roomHeight, interactableGridCache);
                 }
             }
         }
 
-        List<Position> travelledPositions = activeRoom.getPlayerTravelledPositions();
         double memoryThreshold = (player != null) ? player.getIlluminationRange() : 0.0;
         Map<Entity, RenderOffset> animationOffsets = animationManager.getEntityOffsets();
 
@@ -253,7 +259,10 @@ public class GameController {
                 Entity entity = entityGridCache[worldPosition.y][worldPosition.x];
                 if (entity != null) {
                     GlyphStyle entityStyle = glyphRegistry.getStyle(entity);
-                    activeGlyph = entityStyle.glyph();
+                    if(entity instanceof Projectile projectile) {
+                        activeGlyph = projectile.getCharacter() == null ? entityStyle.glyph() : projectile.getCharacter();
+                    }
+                    else activeGlyph = entityStyle.glyph();
 
                     if (animationOffsets.containsKey(entity)) {
                         RenderOffset animationOffset = animationOffsets.get(entity);
@@ -263,8 +272,8 @@ public class GameController {
 
                     if (entity instanceof Player p) {
                         activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
-                        if(tile == TILE.GRASS) p.setIlluminationRange(1);
-                        else p.setIlluminationRange(5);
+                        if(tile == TILE.GRASS) p.setIlluminationRange(0);
+                        else p.resetIlluminationRange();
                     }
                     else {
                         if (entity.getColor() != null) {
@@ -282,7 +291,6 @@ public class GameController {
                     }
                 }
 
-                LightingEngine.LIGHT_LEVEL lightLevel = lightingEngine.getLightLevel(worldPosition.x, worldPosition.y);
                 boolean isTravelled = false;
                 if (player != null && travelledPositions != null) {
                     for (Position previousTravelledPos : travelledPositions) {
@@ -296,17 +304,22 @@ public class GameController {
                     }
                 }
 
-                switch (lightLevel) {
-                    case ILLUMINATED -> {}
-                    case DIM -> activeColor = activeColor.darker();
-                    default -> activeColor = isTravelled ? Color.BLACK.brighter().brighter() : Color.BLACK;
-                }
+                double lightLevelPercent = isTravelled ? Math.max(0.2, lightingEngine.getLightLevel(worldPosition.x, worldPosition.y)) : lightingEngine.getLightLevel(worldPosition.x, worldPosition.y);
+                double lightedRed = Math.clamp((activeColor.getRed() * lightLevelPercent), 0.0, 1.0);
+                double lightedGreen = Math.clamp((activeColor.getGreen() * lightLevelPercent), 0.0, 1.0);
+                double lightedBlue = Math.clamp((activeColor.getBlue() * lightLevelPercent), 0.0, 1.0);
+                activeColor = Color.color(lightedRed, lightedGreen, lightedBlue);
 
                 gameCanvas.drawCharacter(screenX, screenY, activeGlyph, activeColor, entityPixelOffsetX, entityPixelOffsetY);
 
                 if (damagedMonsterOverlayTarget != null) {
                     double healthPercent = (double) damagedMonsterOverlayTarget.health / damagedMonsterOverlayTarget.maxHealth;
                     gameCanvas.drawHealthBar(screenX, screenY, healthPercent, entityPixelOffsetX, entityPixelOffsetY);
+                }
+                if(entity instanceof Player p) {
+                    if(p.health < p.maxHealth) {
+                        gameCanvas.drawHealthBar(screenX, screenY, (double) p.health /p.maxHealth, entityPixelOffsetX, entityPixelOffsetY);
+                    }
                 }
             }
         }

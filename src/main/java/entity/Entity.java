@@ -29,6 +29,7 @@ public abstract class Entity {
     public int stunCounter;
 
     private Color color;
+    private String character;
     private final IlluminationData illuminationData;
 
     protected Random random = new Random();
@@ -79,8 +80,6 @@ public abstract class Entity {
     public void die() {
         health = 0;
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-        if(currentRoom == null) return;
-        if(!(this instanceof Projectile)) currentRoom.addSkeletonTileAt(position);
         EntityRoomManager.getInstance().removeEntityFromRoom(this, currentRoom);
     }
 
@@ -98,7 +97,7 @@ public abstract class Entity {
             cumulativeWeight += weightedObject.weight;
             if(roll <= cumulativeWeight) {
                 Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
-                if(weightedObject.object != null) {
+                if(weightedObject.object != null && currentRoom != null) {
                     currentRoom.addInteractableTile((InteractableTile) weightedObject.object);
                 }
                 return;
@@ -249,6 +248,12 @@ public abstract class Entity {
     public Color getColor() {
         return color;
     }
+
+    public void overrideCharacter(String character) {this.character = character;}
+
+    public void resetCharacter() { this.character = null;}
+
+    public String getCharacter() {return character;}
 
     @Override
     public String toString() {

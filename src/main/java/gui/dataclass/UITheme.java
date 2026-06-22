@@ -48,7 +48,7 @@ public class UITheme {
     public static Color TILE_DOOR = Color.web("#731144");
     public static Color TILE_FLOOR = Color.web("#731144");
     public static Color TILE_GRASS = Color.web("#e3884e");
-    public static Color TILE_WATER = Color.web("#ecb55f");
+    public static Color TILE_WATER = Color.web("#6476e8");
     public static Color TILE_BOOKSHELF = Color.web("#8c3f5d");
     public static Color TILE_PASSABLE_OBSTACLE = Color.web("#731144");
     public static Color TILE_SOLID_OBSTACLE = Color.web("#8c3f5d");
@@ -76,9 +76,10 @@ public class UITheme {
     public static Color ENTITY_ZOMBIE = Color.web("#3ca370");
     public static Color ENTITY_SPIDER = Color.web("#8c3f5d");
     public static Color ENTITY_FLARE_WITCH = Color.web("#eb564b");
-    public static Color ENTITY_RAT = Color.web("#ba6156");
-    public static Color ENTITY_BAT = Color.web("#ba6156");
+    public static Color ENTITY_RAT = Color.web("#731144");
+    public static Color ENTITY_BAT = Color.web("#6476e8");
     public static Color ENTITY_KOBOLD = Color.web("#ba6156");
+    public static Color ENTITY_GOBLIN = Color.web("#3ca370");
 
     // --- PROJECTILES
     public static Color PROJECTILE_FIREBALL = Color.web("#f2a65e");

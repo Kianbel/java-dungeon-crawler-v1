@@ -24,7 +24,7 @@ public abstract class Room {
     protected TILE[][] layout;
     protected boolean isRoomGenerated = false;
 
-    protected Random random = new Random();
+    private Random random = new Random();
 
     public Room(TILE[][] layout, Position minimapPosition) {
         this.layout = layout;
@@ -56,7 +56,7 @@ public abstract class Room {
 
         // --- HANDLE BOX/DOOR GENERATION ---
         final double BOX_SPAWN_CHANCE = 0.6;
-        final double BOOKSHELF_SPAWN_CHANCE = 0.6;
+        final double BOOKSHELF_SPAWN_CHANCE = 0.8;
         final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.5;
         final double WEB_SPAWN_CHANCE = 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
@@ -160,10 +160,15 @@ public abstract class Room {
         List<Position> spawnablePositions = new ArrayList<>();
         // TODO: cannot spawn 1 block all sides surrounding a door
 
+        boolean[][] interactableTileCache = new boolean[height][length];
+        for(InteractableTile interactableTile : interactableTiles) {
+            interactableTileCache[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
+        }
+
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 TILE tile = layout[y][x];
-                if(tile.isWalkable()) spawnablePositions.add(new Position(x, y));
+                if(tile.isWalkable() && !interactableTileCache[y][x]) spawnablePositions.add(new Position(x, y));
             }
         }
         return spawnablePositions;

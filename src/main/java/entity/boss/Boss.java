@@ -3,7 +3,7 @@ package entity.boss;
 import core.EntityRoomManager;
 import core.room.type.Room;
 import entity.Entity;
-import entity.monster.Monster;
+import entity.Monster;
 import gui.GUIManager;
 import item.weapon.Weapon;
 import javafx.scene.paint.Color;
@@ -26,7 +26,6 @@ public abstract class Boss extends Monster {
     public void die() {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
 
-        super.die();
         for(Entity e : summonedEntities) {
             e.die();
         }
@@ -38,6 +37,8 @@ public abstract class Boss extends Monster {
         Position stairSpawnPos = new Position(currentRoom.length/2, currentRoom.height/2);
         if(playerPosition.equals(stairSpawnPos)) stairSpawnPos.x++;
         currentRoom.addInteractableTile(new Staircase(stairSpawnPos));
+
+        super.die();
     }
 
     public void addSummon(Entity summon) {

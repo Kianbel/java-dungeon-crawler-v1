@@ -4,8 +4,10 @@ import entity.*;
 import entity.boss.FlareWitch;
 import entity.monster.*;
 import entity.projectile.Fireball;
+import entity.projectile.WeaponProjectile;
 import gui.dataclass.GlyphStyle;
 import gui.dataclass.UITheme;
+import item.weapon.Weapon;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;
@@ -33,32 +35,24 @@ public class GlyphRegistry {
                 new GlyphStyle("·", UITheme.TILE_FLOOR),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
-//                new GlyphStyle(".", UITheme.TILE_FLOOR),
-//                new GlyphStyle("░", UITheme.TILE_FLOOR)
         });
 
         tileRegistry.put(TILE.DOOR, new GlyphStyle[]{
                 new GlyphStyle("⌸", UITheme.TILE_DOOR)
         });
         tileRegistry.put(TILE.GRASS, new GlyphStyle[] {
-//                new GlyphStyle("\"", UITheme.TILE_GRASS),
-//                new GlyphStyle("'", UITheme.TILE_GRASS),
-//                new GlyphStyle("⚘", UITheme.TILE_GRASS),
-//                new GlyphStyle(".", UITheme.TILE_GRASS),
-//                new GlyphStyle("*", UITheme.TILE_GRASS),
-//                new GlyphStyle("⊹", UITheme.TILE_GRASS),
                 new GlyphStyle("🌾", UITheme.TILE_GRASS),
         });
         tileRegistry.put(TILE.WATER, new GlyphStyle[] {
-                new GlyphStyle("▓", UITheme.TILE_WATER),
+                new GlyphStyle("░", UITheme.TILE_WATER),
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("⛩", UITheme.TILE_SOLID_OBSTACLE),
                 new GlyphStyle("目", UITheme.TILE_SOLID_OBSTACLE),
         });
-        tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
-                new GlyphStyle("ノ", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("ᵕ", UITheme.TILE_PASSABLE_OBSTACLE),
+        tileRegistry.put(TILE.PASSABLE_DECOR, new GlyphStyle[] {
+                new GlyphStyle(".", UITheme.TILE_PASSABLE_OBSTACLE),
+                new GlyphStyle("░", UITheme.TILE_PASSABLE_OBSTACLE)
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
                 new GlyphStyle("目", UITheme.TILE_BOOKSHELF),
@@ -95,10 +89,12 @@ public class GlyphRegistry {
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
         registerEntity(Bat.class, "b", UITheme.ENTITY_BAT);
         registerEntity(Kobold.class, "k", UITheme.ENTITY_KOBOLD);
+        registerEntity(Goblin.class, "g", UITheme.ENTITY_GOBLIN);
 
 
         // --- PROJECTILE ENTITY REGISTRY ---
-        registerEntity(Fireball.class, "\uD83D\uDD25", UITheme.PROJECTILE_FIREBALL);
+        registerEntity(Fireball.class, "🔥", UITheme.PROJECTILE_FIREBALL);
+        registerEntity(WeaponProjectile.class, "?", Color.PINK);
     }
 
     public static GlyphRegistry getInstance() { return instance; }

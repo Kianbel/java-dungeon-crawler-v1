@@ -24,7 +24,8 @@ public abstract class Projectile extends Entity implements MoveAfterPlayer {
         TILE[][] roomLayout = currentRoom.getLayout();
 
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);
-        for(Entity e : entities) {
+        for(int i = 0; i < entities.size(); i++) {
+            Entity e = entities.get(i);
             if(e.equals(this)) continue;
             if((e.position.equals(targetPosition) || e.position.equals(position)) && !(e instanceof Projectile)) {
                 attack(e);
@@ -48,12 +49,16 @@ public abstract class Projectile extends Entity implements MoveAfterPlayer {
     }
 
     @Override
+    public void makeMove() {
+        move();
+    }
+
+    @Override
     public void attack(Entity targetEntity) {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
         if(EntityRoomManager.getInstance().isEntityInRoom(targetEntity, currentRoom)) {
             int inflictedDamage = weapon.getCalculatedAttackDamage();
             targetEntity.hurt(inflictedDamage, this);
-            die();
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");
     }
