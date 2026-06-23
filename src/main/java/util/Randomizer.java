@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.Random;
 
 public class Randomizer {
-    private static final Random random = new Random();
-
     @SafeVarargs
     public static <T> T pick(T... list) {
-        return list[random.nextInt(list.length)];
+        return list[new Random().nextInt(list.length)];
     }
 
     public static Object rollWeightedObjects(List<WeightedObject> lootTable) {

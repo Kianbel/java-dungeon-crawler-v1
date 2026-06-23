@@ -10,6 +10,7 @@ import gui.dataclass.UITheme;
 import item.Item;
 import item.armor.Armor;
 import item.key.Key;
+import item.weapon.Ammo;
 import javafx.scene.paint.Color;
 import util.Position;
 import item.weapon.Weapon;
@@ -28,15 +29,15 @@ public class DroppedItem extends InteractableTile {
 
     @Override
     public void onEntityEnter(Entity entity) {
-        if(entity instanceof Player p) {
+        if(entity instanceof Player player) {
             Room currentRoom = EntityRoomManager.getInstance().getRoomFromInteractableTile(this);
-            GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
-            GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, p.position, 1000);
             AudioManager.getInstance().playSFX("pickup");
 
             if(item instanceof Weapon w) {
-                Weapon oldWeapon = p.weapon;
-                p.setWeapon(w);
+                GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
+                GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, player.position, 1000);
+                Weapon oldWeapon = player.weapon;
+                player.setWeapon(w);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
 
                 if(oldWeapon != null) {
@@ -44,8 +45,10 @@ public class DroppedItem extends InteractableTile {
                 }
             }
             else if(item instanceof Armor a) {
-                Armor oldArmor = p.armor;
-                p.setArmor(a);
+                GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
+                GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, player.position, 1000);
+                Armor oldArmor = player.armor;
+                player.setArmor(a);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
 
                 if(oldArmor != null) {
@@ -53,7 +56,20 @@ public class DroppedItem extends InteractableTile {
                 }
             }
             else {
-                p.addItemToInventory(item);
+                if(item instanceof Ammo ammo) {
+                    int amount = ammo.getAmount();
+                    GUIManager.getInstance().printLog(String.format("Picked up: %s ( x%d )", item.name, amount), UITheme.LOG_WORLD);
+                    GUIManager.getInstance().triggerTextPopup("+" + item.name + " x" + amount, Color.LIGHTBLUE, player.position, 1000);
+                    for(int i = 0; i < amount; i++) {
+                        player.addItemToInventory(item);
+                    }
+                }
+                else {
+                    GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
+                    GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, player.position, 1000);
+                    player.addItemToInventory(item);
+                }
+
                 EntityRoomManager.getInstance().removeInteractableTile(this);
             }
         }

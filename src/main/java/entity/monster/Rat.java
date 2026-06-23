@@ -18,7 +18,7 @@ public class Rat extends Monster {
     private final RatFSM stateMachine;
 
     public Rat(Position position) {
-        super("Rat", 20, 0, new GenericDamager(2, 0.1), position);
+        super("Rat", 10, 0, new GenericDamager(2, 0.1), position);
         stateMachine = new RatFSM(this);
     }
 

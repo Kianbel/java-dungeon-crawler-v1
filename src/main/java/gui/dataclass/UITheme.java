@@ -54,7 +54,7 @@ public class UITheme {
     public static Color TILE_SOLID_OBSTACLE = Color.web("#8c3f5d");
     public static Color TILE_CARPET = Color.web("#731144");
     public static Color TILE_IRON_BAR = Color.web("#e36433");
-    public static Color TILE_SKELETON = Color.web("#731144");
+    public static Color TILE_SKELETON = Color.web("#c2c2d1");
 
 
     // --- INTERACTABLE TILES ---
