@@ -69,7 +69,8 @@ public class UITheme {
     public static Color ITILE_LOCKED_DOOR = Color.web("#ffffeb");
     public static Color ITILE_OPENED_DOOR = Color.web("#731144");
     public static Color ITILE_STAIRCASE = Color.web("#ffffeb");
-    public static Color ITILE_SPIKE = Color.web("#e36433");
+    public static Color ITILE_SPIKE_TRAP = Color.web("#e36433");
+    public static Color ITILE_PRESSURE_PLATE_TRAP = UITheme.TILE_FLOOR;
 
     // --- ENTITIES PALETTE ---
     public static final Color ENTITY_PLAYER = Color.web("#ffe478");
@@ -99,7 +100,11 @@ public class UITheme {
 
     // --- ATTACK DAMAGE INDICATORS ---
     public static final Color PLAYER_TAKE_DAMAGE = Color.RED;
-    public static final Color NORMAL_DAMAGE = Color.WHITE;
+    public static final Color TEXT_POPUP_NORMAL_HIT = Color.WHITE;
     public static final Color CRITICAL_DAMAGE = Color.DARKRED;
     public static final Color MISS = Color.YELLOW;
+
+    // --- TEXT POPUPS
+    public static final Color TEXT_POPUP_HEAL = Color.web("#3ca370");
+    public static final Color TEXT_POPUP_CRITICAL_HIT = Color.web("#FF0000");
 }

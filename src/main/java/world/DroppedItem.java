@@ -52,7 +52,7 @@ public class DroppedItem extends InteractableTile {
                     currentRoom.addInteractableTile(new DroppedItem(roomLayoutPosition, oldArmor));
                 }
             }
-            else if(item instanceof Key) {
+            else {
                 p.addItemToInventory(item);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
             }

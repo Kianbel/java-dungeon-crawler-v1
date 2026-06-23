@@ -89,8 +89,10 @@ public class GameController {
         AudioManager.getInstance().registerSFX("stun", "/audio/stun.mp3");
         AudioManager.getInstance().registerSFX("enemy_die", "/audio/enemy_die.mp3");
         AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3");
+        AudioManager.getInstance().registerSFX("enemy_see_player", "/audio/enemy_see_player.mp3");
 
-        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
+//        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
+        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
 
         AudioManager.getInstance().setSFXVolume(0.5);
         AudioManager.getInstance().setBGMVolume(0.3);

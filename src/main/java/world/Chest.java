@@ -26,7 +26,6 @@ public class Chest extends InteractableTile {
         List<WeightedObject> lootTable = new ArrayList<>();
 
         final int floor = GameManager.getInstance().getCurrentFloor();
-        System.out.println(floor);
         switch (floor) {
             case 1 -> {
                 lootTable.add(new WeightedObject(new Heart(roomLayoutPosition, 10), 5));

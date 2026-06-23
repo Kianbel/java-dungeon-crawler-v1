@@ -2,18 +2,17 @@ package world;
 
 import entity.Entity;
 import entity.MoveAfterPlayer;
-import gui.AudioManager;
 import gui.dataclass.UITheme;
 import util.Position;
 
 import java.util.Random;
 
-public class Spike extends InteractableTile implements MoveAfterPlayer {
+public class SpikeTrap extends Trap implements MoveAfterPlayer {
     public boolean isActivated = true;
     private int tick = 0;
     private Random random = new Random();
 
-    public Spike(Position roomLayoutPosition) {
+    public SpikeTrap(Position roomLayoutPosition) {
         super(roomLayoutPosition, false);
         tick = random.nextInt(0,2);
     }
@@ -21,14 +20,14 @@ public class Spike extends InteractableTile implements MoveAfterPlayer {
     @Override
     public void onEntityEnter(Entity entity) {
         if(isActivated) {
-            entity.hurt(random.nextInt(1,5));
+            entity.hurt(random.nextInt(8,10));
         }
     }
 
     @Override
     public void onEntityStay(Entity entity) {
         if(isActivated) {
-            entity.hurt(random.nextInt(1,5));
+            entity.hurt(random.nextInt(8,10));
         }
     }
 

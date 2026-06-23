@@ -88,7 +88,6 @@ public class GameCanvas {
         final double renderPixelY = (y * cellHeight) + (cellWidth/2.0) + offsetY;
 
         Font font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, fontSize);
-        if(Character.isDigit(text.charAt(0))) font = Font.font(UITheme.TEXT_POPUP_FONT_FAMILY, FontWeight.BOLD, fontSize);
         gc.setFont(font);
         gc.setFill(color);
         gc.setTextAlign(TextAlignment.CENTER);

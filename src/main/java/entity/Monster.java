@@ -7,7 +7,8 @@ import util.Position;
 import util.TILE;
 import core.room.type.Room;
 import world.InteractableTile;
-import world.Spike;
+import world.SpikeTrap;
+import world.Trap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,7 +125,12 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             for (int i = 0; i < interactableTiles.size(); i++) {
                 InteractableTile interactableTile = interactableTiles.get(i);
                 if (interactableTile.isInBounds(roomHeight, roomLength)) {
-                    if(interactableTile instanceof Spike spike && !spike.isActivated) continue;
+                    if(interactableTile instanceof Trap trap){
+                        if(trap instanceof SpikeTrap spikeTrap && spikeTrap.isActivated) {
+                            isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
+                        }
+                        else continue;
+                    }
                     isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
                 }
             }
@@ -250,7 +256,8 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
         for (int i = 0; i < interactableTiles.size(); i++) {
             InteractableTile interactableTile = interactableTiles.get(i);
-            if (interactableTile.roomLayoutPosition.equals(targetPosition) && interactableTile.isSolid) return false;
+            if (interactableTile.roomLayoutPosition.equals(targetPosition)
+                    && interactableTile.isSolid) return false;
         }
 
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);

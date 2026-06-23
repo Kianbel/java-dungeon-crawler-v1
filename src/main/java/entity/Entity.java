@@ -1,8 +1,8 @@
 package entity;
 
 import core.EntityRoomManager;
+import core.GameManager;
 import core.IlluminationData;
-import entity.projectile.Projectile;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
@@ -35,10 +35,12 @@ public abstract class Entity {
     protected Random random = new Random();
 
     public Entity(String name, int health, int defense, Weapon weapon, Position position) {
+        final int currentFloor = GameManager.getInstance().getCurrentFloor();
+
         this.name = name;
         this.defense = defense;
-        this.health = health;
-        this.maxHealth = health;
+        this.maxHealth = (int) (health * Math.pow(1.25, currentFloor-1));
+        this.health = maxHealth;
         this.weapon = weapon;
         this.position = position;
         this.id = this.hashCode();
@@ -122,7 +124,7 @@ public abstract class Entity {
             damage = 0;
         }
 
-        GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
+        GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.TEXT_POPUP_NORMAL_HIT, position);
 
         health -= damage;
         if(health <= 0) {
@@ -145,8 +147,11 @@ public abstract class Entity {
                 }
             }
 
-            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
-            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.NORMAL_DAMAGE, position);
+            if(attacker.weapon.isCritical(damage)) {
+                GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.TEXT_POPUP_CRITICAL_HIT, position);
+                GUIManager.getInstance().triggerTextPopup("CRITICAL HIT!", UITheme.TEXT_POPUP_CRITICAL_HIT, position);
+            }
+            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.TEXT_POPUP_NORMAL_HIT, position);
 
             health -= damage;
             if(health <= 0) {

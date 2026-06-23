@@ -17,7 +17,7 @@ public class Bat extends Monster {
     private final BatFSM stateMachine;
 
     public Bat(Position position) {
-        super("Bat", 10, 0, new GenericDamager(3, 0.1), position);
+        super("Bat", 20, 0, new GenericDamager(3, 0.1), position);
         stateMachine = new BatFSM(this);
     }
 

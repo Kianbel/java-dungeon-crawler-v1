@@ -7,7 +7,6 @@ import entity.projectile.Fireball;
 import entity.projectile.WeaponProjectile;
 import gui.dataclass.GlyphStyle;
 import gui.dataclass.UITheme;
-import item.weapon.Weapon;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;
@@ -79,7 +78,8 @@ public class GlyphRegistry {
         registerInteractableTile(LockedDoor.class, "⌸", UITheme.ITILE_LOCKED_DOOR);
         registerInteractableTile(OpenedDoor.class, "⌸", UITheme.ITILE_OPENED_DOOR);
         registerInteractableTile(Staircase.class, "目", UITheme.ITILE_STAIRCASE);
-        registerInteractableTile(Spike.class, "♒", UITheme.ITILE_SPIKE);
+        registerInteractableTile(SpikeTrap.class, "♒", UITheme.ITILE_SPIKE_TRAP);
+        registerInteractableTile(PressurePlateTrap.class, "~", UITheme.ITILE_PRESSURE_PLATE_TRAP);
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

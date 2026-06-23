@@ -4,9 +4,6 @@ import util.DIRECTION;
 import util.Position;
 import util.Randomizer;
 import util.TILE;
-import item.weapon.AncientSword;
-import item.weapon.IronBlade;
-import item.weapon.Weapon;
 import world.*;
 
 import java.util.*;
@@ -38,21 +35,31 @@ public abstract class Room {
     }
 
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
-        // --- RANDOM PASSABLE_OBSTACLES (FOR DECORATIONS) ---
-
-        if(this instanceof ExtraRoom) {
-            final int FLOOR_DECOR_AMOUNT = (int) (length * height * 0.1);
-            for(int i = 0; i < FLOOR_DECOR_AMOUNT; i++) {
-                final int x = random.nextInt(1, length-1);
-                final int y = random.nextInt(1, height-1);
-                if(layout[y][x] == TILE.FLOOR) {
-                    switch(Randomizer.pick(1,2)) {
-                        case 1 -> layout[y][x] = TILE.GRASS;
-                        case 2 -> layout[y][x] = TILE.WEB;
-                    }
+        // --- RANDOM OBSTACLES --
+        if(this instanceof ExtraRoom || this instanceof NormalRoom) {
+            List<Position> replaceablePositions = new ArrayList<>();
+            for(int y = 0; y < height; y++) {
+                for(int x = 0; x < length; x++) {
+                    if(layout[y][x] == TILE.FLOOR) replaceablePositions.add(new Position(x,y));
                 }
             }
+
+            double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
+            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
+                switch (Randomizer.pick(1,2,3)) {
+                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.GRASS;
+                    case 2 -> layout[replacedPos.y][replacedPos.x] = TILE.WEB;
+                    case 3 -> layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
+                }
+            }
+            FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
+            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
+                addInteractableTile(new PressurePlateTrap(replacedPos));
+            }
         }
+
 
         // --- HANDLE BOX/DOOR GENERATION ---
         final double BOX_SPAWN_CHANCE = 0.6;
@@ -75,7 +82,7 @@ public abstract class Room {
                     }
                     case SPIKE -> {
                         this.layout[y][x] = TILE.FLOOR;
-                        addInteractableTile(new Spike(new Position(x,y)));
+                        addInteractableTile(new SpikeTrap(new Position(x,y)));
                     }
                     case LOCKED_DOOR -> {
                         this.layout[y][x] = TILE.FLOOR;
@@ -95,22 +102,8 @@ public abstract class Room {
                     }
                     case CHEST -> {
                         this.layout[y][x] = TILE.FLOOR;
-                        InteractableTile chestDrop = null;
-
                         Position currentPos = new Position(x,y);
-                        switch(Randomizer.pick(1,2,3)) {
-                            case 1 -> chestDrop = new Coin(currentPos, Randomizer.pick(5,10,15));
-                            case 2 -> chestDrop = new Heart(currentPos, Randomizer.pick(10,15,20));
-                            case 3 -> {
-                                Weapon weapon = null;
-                                switch(Randomizer.pick(1,2)) {
-                                    case 1 -> weapon = new AncientSword();
-                                    case 2 -> weapon = new IronBlade();
-                                }
-                                chestDrop = new DroppedItem(currentPos, weapon);
-                            }
-                        }
-                        addInteractableTile(new Chest(currentPos, chestDrop));
+                        addInteractableTile(new Chest(currentPos));
                     }
                     case BOX -> {
                         layout[y][x] = TILE.FLOOR;

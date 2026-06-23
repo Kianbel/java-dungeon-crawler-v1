@@ -216,6 +216,7 @@ public class Player extends Entity {
     }
 
     public void setHunger(int hunger) {
+        if(hunger < 0) hunger = 0;
         this.hunger = hunger;
         GUIManager.getInstance().setHunger(hunger);
     }
@@ -228,8 +229,10 @@ public class Player extends Entity {
             return;
         }
 
-        setHealth(health + random.nextInt(5,10));
+        int heal = random.nextInt(5,10);
+        setHealth(health + heal);
         setHunger(hunger - random.nextInt(1,5));
+        GUIManager.getInstance().triggerTextPopup("+"+heal, UITheme.TEXT_POPUP_HEAL, position);
         naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
     }
 
@@ -239,9 +242,10 @@ public class Player extends Entity {
             return;
         }
         setHunger(hunger - random.nextInt(1,5));
-        if(hunger < 0) {
-            setHealth(health - 5);
+        if(hunger <= 0) {
+            hurt(5);
             GUIManager.getInstance().printLog("You are starving", Color.ORANGE);
+            GUIManager.getInstance().triggerTextPopup("I need to eat", Color.ORANGE, position);
         }
         hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     }

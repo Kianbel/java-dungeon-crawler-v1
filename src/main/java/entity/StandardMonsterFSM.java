@@ -1,6 +1,7 @@
 package entity;
 
 import core.GameManager;
+import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
@@ -30,6 +31,7 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
     protected void playAlertEffects() {
         GUIManager.getInstance().printLog(owner.name + " found you.", UITheme.LOG_MONSTER_ACTION);
         GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);
+        AudioManager.getInstance().playSFX("enemy_see_player");
     }
 
     protected void handleIdle() {

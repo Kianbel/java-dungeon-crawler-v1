@@ -3,6 +3,7 @@ package entity.monster;
 import core.GameManager;
 import entity.Monster;
 import entity.StandardMonsterFSM;
+import gui.AudioManager;
 import gui.GUIManager;
 import javafx.scene.paint.Color;
 
@@ -52,6 +53,7 @@ public class BatFSM extends StandardMonsterFSM<BatFSM.STATE> {
             switchState(STATE.ANGERED);
             GUIManager.getInstance().triggerTextPopup(owner.name + " found you", Color.WHITE, owner.position);
             GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);
+            AudioManager.getInstance().playSFX("enemy_see_player");
         }
     }
 
