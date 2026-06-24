@@ -7,6 +7,8 @@ import gui.dataclass.UITheme;
 import item.Item;
 import item.armor.Armor;
 import item.armor.BareLeatherTunic;
+import item.food.Food;
+import item.heal.HealingPotion;
 import item.weapon.DevOneShotWeapon;
 import javafx.scene.paint.Color;
 import item.weapon.Weapon;
@@ -237,8 +239,8 @@ public class Player extends Entity {
         setHunger(hunger - random.nextInt(1,5));
         if(hunger <= 0) {
             hurt(5);
-            GUIManager.getInstance().printLog("You are starving", Color.ORANGE);
-            GUIManager.getInstance().triggerTextPopup("I need to eat", Color.ORANGE, position);
+            GUIManager.getInstance().printLog("You are starving", UITheme.STAT_HUNGER);
+            GUIManager.getInstance().triggerTextPopup("I need to eat", UITheme.STAT_HUNGER, position);
         }
         hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
     }
@@ -248,8 +250,46 @@ public class Player extends Entity {
     }
 
     public void addItemToInventory(Item item) {
-        inventory.add(item);
+        for(int i = 0; i < item.amount; i++) {
+            inventory.add(item);
+        }
         GUIManager.getInstance().updateInventory(inventory);
+    }
+
+    public void eat() {
+        if(hunger >= 100) {
+            GUIManager.getInstance().triggerTextPopup("i'm full", UITheme.STAT_HUNGER, position);
+            return;
+        }
+
+        for(Item item : inventory) {
+            if(item instanceof Food f) {
+                removeItemFromInventory(f);
+                setHunger(Math.clamp(hunger + f.hungerPoints, 0, 100));
+                GUIManager.getInstance().triggerTextPopup("+" + f.hungerPoints, UITheme.STAT_HUNGER, position);
+                // TODO: food eat sound
+                return;
+            }
+        }
+        GUIManager.getInstance().triggerTextPopup("no food to eat", UITheme.STAT_HUNGER, position);
+    }
+
+    public void heal() {
+        if(health >= maxHealth) {
+            GUIManager.getInstance().triggerTextPopup("i'm at full health", UITheme.STAT_HEALTH, position);
+            return;
+        }
+
+        for(Item item : inventory) {
+            if(item instanceof HealingPotion healingPotion) {
+                removeItemFromInventory(healingPotion);
+                setHealth(Math.clamp(health + healingPotion.healPoints, 0, 100));
+                GUIManager.getInstance().triggerTextPopup("+" + healingPotion.healPoints, UITheme.STAT_HEALTH, position);
+                // TODO: heal sounds
+                return;
+            }
+        }
+        GUIManager.getInstance().triggerTextPopup("no healing potions", UITheme.STAT_HEALTH, position);
     }
 
     public void removeItemFromInventory(Item item) {

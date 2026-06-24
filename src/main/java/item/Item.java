@@ -4,11 +4,19 @@ import javafx.scene.paint.Color;
 
 public abstract class Item {
     public String name;
+    public int amount;
+
     public String character = null;
     public Color color = null;
 
     public Item(String name) {
         this.name = name;
+        this.amount = 1;
+    }
+
+    public Item(String name, int amount) {
+        this(name);
+        this.amount = amount;
     }
 
     @Override
@@ -24,5 +32,10 @@ public abstract class Item {
     public void overrideColor(Color color) {
         if(color == null) return;
         this.color = color;
+    }
+
+    public void decreaseAmount() {
+        if(amount <= 0) return;
+        amount--;
     }
 }

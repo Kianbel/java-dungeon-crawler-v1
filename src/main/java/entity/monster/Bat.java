@@ -3,6 +3,7 @@ package entity.monster;
 import entity.Monster;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
+import item.food.MonsterMeat;
 import util.WeightedObject;
 import item.weapon.GenericDamager;
 import util.Position;
@@ -11,6 +12,7 @@ import world.Heart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Bat extends Monster {
 
@@ -26,7 +28,8 @@ public class Bat extends Monster {
         List<WeightedObject> lootTable = new ArrayList<>(List.of(
                 new WeightedObject(new Heart(position, 5), 3),
                 new WeightedObject(new Coin(position, 5), 3),
-                new WeightedObject(null, 5)
+                new WeightedObject(new MonsterMeat(new Random().nextInt(1,3)), position, 6),
+                new WeightedObject(null, 2)
         ));
 
         dropOnDeath(lootTable);

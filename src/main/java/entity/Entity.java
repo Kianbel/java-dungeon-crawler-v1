@@ -6,6 +6,7 @@ import core.IlluminationData;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
+import item.food.MonsterMeat;
 import javafx.scene.paint.Color;
 import util.DIRECTION;
 import item.weapon.Weapon;
@@ -13,6 +14,7 @@ import util.Position;
 import util.TILE;
 import core.room.type.Room;
 import util.WeightedObject;
+import world.DroppedItem;
 import world.InteractableTile;
 
 import java.util.List;

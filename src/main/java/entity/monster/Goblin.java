@@ -1,6 +1,7 @@
 package entity.monster;
 
 import entity.RangedMonster;
+import item.food.MonsterMeat;
 import item.weapon.Arrow;
 import item.weapon.WoodenBow;
 import util.Position;
@@ -21,8 +22,10 @@ public class Goblin extends RangedMonster {
     @Override
     public void die() {
         List<WeightedObject> drops = new ArrayList<>();
-        drops.add(new WeightedObject(new WoodenBow(), position, 1));
+//        drops.add(new WeightedObject(new WoodenBow(), position, 1));
         drops.add(new WeightedObject(new Arrow(new Random().nextInt(3,8)), position, 5));
+        drops.add(new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, 5));
+        drops.add(new WeightedObject(null, 3));
         dropOnDeath(drops);
 
         super.die();

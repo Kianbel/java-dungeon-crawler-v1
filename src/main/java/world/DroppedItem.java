@@ -56,20 +56,15 @@ public class DroppedItem extends InteractableTile {
                 }
             }
             else {
-                if(item instanceof Ammo ammo) {
-                    int amount = ammo.getAmount();
-                    GUIManager.getInstance().printLog(String.format("Picked up: %s ( x%d )", item.name, amount), UITheme.LOG_WORLD);
-                    GUIManager.getInstance().triggerTextPopup("+" + item.name + " x" + amount, Color.LIGHTBLUE, player.position, 1000);
-                    for(int i = 0; i < amount; i++) {
-                        player.addItemToInventory(item);
-                    }
+                if(item.amount > 1) {
+                    GUIManager.getInstance().printLog(String.format("Picked up: %s ( x%d )", item.name, item.amount), UITheme.LOG_WORLD);
+                    GUIManager.getInstance().triggerTextPopup("+" + item.name + " x" + item.amount, Color.LIGHTBLUE, player.position, 1000);
                 }
                 else {
                     GUIManager.getInstance().printLog("Picked up: " + item.name, UITheme.LOG_WORLD);
                     GUIManager.getInstance().triggerTextPopup("+" + item.name, Color.LIGHTBLUE, player.position, 1000);
-                    player.addItemToInventory(item);
                 }
-
+                player.addItemToInventory(item);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
             }
         }

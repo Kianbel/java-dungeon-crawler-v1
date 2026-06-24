@@ -2,6 +2,7 @@ package entity.monster;
 
 import entity.Monster;
 import entity.Player;
+import item.food.MonsterMeat;
 import item.weapon.GenericDamager;
 import util.WeightedObject;
 import entity.Entity;
@@ -13,6 +14,7 @@ import world.Heart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Rat extends Monster {
     private final RatFSM stateMachine;
@@ -30,9 +32,10 @@ public class Rat extends Monster {
     @Override
     public void die() {
         List<WeightedObject> lootTable = new ArrayList<>(List.of(
-                new WeightedObject(new Heart(position, 5), 3),
-                new WeightedObject(new Coin(position, 5), 3),
-                new WeightedObject(null, 5)
+                new WeightedObject(new Heart(position, 5), 2),
+                new WeightedObject(new Coin(position, 5), 2),
+                new WeightedObject(new MonsterMeat(new Random().nextInt(1,3)), position, 6),
+                new WeightedObject(null, 1)
         ));
 
         dropOnDeath(lootTable);

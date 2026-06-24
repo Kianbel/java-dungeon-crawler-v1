@@ -98,6 +98,8 @@ public class GameFSM {
             case S, DOWN  -> { movementVector.y++; isTickAction = true; }
             case D, RIGHT -> { movementVector.x++; isTickAction = true; }
             case T        -> player.toggleGodMode();
+            case F -> { player.eat(); isTickAction = true; }
+            case H -> { player.heal(); isTickAction = true; }
             case SPACE    -> {
                 GUIManager.getInstance().triggerTextPopup("wait", Color.WHITE, player.position);
                 isTickAction = true;
