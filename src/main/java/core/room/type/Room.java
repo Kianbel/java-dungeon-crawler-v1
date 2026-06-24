@@ -51,7 +51,7 @@ public abstract class Room {
                 }
             }
 
-            double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.3;
+            double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.2;
             for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
                 Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
                 switch (Randomizer.pick(1,2,3)) {
