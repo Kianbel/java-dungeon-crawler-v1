@@ -1,10 +1,9 @@
 package core.room.type;
 
 import core.EntitySpawner;
+import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
-import entity.monster.GiantSpider;
-import entity.monster.Kobold;
-import entity.monster.Zombie;
+import entity.monster.*;
 import util.Position;
 import util.Randomizer;
 import util.TILE;
@@ -18,14 +17,5 @@ public class NormalRoom extends Room {
     public NormalRoom(Position minimapPosition) {
         TILE[][] layout = RoomLayoutRegistry.getInstance().getRandomLayoutFromRoomClass(NormalRoom.class);
         super(layout, minimapPosition);
-    }
-
-    @Override
-    public void populateWithEntities() {
-        super.populateWithEntities();
-
-        EntitySpawner entitySpawner = new EntitySpawner(this);
-        entitySpawner.spawnMonstersAmount(GiantSpider::new, random.nextInt(0,3));
-        entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(0,3));
     }
 }

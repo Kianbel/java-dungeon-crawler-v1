@@ -54,18 +54,18 @@ public class GoblinFSM extends StandardMonsterFSM<GoblinFSM.STATE> {
             return;
         }
 
-        Position unitPos = new Position(0, 0);
-        switch (Randomizer.pick(1, 2, 3, 4)) {
-            case 1 -> unitPos.x = 1;
-            case 2 -> unitPos.x = -1;
-            case 3 -> unitPos.y = 1;
-            case 4 -> unitPos.y = -1;
-        }
-
-        Position targetPos = owner.position.add(unitPos);
-        if (owner.isValidTargetPosition(targetPos)) {
-            owner.walk(unitPos);
-        }
+//        Position unitPos = new Position(0, 0);
+//        switch (Randomizer.pick(1, 2, 3, 4)) {
+//            case 1 -> unitPos.x = 1;
+//            case 2 -> unitPos.x = -1;
+//            case 3 -> unitPos.y = 1;
+//            case 4 -> unitPos.y = -1;
+//        }
+//
+//        Position targetPos = owner.position.add(unitPos);
+//        if (owner.isValidTargetPosition(targetPos)) {
+//            owner.walk(unitPos);
+//        }
     }
 
     protected void handleAngered() {

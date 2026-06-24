@@ -42,7 +42,6 @@ public class DungeonMapGenerator {
                     case BOSS -> stringBuilder.append('b');
                     case TREASURE -> stringBuilder.append('t');
                     case NORMAL -> stringBuilder.append('n');
-                    case EXTRA -> stringBuilder.append('e');
                     case VCORRIDOR -> stringBuilder.append('|');
                     case HCORRIDOR -> stringBuilder.append('-');
                     default -> stringBuilder.append('.');

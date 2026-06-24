@@ -8,7 +8,7 @@ import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.Item;
 import item.key.Key;
-import item.key.RoomKey;
+import item.key.TreasureRoomKey;
 import util.Position;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class LockedDoor extends InteractableTile {
     }
 
     public LockedDoor(Position roomLayoutPosition) {
-        this(roomLayoutPosition, RoomKey.class);
+        this(roomLayoutPosition, TreasureRoomKey.class);
     }
 
     @Override
@@ -45,7 +45,8 @@ public class LockedDoor extends InteractableTile {
             }
 
             GUIManager.getInstance().printLog("It seems like the door needs a key.", UITheme.LOG_WORLD);
-            GUIManager.getInstance().triggerTextPopup("locked", UITheme.LOG_WORLD, p.position);
+            GUIManager.getInstance().printLog("The key must be around here somewhere...", UITheme.LOG_WORLD);
+            GUIManager.getInstance().triggerTextPopup("needs a key", UITheme.LOG_WORLD, p.position);
         }
     }
 }

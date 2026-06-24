@@ -67,6 +67,9 @@ public class GlyphRegistry {
         tileRegistry.put(TILE.SKELETON, new GlyphStyle[] {
                 new GlyphStyle("☠", UITheme.TILE_SKELETON),
         });
+        tileRegistry.put(TILE.BRIDGE, new GlyphStyle[] {
+                new GlyphStyle("☰", UITheme.TILE_BRIDGE),
+        });
 
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "🕸", UITheme.ITILE_WEB);
@@ -89,8 +92,8 @@ public class GlyphRegistry {
         registerEntity(GiantSpider.class, "🕷", UITheme.ENTITY_SPIDER);
         registerEntity(FlareWitch.class, "༒", UITheme.ENTITY_FLARE_WITCH);
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
-        registerEntity(Bat.class, "b", UITheme.ENTITY_BAT);
-        registerEntity(Kobold.class, "k", UITheme.ENTITY_KOBOLD);
+        registerEntity(Bat.class, "🦇", UITheme.ENTITY_BAT);
+        registerEntity(Kobold.class, "🦎", UITheme.ENTITY_KOBOLD);
         registerEntity(Goblin.class, "g", UITheme.ENTITY_GOBLIN);
 
 

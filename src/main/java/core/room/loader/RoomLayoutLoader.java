@@ -47,10 +47,12 @@ public class RoomLayoutLoader {
                 // --- GET ROOM CLASS FROM FILENAME ---
                 String fileName = file.getName();
                 int i;
-                for(i = 0; i < fileName.length(); i++) {
+                // filename format: e_{roomtype}{number}.csv
+                // so start at 2nd index (disregard 'e_')
+                for(i = 2; i < fileName.length(); i++) {
                     if(!Character.isAlphabetic(fileName.charAt(i))) break;
                 }
-                String classString = fileName.substring(0, i);
+                String classString = fileName.substring(2, i);
                 Class<? extends Room> roomClass = getRoomClassFromFileName(classString);
 
                 RoomLayoutRegistry.getInstance().addLayout(roomClass, layout);
@@ -68,7 +70,6 @@ public class RoomLayoutLoader {
             case "normal" -> roomClass = NormalRoom.class;
             case "spawn" -> roomClass = SpawnRoom.class;
             case "treasure" -> roomClass = TreasureRoom.class;
-            case "extra" -> roomClass = ExtraRoom.class;
             default -> throw new RuntimeException("Invalid class string: " + classString);
         }
         return roomClass;

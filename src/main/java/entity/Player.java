@@ -4,12 +4,9 @@ import core.EntityRoomManager;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
-import item.HealthPotion;
 import item.Item;
 import item.armor.Armor;
 import item.armor.BareLeatherTunic;
-import item.key.LevelKey;
-import item.key.RoomKey;
 import item.weapon.DevOneShotWeapon;
 import javafx.scene.paint.Color;
 import item.weapon.Weapon;
@@ -28,7 +25,7 @@ public class Player extends Entity {
     public boolean isDead = false;
     private List<Item> inventory = new ArrayList<>();
 
-    private final int DEFAULT_ILLUMINATION_RANGE = 5;
+    private final int DEFAULT_ILLUMINATION_RANGE = 3;
 
     private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
     private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
@@ -53,10 +50,6 @@ public class Player extends Entity {
         setArmor(armor);
         setWeapon(weapon);
         setCoins(coins);
-
-        addItemToInventory(new LevelKey());
-        addItemToInventory(new RoomKey());
-        addItemToInventory(new HealthPotion());
     }
 
     public void toggleGodMode() {

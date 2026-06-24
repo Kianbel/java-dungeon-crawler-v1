@@ -64,6 +64,8 @@ public class GameController {
     private InteractableTile[][] interactableGridCache;
     private Entity[][] entityGridCache;
 
+    private final double IS_TRAVELLED_DIM_PERCENT = 0.1;
+
     @FXML
     public void initialize() {
         canvas.setManaged(false);
@@ -91,8 +93,8 @@ public class GameController {
         AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3");
         AudioManager.getInstance().registerSFX("enemy_see_player", "/audio/enemy_see_player.mp3");
 
-        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
-//        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
+//        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
+        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
 
         AudioManager.getInstance().setSFXVolume(0.5);
         AudioManager.getInstance().setBGMVolume(0.3);
@@ -306,7 +308,7 @@ public class GameController {
                     }
                 }
 
-                double lightLevelPercent = isTravelled ? Math.max(0.2, lightingEngine.getLightLevel(worldPosition.x, worldPosition.y)) : lightingEngine.getLightLevel(worldPosition.x, worldPosition.y);
+                double lightLevelPercent = isTravelled ? Math.max(IS_TRAVELLED_DIM_PERCENT, lightingEngine.getLightLevel(worldPosition.x, worldPosition.y)) : lightingEngine.getLightLevel(worldPosition.x, worldPosition.y);
                 double lightedRed = Math.clamp((activeColor.getRed() * lightLevelPercent), 0.0, 1.0);
                 double lightedGreen = Math.clamp((activeColor.getGreen() * lightLevelPercent), 0.0, 1.0);
                 double lightedBlue = Math.clamp((activeColor.getBlue() * lightLevelPercent), 0.0, 1.0);
@@ -395,7 +397,9 @@ public class GameController {
 
                 if (mapTile != null) {
                     switch (mapTile) {
-                        case SPAWN, NORMAL, TREASURE -> minimapGlyph = "□";
+                        case SPAWN -> minimapGlyph = "□";
+                        case TREASURE -> minimapGlyph = "T";
+                        case NORMAL -> minimapGlyph = "□";
                         case BOSS -> { minimapGlyph = "□"; tileColor = Color.RED; }
                         case VCORRIDOR -> minimapGlyph = "|";
                         case HCORRIDOR -> minimapGlyph = "-";

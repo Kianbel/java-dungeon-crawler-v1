@@ -1,5 +1,11 @@
 package core.room.type;
 
+import core.EntitySpawner;
+import core.GameManager;
+import entity.monster.Bat;
+import entity.monster.Goblin;
+import entity.monster.Kobold;
+import entity.monster.Rat;
 import util.DIRECTION;
 import util.Position;
 import util.Randomizer;
@@ -37,7 +43,7 @@ public abstract class Room {
 
     public void generate(boolean hasDoorNorth, boolean hasDoorEast, boolean hasDoorSouth, boolean hasDoorWest) {
         // --- RANDOM OBSTACLES --
-        if(this instanceof ExtraRoom || this instanceof NormalRoom) {
+        if(!(this instanceof BossRoom)) {
             List<Position> replaceablePositions = new ArrayList<>();
             for(int y = 0; y < height; y++) {
                 for(int x = 0; x < length; x++) {
@@ -45,7 +51,7 @@ public abstract class Room {
                 }
             }
 
-            double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
+            double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.3;
             for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
                 Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
                 switch (Randomizer.pick(1,2,3)) {
@@ -103,6 +109,8 @@ public abstract class Room {
                     }
                     case CHEST -> {
                         this.layout[y][x] = TILE.FLOOR;
+
+                        if(this instanceof TreasureRoom) continue; // handle chest loot in TreasureRoom class
                         Position currentPos = new Position(x,y);
                         addInteractableTile(new Chest(currentPos));
                     }
@@ -146,6 +154,42 @@ public abstract class Room {
 
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
+
+        EntitySpawner entitySpawner = new EntitySpawner(this);
+        final int floor = GameManager.getInstance().getCurrentFloor();
+        switch(floor) {
+            case 1 -> {
+                switch(Randomizer.pick(1,2,3)) {
+                    case 1 -> entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(2,5));
+                    case 2 -> entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(2,5));
+                    case 3 -> entitySpawner.spawnMonstersAmount(Goblin::new, random.nextInt(2,5));
+                }
+                if(Math.random() <= 0.2) {
+                    entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(1,3));
+                }
+            }
+            case 2 -> {
+                switch(Randomizer.pick(1,2)) {
+                    case 1 -> entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(3,6));
+                    case 2 -> entitySpawner.spawnMonstersAmount(Goblin::new, random.nextInt(2,5));
+                }
+                if(Math.random() <= 0.3) {
+                    switch(Randomizer.pick(1,2)) {
+                        case 1 -> entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(0,3));
+                        case 2 -> entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(2,5));
+                    }
+                }
+            }
+            case 3 -> {
+
+            }
+            case 4 -> {
+
+            }
+            case 5 -> {
+
+            }
+        }
     }
 
     public List<Position> getSpawnablePositions() {

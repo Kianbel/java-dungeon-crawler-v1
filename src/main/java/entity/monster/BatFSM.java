@@ -21,6 +21,7 @@ public class BatFSM extends StandardMonsterFSM<BatFSM.STATE> {
         setupInitialState();
     }
 
+    @Override protected int getFollowRange() {return 6;}
     @Override protected double getFollowChance() {return 0.9;}
 
     @Override protected STATE getIdleState() {return STATE.IDLE;}
@@ -32,6 +33,7 @@ public class BatFSM extends StandardMonsterFSM<BatFSM.STATE> {
     @Override
     public void setupInitialState() {
         currentState = STATE.IDLE;
+        owner.overrideColor(Color.BLACK.brighter());
     }
 
     @Override
@@ -54,6 +56,7 @@ public class BatFSM extends StandardMonsterFSM<BatFSM.STATE> {
             GUIManager.getInstance().triggerTextPopup(owner.name + " found you", Color.WHITE, owner.position);
             GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);
             AudioManager.getInstance().playSFX("enemy_see_player");
+            owner.resetColor();
         }
     }
 
