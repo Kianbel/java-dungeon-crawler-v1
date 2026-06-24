@@ -11,14 +11,13 @@ public abstract class Weapon extends Item {
 
     public Weapon(String name, int baseAttackDamage, double critRate) {
         super(name);
-        this.baseAttackDamage = baseAttackDamage;
+        this.baseAttackDamage = Math.max(baseAttackDamage + new Random().nextInt(3), 0);
         this.critRate = critRate;
     }
 
     public Weapon(String name, int baseAttackDamage) {
-        super(name);
+        this(name, baseAttackDamage, 0.1);
         this.baseAttackDamage = baseAttackDamage;
-        this.critRate = 0.1;
     }
 
     public int getCalculatedAttackDamage() {

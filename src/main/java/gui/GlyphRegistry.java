@@ -10,6 +10,8 @@ import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;
+import world.Chest;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;

@@ -8,6 +8,7 @@ import util.Position;
 import util.TILE;
 import item.weapon.IronBlade;
 import world.*;
+import world.Chest;
 
 import java.util.Random;
 

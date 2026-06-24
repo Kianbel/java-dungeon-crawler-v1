@@ -5,6 +5,7 @@ import util.Position;
 import util.Randomizer;
 import util.TILE;
 import world.*;
+import world.Chest;
 
 import java.util.*;
 

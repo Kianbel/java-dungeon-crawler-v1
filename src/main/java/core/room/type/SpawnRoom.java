@@ -5,11 +5,9 @@ import core.EntitySpawner;
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
-import entity.monster.GiantSpider;
-import entity.monster.Goblin;
 import util.Position;
 import util.TILE;
-import world.*;
+import world.Chest;
 
 public class SpawnRoom extends Room {
 
@@ -18,14 +16,14 @@ public class SpawnRoom extends Room {
 
         super(layout, minimapPosition);
 
-        addInteractableTile(new Staircase(new Position(5, 3)));
-//        addInteractableTile(new Chest(new Position(6,3)));
-//        addInteractableTile(new Chest(new Position(7,3)));
-//        addInteractableTile(new Chest(new Position(8,3)));
-//        addInteractableTile(new Chest(new Position(6,4)));
-//        addInteractableTile(new Chest(new Position(7,4)));
-//        addInteractableTile(new Chest(new Position(8,4)));
-//        addInteractableTile(new Chest(new Position(9,4)));
+//        addInteractableTile(new Staircase(new Position(5, 3)));
+        addInteractableTile(new Chest(new Position(6,3)));
+        addInteractableTile(new Chest(new Position(7,3)));
+        addInteractableTile(new Chest(new Position(8,3)));
+        addInteractableTile(new Chest(new Position(6,4)));
+        addInteractableTile(new Chest(new Position(7,4)));
+        addInteractableTile(new Chest(new Position(8,4)));
+        addInteractableTile(new Chest(new Position(9,4)));
     }
 
     @Override
@@ -39,6 +37,6 @@ public class SpawnRoom extends Room {
         }
 
         EntitySpawner entitySpawner = new EntitySpawner(this);
-        entitySpawner.spawnMonstersAmount(Goblin::new, 1);
+//        entitySpawner.spawnMonstersAmount(Goblin::new, 1);
     }
 }

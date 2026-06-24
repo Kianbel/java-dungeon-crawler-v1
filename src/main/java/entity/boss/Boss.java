@@ -27,7 +27,7 @@ public abstract class Boss extends Monster {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
 
         for(Entity e : summonedEntities) {
-            e.die();
+            if(EntityRoomManager.getInstance().isEntityInRoom(e, currentRoom)) e.die();
         }
         summonedEntities.clear();
 
