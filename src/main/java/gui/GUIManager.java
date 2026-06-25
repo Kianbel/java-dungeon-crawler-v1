@@ -61,7 +61,7 @@ public class GUIManager {
     }
 
     public void triggerRoomTransitionFlash() {
-        if (isPipelineOperational()) triggerColorFlash(Color.BLACK, 60);
+        if (isPipelineOperational()) triggerColorFlash(Color.BLACK, 120);
     }
 
     public void triggerAttackAnimation(Entity attacker, Position targetPosition) {

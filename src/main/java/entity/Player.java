@@ -36,7 +36,8 @@ public class Player extends Entity {
     private final int NATURAL_HEALING_MOVE_COOLDOWN = 15;
     private int naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-    private double ARMOR_PENETRATION_CHANCE = 0.3;
+    public final double DEFAULT_ARMOR_PENETRATION_CHANCE = 0.3;
+    public double armorPenetrationChance = DEFAULT_ARMOR_PENETRATION_CHANCE;
 
     private int putTravelledPositionCtr = 0;
 
@@ -65,7 +66,7 @@ public class Player extends Entity {
             hunger = 99999999;
             setWeapon(new DevOneShotWeapon());
             setArmor(new DevArmor());
-            ARMOR_PENETRATION_CHANCE = 0;
+            armorPenetrationChance = 0;
             overrideColor(Color.RED);
         }
         else {
@@ -73,7 +74,7 @@ public class Player extends Entity {
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
             setWeapon(new AncientSword());
-            ARMOR_PENETRATION_CHANCE = 0.3;
+            armorPenetrationChance = DEFAULT_ARMOR_PENETRATION_CHANCE;
             setArmor(new BareLeatherTunic());
             resetColor();
         }
@@ -164,7 +165,7 @@ public class Player extends Entity {
     public void hurt(int damage, Entity attacker) {
         naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-        if(Math.random() > ARMOR_PENETRATION_CHANCE) damage = Math.max(0, damage - this.armor.armorPoints);
+        if(Math.random() > armorPenetrationChance) damage = Math.max(0, damage - this.armor.armorPoints);
         setHealth(health - damage);
 
         if(damage == 0) {
@@ -189,6 +190,8 @@ public class Player extends Entity {
 
     @Override
     public void stun(int moveCount) {
+        if(!isStunnable) return;
+
         if(stunCounter > 0) return;
         stunCounter = moveCount;
     }

@@ -29,6 +29,7 @@ public abstract class Entity {
     public Position position;
     public final int id;
     public int stunCounter;
+    public boolean isStunnable = true;
 
     private Color color;
     private String character;
@@ -171,7 +172,7 @@ public abstract class Entity {
      * Override to implement stun.
      * @param moveCounter number of moves the entity is stunned for.
      */
-    public void stun(int moveCounter) {};
+    public void stun(int moveCounter) {}
 
     protected Room getAdjacentRoomFromUnitPos(Position unitPos) {
         unitPos.x *= 2;

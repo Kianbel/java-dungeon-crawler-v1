@@ -2,13 +2,14 @@ package core.room.type;
 
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
-import item.armor.ChainHauberk;
-import item.armor.IronMail;
-import item.armor.ReinforcedIronBreastplate;
+import item.armor.*;
+import item.armor.special.FlamenCloak;
+import item.armor.special.IlluminiteCloak;
+import item.armor.special.PrecisionThingamabob;
+import item.armor.special.Shield;
+import item.heal.HealingPotion;
 import item.key.TreasureRoomKey;
-import item.weapon.GreatClub;
-import item.weapon.GreatSword;
-import item.weapon.Mace;
+import item.weapon.*;
 import util.Position;
 import util.Randomizer;
 import util.TILE;
@@ -36,28 +37,39 @@ public class TreasureRoom extends Room {
         InteractableTile chestDrop = null;
         switch(currentFloor) {
             case 1 -> {
-                switch (Randomizer.pick(1, 2)) {
+                switch (Randomizer.pick(1, 2, 3)) {
                     case 1 -> chestDrop = new DroppedItem(treasureChestPos, new Mace());
                     case 2 -> chestDrop = new DroppedItem(treasureChestPos, new ChainHauberk());
+                    case 3 -> chestDrop = new DroppedItem(treasureChestPos, new HealingPotion(3));
                 }
             }
             case 2 -> {
-                switch (Randomizer.pick(1, 2)) {
+                switch (Randomizer.pick(1, 2, 3)) {
                     case 1 -> chestDrop = new DroppedItem(treasureChestPos, new GreatSword());
                     case 2 -> chestDrop = new DroppedItem(treasureChestPos, new IronMail());
+                    case 3 -> chestDrop = new DroppedItem(treasureChestPos, new Shield());
                 }
             }
             case 3 -> {
-                switch (Randomizer.pick(1, 2)) {
+                switch (Randomizer.pick(1, 2, 3)) {
                     case 1 -> chestDrop = new DroppedItem(treasureChestPos, new GreatClub());
                     case 2 -> chestDrop = new DroppedItem(treasureChestPos, new ReinforcedIronBreastplate());
+                    case 3 -> chestDrop = new DroppedItem(treasureChestPos, new PrecisionThingamabob());
                 }
             }
             case 4 -> {
-                // TODO
+                switch (Randomizer.pick(1, 2, 3)) {
+                    case 1 -> chestDrop = new DroppedItem(treasureChestPos, new Halberd());
+                    case 2 -> chestDrop = new DroppedItem(treasureChestPos, new OdrilMail());
+                    case 3 -> chestDrop = new DroppedItem(treasureChestPos, new IlluminiteCloak());
+                }
             }
             case 5 -> {
-                // TODO
+                switch (Randomizer.pick(1, 2, 3)) {
+                    case 1 -> chestDrop = new DroppedItem(treasureChestPos, new Claymore());
+                    case 2 -> chestDrop = new DroppedItem(treasureChestPos, new CobaltChestplate());
+                    case 3 -> chestDrop = new DroppedItem(treasureChestPos, new FlamenCloak());
+                }
             }
         }
         InteractableTile treasureChest = new Chest(treasureChestPos, chestDrop);

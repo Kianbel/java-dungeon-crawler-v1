@@ -130,6 +130,9 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
             for (int i = 0; i < interactableTiles.size(); i++) {
                 InteractableTile interactableTile = interactableTiles.get(i);
                 if (interactableTile.isInBounds(roomHeight, roomLength)) {
+                    if(interactableTile instanceof Trap p && p instanceof SpikeTrap st && st.isActivated) {
+                        isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
+                    }
                     if(interactableTile.isSolid){
                         isOccupied[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
                     }

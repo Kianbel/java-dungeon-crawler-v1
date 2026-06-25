@@ -7,9 +7,7 @@ import entity.Entity;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
-import item.armor.BareLeatherTunic;
-import item.armor.PaddedLeatherTunic;
-import item.armor.RatSkinTunic;
+import item.armor.*;
 import item.weapon.*;
 import util.Position;
 import util.Randomizer;
@@ -30,7 +28,7 @@ public class Chest extends InteractableTile {
             case 1 -> {
                 lootTable.add(new WeightedObject(new Heart(roomLayoutPosition, 10), 5));
                 lootTable.add(new WeightedObject(new Coin(roomLayoutPosition, 5), 5));
-                lootTable.add(new WeightedObject(new IronBlade(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new Longsword(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new Dagger(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new Club(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new GreatClub(), roomLayoutPosition, 0.1));
@@ -42,11 +40,36 @@ public class Chest extends InteractableTile {
                 lootTable.add(new WeightedObject(new Coin(roomLayoutPosition, 10), 5));
                 lootTable.add(new WeightedObject(new GreatClub(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new Mace(), roomLayoutPosition, 2));
-                lootTable.add(new WeightedObject(new GreatSword(), roomLayoutPosition, 0.5));
+                lootTable.add(new WeightedObject(new GreatSword(), roomLayoutPosition, 0.2));
+                lootTable.add(new WeightedObject(new PaddedLeatherTunic(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new ChainHauberk(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new IronMail(), roomLayoutPosition, 0.5));
+                lootTable.add(new WeightedObject(new ReinforcedIronBreastplate(), roomLayoutPosition, 0.1));
             }
-            case 3 -> {}
-            case 4 -> {}
-            case 5 -> {}
+            case 3 -> {
+                lootTable.add(new WeightedObject(new Heart(roomLayoutPosition, 25), 4));
+                lootTable.add(new WeightedObject(new Coin(roomLayoutPosition, 15), 4));
+                lootTable.add(new WeightedObject(new GreatSword(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new Halberd(), roomLayoutPosition, 1));
+                lootTable.add(new WeightedObject(new ReinforcedIronBreastplate(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new OdrilMail(), roomLayoutPosition, 0.1));
+                lootTable.add(new WeightedObject(new DaggerAxe(), roomLayoutPosition, 0.1));
+            }
+            case 4 -> {
+                lootTable.add(new WeightedObject(new Heart(roomLayoutPosition, 30), 3.5));
+                lootTable.add(new WeightedObject(new Coin(roomLayoutPosition, 20), 3.5));
+                lootTable.add(new WeightedObject(new OdrilMail(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new ReinforcedIronBreastplate(), roomLayoutPosition, 1));
+                lootTable.add(new WeightedObject(new CobaltChestplate(), roomLayoutPosition, 0.1));
+                lootTable.add(new WeightedObject(new DaggerAxe(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new Claymore(), roomLayoutPosition, 0.1));
+            }
+            case 5 -> {
+                lootTable.add(new WeightedObject(new Heart(roomLayoutPosition, 35), 2));
+                lootTable.add(new WeightedObject(new Coin(roomLayoutPosition, 25), 2));
+                lootTable.add(new WeightedObject(new Claymore(), roomLayoutPosition, 2));
+                lootTable.add(new WeightedObject(new CobaltChestplate(), roomLayoutPosition, 2));
+            }
         }
 
         InteractableTile dropBasedOnFloor;

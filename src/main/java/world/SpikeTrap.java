@@ -40,11 +40,9 @@ public class SpikeTrap extends Trap implements MoveAfterPlayer {
         if(tick == 2) {
             isActivated = !isActivated;
             if(!isActivated) {
-                isSolid = false;
                 overrideColor(UITheme.TILE_FLOOR);
             }
             else {
-                isSolid = true;
                 resetColor();
                 if(player == null) player = GameManager.getInstance().getPlayer();
                 if(player.position.getDistanceTo(roomLayoutPosition) <= 3) {
