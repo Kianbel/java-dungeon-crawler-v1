@@ -14,8 +14,19 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
         super(owner);
     }
 
+    /**
+     * @return default: 8
+     */
     protected int getFollowRange() {return 8;}
+
+    /**
+     * @return default: 0.8
+     */
     protected double getFollowChance() {return 0.8;}
+
+    /**
+     * @return default: 0.4
+     */
     protected double getBackOffChance() {return 0.4;}
 
     protected abstract T getIdleState();
@@ -43,18 +54,18 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
             return;
         }
 
-//        Position unitPos = new Position(0, 0);
-//        switch (Randomizer.pick(1, 2, 3, 4)) {
-//            case 1 -> unitPos.x = 1;
-//            case 2 -> unitPos.x = -1;
-//            case 3 -> unitPos.y = 1;
-//            case 4 -> unitPos.y = -1;
-//        }
-//
-//        Position targetPos = owner.position.add(unitPos);
-//        if (owner.isValidTargetPosition(targetPos)) {
-//            owner.walk(unitPos);
-//        }
+        Position unitPos = new Position(0, 0);
+        switch (Randomizer.pick(1, 2, 3, 4)) {
+            case 1 -> unitPos.x = 1;
+            case 2 -> unitPos.x = -1;
+            case 3 -> unitPos.y = 1;
+            case 4 -> unitPos.y = -1;
+        }
+
+        Position targetPos = owner.position.add(unitPos);
+        if (owner.isValidTargetPosition(targetPos)) {
+            owner.walk(unitPos);
+        }
     }
 
     protected void handleAngered() {

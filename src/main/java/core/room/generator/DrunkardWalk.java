@@ -1,5 +1,6 @@
 package core.room.generator;
 
+import core.GameManager;
 import util.Position;
 import util.MAP;
 import util.Randomizer;
@@ -103,17 +104,18 @@ public class DrunkardWalk extends Generator {
                 if (spawnRoomPosition.equals(x, y)) {
                     mapLayout[y][x] = MAP.SPAWN;
                 } else if (bossRoomPosition.equals(x, y)) {
-                    mapLayout[y][x] = MAP.BOSS;
+                    if(GameManager.getInstance().getCurrentFloor() % 3 == 0) mapLayout[y][x] = MAP.BOSS;
+                    else mapLayout[y][x] = MAP.STAIR;
                 } else {
                     roomsToChange.add(new Position(x, y));
                 }
             }
         }
 
-//        if (!roomsToChange.isEmpty()) {
-//            Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
-//            mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
-//        }
+        if (!roomsToChange.isEmpty()) {
+            Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+            mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
+        }
     }
 
     private void putRoomAt(int x, int y) {

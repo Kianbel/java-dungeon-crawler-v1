@@ -9,6 +9,7 @@ import core.room.type.Room;
 import world.InteractableTile;
 import world.SpikeTrap;
 import world.Trap;
+import world.Web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,8 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
 
     @Override
     public void makeMove() {
-        if (Math.random() <= 0.1) makeSoundTextPopup();
+        final int MAKE_SOUND_DISTANCE_THRESHOLD = 8;
+        if(Math.random() <= 0.1 && getDistanceFromPlayer() <= MAKE_SOUND_DISTANCE_THRESHOLD) makeSoundTextPopup();
     }
 
     public boolean hasLineOfSight(Position start, Position end) {
@@ -56,7 +58,10 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         final boolean[][] interactableTileCache = new boolean[currentRoom.height][currentRoom.length];
         List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
         for(InteractableTile interactableTile : interactableTiles) {
-            if(!(interactableTile instanceof Trap)) interactableTileCache[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
+            if(interactableTile instanceof Trap) continue;
+            if(interactableTile instanceof Web) continue;
+
+            interactableTileCache[interactableTile.roomLayoutPosition.y][interactableTile.roomLayoutPosition.x] = true;
         }
 
         while (true) {

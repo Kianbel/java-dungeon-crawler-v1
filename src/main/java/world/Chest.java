@@ -33,9 +33,8 @@ public class Chest extends InteractableTile {
                 lootTable.add(new WeightedObject(new IronBlade(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new Dagger(), roomLayoutPosition, 2));
                 lootTable.add(new WeightedObject(new Club(), roomLayoutPosition, 2));
-                lootTable.add(new WeightedObject(new GreatClub(), roomLayoutPosition, 0.5));
-                lootTable.add(new WeightedObject(new BareLeatherTunic(), roomLayoutPosition, 2));
-                lootTable.add(new WeightedObject(new PaddedLeatherTunic(), roomLayoutPosition, 0.5));
+                lootTable.add(new WeightedObject(new GreatClub(), roomLayoutPosition, 0.1));
+                lootTable.add(new WeightedObject(new PaddedLeatherTunic(), roomLayoutPosition, 0.2));
                 lootTable.add(new WeightedObject(new RatSkinTunic(), roomLayoutPosition, 2));
             }
             case 2 -> {

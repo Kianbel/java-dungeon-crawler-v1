@@ -3,6 +3,7 @@ package entity.monster;
 import core.EntityRoomManager;
 import entity.Monster;
 import gui.dataclass.UITheme;
+import item.weapon.GenericDamager;
 import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
@@ -15,8 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Zombie extends Monster {
+
+    private ZombieFSM zombieFSM;
+
     public Zombie(Position position) {
-        super("Zombie", 10, 0, new Fist(), position);
+        super("Zombie", 20, 0, new GenericDamager(5, 0.2), position);
+        zombieFSM = new ZombieFSM(this);
     }
 
     @Override
@@ -26,19 +31,7 @@ public class Zombie extends Monster {
 
     public void makeMove() {
         super.makeMove();
-        Position unitPos = pathfindToPlayerPosition();
-        if(unitPos.x == 0 && unitPos.y == 0) return;
-
-        Position targetPosition = position.add(unitPos);
-        Entity player = EntityRoomManager.getInstance().getPlayer();
-
-        if(player.position.equals(targetPosition)) {
-            attack(player);
-        }
-        else if(isValidTargetPosition(targetPosition)){
-            final double WALK_CHANCE = 0.8;
-            if(Math.random() <= WALK_CHANCE) walk(unitPos);
-        }
+        zombieFSM.update();
     }
 
     @Override

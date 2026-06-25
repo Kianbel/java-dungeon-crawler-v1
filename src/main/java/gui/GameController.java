@@ -398,10 +398,10 @@ public class GameController {
 
                 if (mapTile != null) {
                     switch (mapTile) {
-                        case SPAWN -> minimapGlyph = "□";
-                        case TREASURE -> minimapGlyph = "T";
-                        case NORMAL -> minimapGlyph = "□";
+                        case SPAWN, NORMAL -> minimapGlyph = "□";
+                        case TREASURE -> minimapGlyph = "💼";
                         case BOSS -> { minimapGlyph = "□"; tileColor = Color.RED; }
+                        case STAIR -> { minimapGlyph = "目"; }
                         case VCORRIDOR -> minimapGlyph = "|";
                         case HCORRIDOR -> minimapGlyph = "-";
                         case EMPTY -> minimapGlyph = " ";

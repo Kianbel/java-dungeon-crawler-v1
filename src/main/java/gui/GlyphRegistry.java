@@ -29,12 +29,17 @@ public class GlyphRegistry {
 
     private GlyphRegistry() {
         tileRegistry.put(TILE.WALL, new GlyphStyle[]{
-                new GlyphStyle("▓", UITheme.TILE_WALL)
+                new GlyphStyle("▓", UITheme.TILE_WALL),
         });
 
         tileRegistry.put(TILE.FLOOR, new GlyphStyle[]{
 //                new GlyphStyle("·", UITheme.TILE_FLOOR),
-                new GlyphStyle("░", UITheme.TILE_FLOOR.darker().darker()),
+                new GlyphStyle("░", UITheme.TILE_FLOOR),
+                new GlyphStyle("░", UITheme.TILE_FLOOR_MOSSY),
+                new GlyphStyle(".", UITheme.TILE_FLOOR),
+                new GlyphStyle(" ", UITheme.TILE_FLOOR),
+                new GlyphStyle(" ", UITheme.TILE_FLOOR),
+                new GlyphStyle(" ", UITheme.TILE_FLOOR),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
         });
@@ -53,9 +58,8 @@ public class GlyphRegistry {
                 new GlyphStyle("🖾", UITheme.TILE_SOLID_OBSTACLE),
                 new GlyphStyle("┬", UITheme.TILE_SOLID_OBSTACLE),
         });
-        tileRegistry.put(TILE.PASSABLE_DECOR, new GlyphStyle[] {
-                new GlyphStyle(".", UITheme.TILE_PASSABLE_OBSTACLE),
-                new GlyphStyle("░", UITheme.TILE_PASSABLE_OBSTACLE)
+        tileRegistry.put(TILE.PASSABLE_OBSTACLE, new GlyphStyle[] {
+                new GlyphStyle("▒", UITheme.TILE_WATER.darker())
         });
         tileRegistry.put(TILE.BOOKSHELF, new GlyphStyle[] {
                 new GlyphStyle("目", UITheme.TILE_BOOKSHELF),

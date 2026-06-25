@@ -39,12 +39,12 @@ public class LockedDoor extends InteractableTile {
                     currentRoom.removeInteractableTile(this);
 
                     currentRoom.addInteractableTile(new OpenedDoor(roomLayoutPosition));
+                    GUIManager.getInstance().printLog("As you open the door, the key disintegrated.", UITheme.LOG_PLAYER_ACTION);
 
                     return;
                 }
             }
 
-            GUIManager.getInstance().printLog("It seems like the door needs a key.", UITheme.LOG_WORLD);
             GUIManager.getInstance().printLog("The key must be around here somewhere...", UITheme.LOG_WORLD);
             GUIManager.getInstance().triggerTextPopup("needs a key", UITheme.LOG_WORLD, p.position);
         }

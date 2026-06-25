@@ -47,7 +47,8 @@ public class UITheme {
 //    public static Color TILE_WALL = Color.web("#e36433");
     public static Color TILE_WALL = Color.web("#43434f");
     public static Color TILE_DOOR = Color.web("#731144");
-    public static Color TILE_FLOOR = Color.web("#731144");
+    public static Color TILE_FLOOR = Color.web("#731144").darker().darker();
+    public static Color TILE_FLOOR_MOSSY = Color.web("#3ca370").darker().darker().darker().darker();
     public static Color TILE_GRASS = Color.web("#e3884e");
     public static Color TILE_WATER = Color.web("#6476e8");
     public static Color TILE_BOOKSHELF = Color.web("#8c3f5d");

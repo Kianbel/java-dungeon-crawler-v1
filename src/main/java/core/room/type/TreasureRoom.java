@@ -77,7 +77,7 @@ public class TreasureRoom extends Room {
         }
 
         Position keyPos = possibleKeysPos.remove(new Random().nextInt(possibleKeysPos.size()));
-        InteractableTile keyChest = new Chest(keyPos, new DroppedItem(keyPos, new TreasureRoomKey()));
-        addInteractableTile(keyChest);
+        InteractableTile key = new DroppedItem(keyPos, new TreasureRoomKey());
+        addInteractableTile(key);
     }
 }

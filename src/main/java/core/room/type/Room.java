@@ -2,10 +2,7 @@ package core.room.type;
 
 import core.EntitySpawner;
 import core.GameManager;
-import entity.monster.Bat;
-import entity.monster.Goblin;
-import entity.monster.Kobold;
-import entity.monster.Rat;
+import entity.monster.*;
 import util.DIRECTION;
 import util.Position;
 import util.Randomizer;
@@ -55,18 +52,12 @@ public abstract class Room {
             for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
                 Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
                 switch (Randomizer.pick(1,2)) {
-//                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.GRASS;
+                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.PASSABLE_OBSTACLE;
                     case 2 -> {
                         if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
                     }
-//                    case 3 -> layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
                 }
             }
-//            FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
-//            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
-//                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
-//                addInteractableTile(new PressurePlateTrap(replacedPos));
-//            }
         }
 
 
@@ -169,34 +160,25 @@ public abstract class Room {
         final int floor = GameManager.getInstance().getCurrentFloor();
         switch(floor) {
             case 1 -> {
-                int batAmount = random.nextInt(-2,3);
-                int koboldAmount = random.nextInt(-2,3);
-                int goblinAmount = random.nextInt(-2,3);
+                int zombies = random.nextInt(4,8);
+                int bats = random.nextInt(2,8);
 
-                if(batAmount > 0) entitySpawner.spawnMonstersAmount(Bat::new, batAmount);
-                if(koboldAmount > 0) entitySpawner.spawnMonstersAmount(Kobold::new, koboldAmount);
-                if(goblinAmount > 0) entitySpawner.spawnMonstersAmount(Goblin::new, goblinAmount);
-
-                if(Math.random() <= 0.4) {
-                    entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(1,4));
-                }
+                if(zombies > 0) entitySpawner.spawnMonstersAmount(Zombie::new, zombies);
+                if(bats > 0) entitySpawner.spawnMonstersAmount(Bat::new, bats);
             }
             case 2 -> {
-                int koboldAmount = random.nextInt(-1,3);
-                int goblinAmount = random.nextInt(-1,3);
-                int spiderAmount = random.nextInt(-1,3);
+                int koboldAmount = random.nextInt(1,8);
+                int spiderAmount = random.nextInt(1,8);
+                int bats = random.nextInt(1,4);
 
                 if(koboldAmount > 0) entitySpawner.spawnMonstersAmount(Kobold::new, koboldAmount);
-                if(goblinAmount > 0) entitySpawner.spawnMonstersAmount(Goblin::new, goblinAmount);
                 if(spiderAmount > 0) entitySpawner.spawnMonstersAmount(Bat::new, spiderAmount);
-
-                if(Math.random() <= 0.4) {
-                    if(random.nextInt(2) == 0) entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(1,4));
-                    else entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(1,4));
-                }
+                if(bats > 0) entitySpawner.spawnMonstersAmount(Bat::new, bats);
             }
             case 3 -> {
+                int goblins = random.nextInt(3,8);
 
+                if(goblins > 0) entitySpawner.spawnMonstersAmount(Goblin::new, goblins);
             }
             case 4 -> {
 

@@ -8,7 +8,7 @@ public enum TILE {
     GRASS,
     WATER,
     SOLID_OBSTACLE,
-    PASSABLE_DECOR,
+    PASSABLE_OBSTACLE,
     BOOKSHELF,
     BOX,
     WEB,
@@ -29,7 +29,7 @@ public enum TILE {
 
     public boolean isWalkable() {
         return this == FLOOR ||
-                this == PASSABLE_DECOR ||
+                this == PASSABLE_OBSTACLE ||
                 this == GRASS ||
                 this == CARPET ||
                 this == SKELETON ||
