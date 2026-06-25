@@ -23,6 +23,8 @@ public enum TILE {
     POSSIBLE_KEY,
     SKELETON,
     BRIDGE,
+    WOODEN_DOOR,
+    BREAKABLE_WALL,
     EMPTY;
 
     public boolean isWalkable() {
@@ -38,6 +40,8 @@ public enum TILE {
         return this == WALL ||
                 this == BOOKSHELF ||
                 this == DOOR ||
-                this == GRASS;
+                this == GRASS ||
+                this == WOODEN_DOOR ||
+                this == BREAKABLE_WALL;
     }
 }

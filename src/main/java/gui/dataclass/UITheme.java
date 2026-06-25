@@ -44,7 +44,8 @@ public class UITheme {
     public static final Color TEXT_MUTED       = Color.DARKGRAY;
 
     // --- TILES --- https://lospec.com/palette-list/micro-roguelike
-    public static Color TILE_WALL = Color.web("#e36433");
+//    public static Color TILE_WALL = Color.web("#e36433");
+    public static Color TILE_WALL = Color.web("#43434f");
     public static Color TILE_DOOR = Color.web("#731144");
     public static Color TILE_FLOOR = Color.web("#731144");
     public static Color TILE_GRASS = Color.web("#e3884e");
@@ -72,6 +73,7 @@ public class UITheme {
     public static Color ITILE_STAIRCASE = Color.web("#ffffeb");
     public static Color ITILE_SPIKE_TRAP = Color.web("#e36433");
     public static Color ITILE_PRESSURE_PLATE_TRAP = UITheme.TILE_FLOOR;
+    public static Color ITILE_WOODEN_DOOR = Color.web("#ba6156");
 
     // --- ENTITIES PALETTE ---
     public static final Color ENTITY_PLAYER = Color.web("#ffe478");

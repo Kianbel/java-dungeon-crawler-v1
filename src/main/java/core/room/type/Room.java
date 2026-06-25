@@ -31,11 +31,11 @@ public abstract class Room {
     private Random random = new Random();
 
     public Room(TILE[][] layout, Position minimapPosition) {
-        this.layout = layout;
         int randomRotationAmount = random.nextInt(4);
         for(int i = 0; i < randomRotationAmount; i++) {
-            rotateLayout90Degrees(this.layout);
+            layout = rotateLayout90Degrees(layout);
         }
+        this.layout = layout;
         this.minimapPosition = minimapPosition;
         this.height = layout.length;
         this.length = layout[0].length;
@@ -54,30 +54,40 @@ public abstract class Room {
             double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.2;
             for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
                 Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
-                switch (Randomizer.pick(1,2,3)) {
-                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.GRASS;
-                    case 2 -> layout[replacedPos.y][replacedPos.x] = TILE.WEB;
-                    case 3 -> layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
+                switch (Randomizer.pick(1,2)) {
+//                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.GRASS;
+                    case 2 -> {
+                        if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
+                    }
+//                    case 3 -> layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
                 }
             }
-            FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
-            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
-                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
-                addInteractableTile(new PressurePlateTrap(replacedPos));
-            }
+//            FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.1;
+//            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+//                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
+//                addInteractableTile(new PressurePlateTrap(replacedPos));
+//            }
         }
 
 
         // --- HANDLE BOX/DOOR GENERATION ---
-        final double BOX_SPAWN_CHANCE = 0.6;
+        final double POT_SPAWN_CHANCE = 0.8;
         final double BOOKSHELF_SPAWN_CHANCE = 0.8;
-        final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.5;
+        final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.8;
         final double WEB_SPAWN_CHANCE = 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 switch(layout[y][x]) {
+                    case WOODEN_DOOR -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new WoodenDoor(new Position(x,y)));
+                    }
+                    case BREAKABLE_WALL -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new BreakableWall(new Position(x,y)));
+                    }
                     case SOLID_OBSTACLE -> {
                         if(Math.random() > SOLID_OBSTACLE_SPAWN_CHANCE) this.layout[y][x] = TILE.FLOOR;
                     }
@@ -116,7 +126,7 @@ public abstract class Room {
                     }
                     case BOX -> {
                         layout[y][x] = TILE.FLOOR;
-                        if(Math.random() <= BOX_SPAWN_CHANCE) addInteractableTile(new Pot(new Position(x, y)));
+                        if(Math.random() <= POT_SPAWN_CHANCE) addInteractableTile(new Pot(new Position(x, y)));
                     }
                     case DOOR -> {
                         // if tile above door is not wall, door is south door
@@ -279,40 +289,18 @@ public abstract class Room {
         }
     }
 
-    private void rotateLayout90Degrees(TILE[][] matrix) {
-        int n = matrix.length;
-        int blockSize = 64; // Optimized for typical CPU cache lines
+    private TILE[][] rotateLayout90Degrees(TILE[][] matrix) {
+        int oldRows = matrix.length;
+        int oldCols = matrix[0].length;
 
-        // 1. Cache-friendly Transpose using Tiling
-        for (int r = 0; r < n; r += blockSize) {
-            for (int c = 0; c < n; c += blockSize) {
+        TILE[][] rotatedMatrix = new TILE[oldCols][oldRows];
 
-                // Process the current block
-                for (int i = r; i < Math.min(r + blockSize, n); i++) {
-                    for (int j = c; j < Math.min(c + blockSize, n); j++) {
-                        if (i < j) {
-                            TILE temp = matrix[i][j];
-                            matrix[i][j] = matrix[j][i];
-                            matrix[j][i] = temp;
-                        }
-                    }
-                }
+        for (int r = 0; r < oldRows; r++) {
+            for (int c = 0; c < oldCols; c++) {
 
+                rotatedMatrix[c][oldRows-1-r] = matrix[r][c];
             }
         }
-
-        // 2. Reverse rows
-        for (int i = 0; i < n; i++) {
-            int left = 0;
-            int right = n - 1;
-            while (left < right) {
-                TILE temp = matrix[i][left];
-                matrix[i][left] = matrix[i][right];
-                matrix[i][right] = temp;
-                left++;
-                right--;
-            }
-        }
-
+        return rotatedMatrix;
     }
 }

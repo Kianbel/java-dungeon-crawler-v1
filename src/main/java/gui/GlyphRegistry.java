@@ -33,7 +33,8 @@ public class GlyphRegistry {
         });
 
         tileRegistry.put(TILE.FLOOR, new GlyphStyle[]{
-                new GlyphStyle("·", UITheme.TILE_FLOOR),
+//                new GlyphStyle("·", UITheme.TILE_FLOOR),
+                new GlyphStyle("░", UITheme.TILE_FLOOR.darker().darker()),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
                 new GlyphStyle(" ", UITheme.TILE_FLOOR),
         });
@@ -49,7 +50,8 @@ public class GlyphRegistry {
         });
         tileRegistry.put(TILE.SOLID_OBSTACLE, new GlyphStyle[] {
                 new GlyphStyle("⛩", UITheme.TILE_SOLID_OBSTACLE),
-                new GlyphStyle("目", UITheme.TILE_SOLID_OBSTACLE),
+                new GlyphStyle("🖾", UITheme.TILE_SOLID_OBSTACLE),
+                new GlyphStyle("┬", UITheme.TILE_SOLID_OBSTACLE),
         });
         tileRegistry.put(TILE.PASSABLE_DECOR, new GlyphStyle[] {
                 new GlyphStyle(".", UITheme.TILE_PASSABLE_OBSTACLE),
@@ -85,6 +87,8 @@ public class GlyphRegistry {
         registerInteractableTile(Staircase.class, "目", UITheme.ITILE_STAIRCASE);
         registerInteractableTile(SpikeTrap.class, "♒", UITheme.ITILE_SPIKE_TRAP);
         registerInteractableTile(PressurePlateTrap.class, "~", UITheme.ITILE_PRESSURE_PLATE_TRAP);
+        registerInteractableTile(WoodenDoor.class, "⌸", UITheme.ITILE_WOODEN_DOOR);
+        registerInteractableTile(BreakableWall.class, "▒", UITheme.TILE_WALL);
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);

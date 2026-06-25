@@ -110,10 +110,10 @@ public class DrunkardWalk extends Generator {
             }
         }
 
-        if (!roomsToChange.isEmpty()) {
-            Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
-            mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
-        }
+//        if (!roomsToChange.isEmpty()) {
+//            Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+//            mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
+//        }
     }
 
     private void putRoomAt(int x, int y) {

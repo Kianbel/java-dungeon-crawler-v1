@@ -79,7 +79,7 @@ public class GameController {
         hudManager = new HUDManager(this);
 
         // Audio
-//        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
+        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
         AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3");
         AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3");
         AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3");
@@ -92,9 +92,10 @@ public class GameController {
         AudioManager.getInstance().registerSFX("enemy_die", "/audio/enemy_die.mp3");
         AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3");
         AudioManager.getInstance().registerSFX("enemy_see_player", "/audio/enemy_see_player.mp3");
+        AudioManager.getInstance().registerSFX("wall_break", "/audio/wall_break.mp3");
 
-//        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
-        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
+        AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
+//        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
 
         AudioManager.getInstance().setSFXVolume(0.5);
         AudioManager.getInstance().setBGMVolume(0.3);

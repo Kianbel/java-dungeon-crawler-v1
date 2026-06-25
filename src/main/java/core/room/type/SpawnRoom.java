@@ -37,7 +37,7 @@ public class SpawnRoom extends Room {
             GameManager.getInstance().setPlayer(player);
         }
 
-        EntitySpawner entitySpawner = new EntitySpawner(this);
-        entitySpawner.spawnMonstersAmount(Bat::new, 1);
+//        EntitySpawner entitySpawner = new EntitySpawner(this);
+//        entitySpawner.spawnMonstersAmount(Bat::new, 1);
     }
 }
