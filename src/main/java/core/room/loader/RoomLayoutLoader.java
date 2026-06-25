@@ -70,6 +70,7 @@ public class RoomLayoutLoader {
             case "normal" -> roomClass = NormalRoom.class;
             case "spawn" -> roomClass = SpawnRoom.class;
             case "treasure" -> roomClass = TreasureRoom.class;
+            case "staircase" -> roomClass = StaircaseRoom.class;
             default -> throw new RuntimeException("Invalid class string: " + classString);
         }
         return roomClass;

@@ -103,7 +103,7 @@ public class UITheme {
     public static final Color LOG_DEV = Color.HOTPINK;
 
     // --- ATTACK DAMAGE INDICATORS ---
-    public static final Color PLAYER_TAKE_DAMAGE = Color.RED;
+    public static final Color PLAYER_TAKE_DAMAGE = Color.WHITE;
     public static final Color TEXT_POPUP_NORMAL_HIT = Color.WHITE;
     public static final Color CRITICAL_DAMAGE = Color.DARKRED;
     public static final Color MISS = Color.YELLOW;

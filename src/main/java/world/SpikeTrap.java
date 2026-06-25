@@ -1,7 +1,10 @@
 package world;
 
+import core.GameManager;
 import entity.Entity;
 import entity.MoveAfterPlayer;
+import entity.Player;
+import gui.AudioManager;
 import gui.dataclass.UITheme;
 import util.Position;
 
@@ -11,6 +14,7 @@ public class SpikeTrap extends Trap implements MoveAfterPlayer {
     public boolean isActivated = true;
     private int tick = 0;
     private Random random = new Random();
+    private Player player;
 
     public SpikeTrap(Position roomLayoutPosition) {
         super(roomLayoutPosition, false);
@@ -35,10 +39,17 @@ public class SpikeTrap extends Trap implements MoveAfterPlayer {
     public void makeMove() {
         if(tick == 2) {
             isActivated = !isActivated;
-            if(!isActivated) overrideColor(UITheme.TILE_FLOOR);
+            if(!isActivated) {
+                isSolid = false;
+                overrideColor(UITheme.TILE_FLOOR);
+            }
             else {
+                isSolid = true;
                 resetColor();
-//                AudioManager.getInstance().playSFX("spike_activate");
+                if(player == null) player = GameManager.getInstance().getPlayer();
+                if(player.position.getDistanceTo(roomLayoutPosition) <= 3) {
+                    AudioManager.getInstance().playSFX("spike_activate");
+                }
             }
             tick = 0;
             return;

@@ -83,7 +83,7 @@ public class GameController {
         AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3");
         AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3");
         AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3");
-//        AudioManager.getInstance().registerSFX("spike_activate", "/audio/spike_activate.mp3");
+        AudioManager.getInstance().registerSFX("spike_activate", "/audio/spike_activate.mp3");
         AudioManager.getInstance().registerSFX("web_sling", "/audio/web_sling.mp3");
         AudioManager.getInstance().registerSFX("chest_open", "/audio/chest_open.mp3");
         AudioManager.getInstance().registerSFX("burn", "/audio/temp_burn.mp3");

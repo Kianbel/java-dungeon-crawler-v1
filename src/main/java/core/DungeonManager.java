@@ -77,9 +77,9 @@ public class DungeonManager {
                     case MAP.TREASURE -> newRoom = new TreasureRoom(minimapPosition);
                     case MAP.BOSS -> newRoom = new BossRoom(minimapPosition);
                     case MAP.NORMAL -> newRoom = new NormalRoom(minimapPosition);
-                    default -> {
-                        continue;
-                    }
+                    case MAP.STAIR -> newRoom = new StaircaseRoom(minimapPosition);
+                    case MAP.EMPTY -> {continue;}
+                    default -> throw new RuntimeException(mapLayout[y][x] + " is not instantiated");
                 }
 
                 newRoom.generate(northDoor,eastDoor,southDoor,westDoor);

@@ -62,7 +62,7 @@ public abstract class Room {
 
 
         // --- HANDLE BOX/DOOR GENERATION ---
-        final double POT_SPAWN_CHANCE = 0.8;
+        final double POT_SPAWN_CHANCE = 0.7;
         final double BOOKSHELF_SPAWN_CHANCE = 0.8;
         final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.8;
         final double WEB_SPAWN_CHANCE = 0.5;

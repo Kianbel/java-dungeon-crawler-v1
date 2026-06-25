@@ -7,6 +7,7 @@ import gui.dataclass.UITheme;
 import item.Item;
 import item.armor.Armor;
 import item.armor.BareLeatherTunic;
+import item.armor.DevArmor;
 import item.food.Food;
 import item.heal.HealingPotion;
 import item.weapon.DevOneShotWeapon;
@@ -35,7 +36,7 @@ public class Player extends Entity {
     private final int NATURAL_HEALING_MOVE_COOLDOWN = 15;
     private int naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-    private final double ARMOR_PENETRATION_CHANCE = 0.3;
+    private double ARMOR_PENETRATION_CHANCE = 0.3;
 
     private int putTravelledPositionCtr = 0;
 
@@ -60,18 +61,20 @@ public class Player extends Entity {
         godModeEnabled = !godModeEnabled;
         if(godModeEnabled) {
             GUIManager.getInstance().printDevLog("GOD MODE ENABLED");
-//            armor = 1000;
             hungerDecreaseCounter = 9999999;
             hunger = 99999999;
             setWeapon(new DevOneShotWeapon());
+            setArmor(new DevArmor());
+            ARMOR_PENETRATION_CHANCE = 0;
             overrideColor(Color.RED);
         }
         else {
             GUIManager.getInstance().printDevLog("DISABLED GOD MODE");
-//            armor = 0;
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
             setWeapon(new AncientSword());
+            ARMOR_PENETRATION_CHANCE = 0.3;
+            setArmor(new BareLeatherTunic());
             resetColor();
         }
     }
@@ -161,7 +164,7 @@ public class Player extends Entity {
     public void hurt(int damage, Entity attacker) {
         naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-        if(Math.random() <= ARMOR_PENETRATION_CHANCE) damage = Math.max(0, damage - this.armor.armorPoints);
+        if(Math.random() > ARMOR_PENETRATION_CHANCE) damage = Math.max(0, damage - this.armor.armorPoints);
         setHealth(health - damage);
 
         if(damage == 0) {
