@@ -28,10 +28,11 @@ public class Bat extends Monster {
     @Override
     public void die() {
         List<WeightedObject> lootTable = new ArrayList<>(List.of(
-                new WeightedObject(new Heart(position, 5), 3),
-                new WeightedObject(new Coin(position, 5), 3),
-                new WeightedObject(new MonsterMeat(new Random().nextInt(1,3)), position, 6),
-                new WeightedObject(null, 2)
+                new WeightedObject(new BatWing(Randomizer.pick(1,2)), position, OWN_DROP_WEIGHT),
+                new WeightedObject(new Heart(position, 5), HEART_WEIGHT),
+                new WeightedObject(new Coin(position, 5), COIN_WEIGHT),
+                new WeightedObject(new MonsterMeat(new Random().nextInt(1,3)), position, MONSTER_MEAT_WEIGHT),
+                new WeightedObject(null, NULL_WEIGHT)
         ));
 
         dropOnDeath(lootTable);

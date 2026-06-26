@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Random;
 
 public class Randomizer {
+
+    private static final Random random = new Random();
+
     @SafeVarargs
     public static <T> T pick(T... list) {
-        return list[new Random().nextInt(list.length)];
+        return list[random.nextInt(list.length)];
     }
 
     public static Object rollWeightedObjects(List<WeightedObject> lootTable) {
@@ -18,7 +21,7 @@ public class Randomizer {
             totalWeight += weightedObject.weight;
         }
 
-        double roll = new Random().nextDouble() * totalWeight;
+        double roll = random.nextDouble() * totalWeight;
         double cumulativeWeight = 0;
         for(WeightedObject weightedObject : lootTable) {
             cumulativeWeight += weightedObject.weight;

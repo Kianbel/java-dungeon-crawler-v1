@@ -4,6 +4,7 @@ import entity.Monster;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.food.MonsterMeat;
+import item.mobdrop.KoboldTail;
 import util.WeightedObject;
 import item.weapon.Dagger;
 import util.Position;
@@ -26,11 +27,12 @@ public class Kobold extends Monster {
     @Override
     public void die() {
         List<WeightedObject> lootTable = new ArrayList<>(List.of(
-                new WeightedObject(new Dagger(), position, 1),
-                new WeightedObject(new Heart(position, 5), 3),
-                new WeightedObject(new Coin(position, 10), 2),
-                new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, 4),
-                new WeightedObject(null, 1)
+                new WeightedObject(new KoboldTail(1), position, OWN_DROP_WEIGHT),
+                new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, MONSTER_MEAT_WEIGHT),
+                new WeightedObject(new Heart(position, 5), HEART_WEIGHT),
+                new WeightedObject(new Coin(position, 10), COIN_WEIGHT),
+                new WeightedObject(new Dagger(), position, 10),
+                new WeightedObject(null, NULL_WEIGHT)
         ));
 
         dropOnDeath(lootTable);

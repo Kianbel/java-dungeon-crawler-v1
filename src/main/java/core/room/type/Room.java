@@ -232,7 +232,10 @@ public abstract class Room {
         for(int i = 0; i < interactableTiles.size(); i++) {
             InteractableTile interactableTile = interactableTiles.get(i);
             if(interactableTile.roomLayoutPosition.equals(tile.roomLayoutPosition)) {
-                interactableTiles.set(i, tile);
+                if(interactableTile instanceof DroppedItem) {
+                    interactableTiles.add(tile);
+                }
+                else interactableTiles.set(i, tile);
                 return;
             }
         }

@@ -3,7 +3,9 @@ package entity.monster;
 import core.EntityRoomManager;
 import entity.Monster;
 import gui.dataclass.UITheme;
+import item.mobdrop.RottingFlesh;
 import item.weapon.GenericDamager;
+import util.Randomizer;
 import util.WeightedObject;
 import entity.Entity;
 import gui.GUIManager;
@@ -37,9 +39,10 @@ public class Zombie extends Monster {
     @Override
     public void die() {
         List<WeightedObject> lootTable = new ArrayList<>(List.of(
-                new WeightedObject(new Heart(position, 10), 3),
-                new WeightedObject(new Coin(position, 5), 3),
-                new WeightedObject(null, 5)
+                new WeightedObject(new RottingFlesh(Randomizer.pick(1,2,3)), position, OWN_DROP_WEIGHT),
+                new WeightedObject(new Heart(position, 10), HEART_WEIGHT),
+                new WeightedObject(new Coin(position, 5), COIN_WEIGHT),
+                new WeightedObject(null, NULL_WEIGHT)
         ));
 
         dropOnDeath(lootTable);

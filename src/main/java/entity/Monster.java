@@ -16,6 +16,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Monster extends Entity implements MoveAfterPlayer {
+
+    // --- DROP ON DEATH WEIGHTS ---
+    protected int OWN_DROP_WEIGHT = 100;
+    protected int NULL_WEIGHT = 110;
+    protected int MONSTER_MEAT_WEIGHT = 80;
+    protected int HEART_WEIGHT = 40;
+    protected int COIN_WEIGHT = 40;
+
     public Monster(String name, int health, int armor, Weapon weapon, Position position) {
         super(name, health, armor, weapon, position);
     }

@@ -2,9 +2,11 @@ package entity.monster;
 
 import entity.RangedMonster;
 import item.food.MonsterMeat;
+import item.mobdrop.GoblinTeeth;
 import item.weapon.Arrow;
 import item.weapon.WoodenBow;
 import util.Position;
+import util.Randomizer;
 import util.WeightedObject;
 
 import java.util.ArrayList;
@@ -23,9 +25,10 @@ public class Goblin extends RangedMonster {
     public void die() {
         List<WeightedObject> drops = new ArrayList<>();
 //        drops.add(new WeightedObject(new WoodenBow(), position, 1));
-        drops.add(new WeightedObject(new Arrow(new Random().nextInt(3,8)), position, 5));
-        drops.add(new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, 5));
-        drops.add(new WeightedObject(null, 3));
+        drops.add(new WeightedObject(new GoblinTeeth(Randomizer.pick(1,2,3)), position, OWN_DROP_WEIGHT));
+        drops.add(new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, MONSTER_MEAT_WEIGHT));
+        drops.add(new WeightedObject(new Arrow(new Random().nextInt(3,8)), position, 50));
+        drops.add(new WeightedObject(null, NULL_WEIGHT));
         dropOnDeath(drops);
 
         super.die();

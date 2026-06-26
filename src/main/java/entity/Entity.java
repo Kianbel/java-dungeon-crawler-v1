@@ -36,6 +36,7 @@ public abstract class Entity {
     private final IlluminationData illuminationData;
 
     protected Random random = new Random();
+    public double missChance = 0.1;
 
     public Entity(String name, int health, int defense, Weapon weapon, Position position) {
         final int currentFloor = GameManager.getInstance().getCurrentFloor();
@@ -116,6 +117,7 @@ public abstract class Entity {
             GUIManager.getInstance().triggerAttackAnimation(this, targetEntity);
 
             int inflictedDamage = weapon.getCalculatedAttackDamage();
+            if(Math.random() <= missChance) inflictedDamage = 0;
             targetEntity.hurt(inflictedDamage, this);
         }
         else throw new RuntimeException(this + " cannot attack " + targetEntity + " as target is not in same room");

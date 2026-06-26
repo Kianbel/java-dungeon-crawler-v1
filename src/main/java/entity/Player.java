@@ -36,9 +36,6 @@ public class Player extends Entity {
     private final int NATURAL_HEALING_MOVE_COOLDOWN = 15;
     private int naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-    public final double DEFAULT_ARMOR_PENETRATION_CHANCE = 0.3;
-    public double armorPenetrationChance = DEFAULT_ARMOR_PENETRATION_CHANCE;
-
     private int putTravelledPositionCtr = 0;
 
     private boolean godModeEnabled = false;
@@ -66,7 +63,6 @@ public class Player extends Entity {
             hunger = 99999999;
             setWeapon(new DevOneShotWeapon());
             setArmor(new DevArmor());
-            armorPenetrationChance = 0;
             overrideColor(Color.RED);
         }
         else {
@@ -74,7 +70,6 @@ public class Player extends Entity {
             hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
             hunger = 100;
             setWeapon(new AncientSword());
-            armorPenetrationChance = DEFAULT_ARMOR_PENETRATION_CHANCE;
             setArmor(new BareLeatherTunic());
             resetColor();
         }
@@ -163,22 +158,30 @@ public class Player extends Entity {
 
     @Override
     public void hurt(int damage, Entity attacker) {
+        hurt(damage, attacker, false);
+    }
+
+    public void hurt(int damage, Entity attacker, boolean penetrateArmor) {
         naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
 
-        if(Math.random() > armorPenetrationChance) damage = Math.max(0, damage - this.armor.armorPoints);
-        setHealth(health - damage);
+        final int DAMAGE_NULLIFIER = 20; // around max armor points among all armor
 
-        if(damage == 0) {
+        int damageTaken;
+        if(penetrateArmor) damageTaken = damage;
+        else damageTaken = damage * DAMAGE_NULLIFIER / (DAMAGE_NULLIFIER + this.armor.armorPoints);
+        setHealth(health - damageTaken);
+
+        if(damageTaken == 0) {
             GUIManager.getInstance().triggerTextPopup("miss", UITheme.MISS, position);
             return;
         }
 
         if(attacker != null) {
-            if(attacker.weapon.isCritical(damage)) GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.CRITICAL_DAMAGE, position);
-            else GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+            if(attacker.weapon.isCritical(damageTaken)) GUIManager.getInstance().triggerTextPopup(damageTaken+"", UITheme.CRITICAL_DAMAGE, position);
+            else GUIManager.getInstance().triggerTextPopup(damageTaken+"", UITheme.PLAYER_TAKE_DAMAGE, position);
         }
         else {
-            GUIManager.getInstance().triggerTextPopup(damage+"", UITheme.PLAYER_TAKE_DAMAGE, position);
+            GUIManager.getInstance().triggerTextPopup(damageTaken+"", UITheme.PLAYER_TAKE_DAMAGE, position);
         }
 
         GUIManager.getInstance().triggerScreenShake();
