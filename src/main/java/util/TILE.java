@@ -13,7 +13,7 @@ public enum TILE {
     BOX,
     WEB,
     FIRE,
-    CHEST,
+    TREASURE_CHEST,
     LOCKED_DOOR,
     STAIRCASE,
     CARPET,
@@ -25,6 +25,7 @@ public enum TILE {
     BRIDGE,
     WOODEN_DOOR,
     BREAKABLE_WALL,
+    NORMAL_CHEST,
     EMPTY;
 
     public boolean isWalkable() {
@@ -40,8 +41,6 @@ public enum TILE {
         return this == WALL ||
                 this == BOOKSHELF ||
                 this == DOOR ||
-                this == GRASS ||
-                this == WOODEN_DOOR ||
-                this == BREAKABLE_WALL;
+                this == GRASS;
     }
 }

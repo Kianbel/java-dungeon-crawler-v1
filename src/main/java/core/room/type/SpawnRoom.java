@@ -1,16 +1,12 @@
 package core.room.type;
 
 import core.EntityRoomManager;
-import core.EntitySpawner;
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
-import entity.monster.Bat;
-import entity.monster.Goblin;
-import entity.monster.Kobold;
 import util.Position;
 import util.TILE;
-import world.Chest;
+import world.NormalChest;
 
 public class SpawnRoom extends Room {
 
@@ -20,13 +16,13 @@ public class SpawnRoom extends Room {
         super(layout, minimapPosition);
 
 //        addInteractableTile(new Staircase(new Position(5, 3)));
-//        addInteractableTile(new Chest(new Position(6,3)));
-//        addInteractableTile(new Chest(new Position(7,3)));
-//        addInteractableTile(new Chest(new Position(8,3)));
-//        addInteractableTile(new Chest(new Position(6,4)));
-//        addInteractableTile(new Chest(new Position(7,4)));
-//        addInteractableTile(new Chest(new Position(8,4)));
-//        addInteractableTile(new Chest(new Position(9,4)));
+        addInteractableTile(new NormalChest(new Position(6,3)));
+        addInteractableTile(new NormalChest(new Position(7,3)));
+        addInteractableTile(new NormalChest(new Position(8,3)));
+        addInteractableTile(new NormalChest(new Position(6,4)));
+        addInteractableTile(new NormalChest(new Position(7,4)));
+        addInteractableTile(new NormalChest(new Position(8,4)));
+        addInteractableTile(new NormalChest(new Position(9,4)));
     }
 
     @Override

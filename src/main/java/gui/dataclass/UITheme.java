@@ -63,12 +63,13 @@ public class UITheme {
     // --- INTERACTABLE TILES ---
     public static Color ITITLE_POT = Color.web("#ba6156");
     public static Color ITILE_SHATTERED_POT = Color.web("#ba6156");
-    public static Color ITILE_DROPPED_WEAPON = Color.web("#ffffeb");
+    public static Color ITILE_DROPPED_ITEM = Color.LIGHTPINK;
     public static Color ITILE_COIN = Color.web("#ffe478");
     public static Color ITILE_HEART = Color.web("#eb564b");
     public static Color ITILE_FIRE = Color.web("#f2a65e");
     public static Color ITILE_WEB = Color.web("#c2c2d1");
-    public static Color ITILE_CHEST = Color.web("#ffffeb");
+    public static Color ITILE_NORMAL_CHEST = Color.web("#ba6156");
+    public static Color ITILE_TREASURE_CHEST = Color.web("#ffffeb");
     public static Color ITILE_LOCKED_DOOR = Color.web("#ffffeb");
     public static Color ITILE_OPENED_DOOR = Color.web("#731144");
     public static Color ITILE_STAIRCASE = Color.web("#ffffeb");

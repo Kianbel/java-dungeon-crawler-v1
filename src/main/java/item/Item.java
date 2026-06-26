@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 public abstract class Item {
     public String name;
     public int amount;
+    public int valueInCoins;
 
     public String character = null;
     public Color color = null;

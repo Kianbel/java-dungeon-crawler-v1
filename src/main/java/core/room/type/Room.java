@@ -8,7 +8,6 @@ import util.Position;
 import util.Randomizer;
 import util.TILE;
 import world.*;
-import world.Chest;
 
 import java.util.*;
 
@@ -18,14 +17,14 @@ public abstract class Room {
     public Position minimapPosition;
     public int id = this.hashCode();
 
-    private Map<DIRECTION, Position> doorPositionsHashmap = new HashMap<>();
-    private List<InteractableTile> interactableTiles = new ArrayList<>();
-    private List<Position> playerTravelledPositions = new ArrayList<>();
+    private final Map<DIRECTION, Position> doorPositionsHashmap = new HashMap<>(4);
+    private final List<InteractableTile> interactableTiles = new ArrayList<>();
+    private final List<Position> playerTravelledPositions = new ArrayList<>();
 
     protected TILE[][] layout;
     protected boolean isRoomGenerated = false;
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public Room(TILE[][] layout, Position minimapPosition) {
         int randomRotationAmount = random.nextInt(4);
@@ -66,6 +65,7 @@ public abstract class Room {
         final double BOOKSHELF_SPAWN_CHANCE = 0.8;
         final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.8;
         final double WEB_SPAWN_CHANCE = 0.5;
+        final double BREAKABLE_WALL_CHANCE = 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
 
         for(int y = 0; y < height; y++) {
@@ -76,8 +76,11 @@ public abstract class Room {
                         addInteractableTile(new WoodenDoor(new Position(x,y)));
                     }
                     case BREAKABLE_WALL -> {
-                        this.layout[y][x] = TILE.FLOOR;
-                        addInteractableTile(new BreakableWall(new Position(x,y)));
+                        if(Math.random() <= BREAKABLE_WALL_CHANCE) {
+                            this.layout[y][x] = TILE.FLOOR;
+                            addInteractableTile(new BreakableWall(new Position(x, y)));
+                        }
+                        else this.layout[y][x] = TILE.WALL;
                     }
                     case SOLID_OBSTACLE -> {
                         if(Math.random() > SOLID_OBSTACLE_SPAWN_CHANCE) this.layout[y][x] = TILE.FLOOR;
@@ -108,12 +111,13 @@ public abstract class Room {
                         this.layout[y][x] = TILE.FLOOR;
                         if(Math.random() <= WEB_SPAWN_CHANCE) addInteractableTile(new Web(new Position(x,y)));
                     }
-                    case CHEST -> {
+                    case NORMAL_CHEST -> {
                         this.layout[y][x] = TILE.FLOOR;
-
-                        if(this instanceof TreasureRoom) continue; // handle chest loot in TreasureRoom class
-                        Position currentPos = new Position(x,y);
-                        addInteractableTile(new Chest(currentPos));
+                        addInteractableTile(new NormalChest(new Position(x,y)));
+                    }
+                    case TREASURE_CHEST -> {
+                        this.layout[y][x] = TILE.FLOOR;
+                        addInteractableTile(new TreasureChest(new Position(x,y)));
                     }
                     case BOX -> {
                         layout[y][x] = TILE.FLOOR;

@@ -10,7 +10,6 @@ import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.TILE;
 import world.*;
-import world.Chest;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -80,8 +79,9 @@ public class GlyphRegistry {
         // --- INTERACTABLE TILE REGISTRY ---
         registerInteractableTile(Web.class, "🕸", UITheme.ITILE_WEB);
         registerInteractableTile(Coin.class, "©", UITheme.ITILE_COIN);
-        registerInteractableTile(Chest.class, "💼", UITheme.ITILE_CHEST);
-        registerInteractableTile(DroppedItem.class, "/", UITheme.ITILE_DROPPED_WEAPON);
+        registerInteractableTile(NormalChest.class, "💼", UITheme.ITILE_NORMAL_CHEST);
+        registerInteractableTile(TreasureChest.class, "💼", UITheme.ITILE_TREASURE_CHEST);
+        registerInteractableTile(DroppedItem.class, "&", UITheme.ITILE_DROPPED_ITEM);
         registerInteractableTile(Heart.class, "♥", UITheme.ITILE_HEART);
         registerInteractableTile(Pot.class, "⚱", UITheme.ITITLE_POT);
         registerInteractableTile(ShatteredPot.class, "%", UITheme.ITILE_SHATTERED_POT);
