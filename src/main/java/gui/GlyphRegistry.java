@@ -32,7 +32,6 @@ public class GlyphRegistry {
         });
 
         tileRegistry.put(TILE.FLOOR, new GlyphStyle[]{
-//                new GlyphStyle("·", UITheme.TILE_FLOOR),
                 new GlyphStyle("░", UITheme.TILE_FLOOR),
                 new GlyphStyle("░", UITheme.TILE_FLOOR_MOSSY),
                 new GlyphStyle(".", UITheme.TILE_FLOOR),

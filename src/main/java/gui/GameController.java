@@ -1,6 +1,7 @@
 package gui;
 
 import core.GameManager;
+import core.ThemeLoader;
 import entity.Entity;
 import entity.Monster;
 import entity.Player;
@@ -15,10 +16,7 @@ import gui.dataclass.UITheme;
 import item.armor.Armor;
 import item.weapon.Weapon;
 import javafx.stage.Stage;
-import util.ANIMATION_CURVE;
-import util.MAP;
-import util.Position;
-import util.TILE;
+import util.*;
 
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -120,6 +118,7 @@ public class GameController {
     }
 
     private void setup() {
+        ThemeLoader.getInstance().loadTheme(LEVEL_THEME.DUNGEON);
         AudioManager.getInstance().setSFXVolume(0);
         animationManager.clearAllAnimations();
         hudManager.clearLogContainer();
@@ -366,6 +365,8 @@ public class GameController {
         animationManager.clearAllAnimations();
         EntityRoomManager.getInstance().clear();
 
+        LEVEL_THEME newLevelTheme = GameManager.getInstance().getRandomLevelTheme();
+        ThemeLoader.getInstance().loadTheme(newLevelTheme);
         Room spawnRoom = DungeonManager.getInstance().generateDungeon();
         Player player = GameManager.getInstance().getPlayer();
         player.position.x = spawnRoom.length / 2;
@@ -373,6 +374,7 @@ public class GameController {
         EntityRoomManager.getInstance().addEntityToRoom(player, spawnRoom);
 
         viewport.updateCameraFocus(player.position, spawnRoom.length, spawnRoom.height);
+
         updateRenderingPipeline();
     }
 

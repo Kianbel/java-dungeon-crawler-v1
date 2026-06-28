@@ -53,7 +53,7 @@ public class GameFSM {
 
     public void switchState(STATE newState) {
         if (currentState == newState) return;
-        System.out.println("State changing from " + currentState + " to " + newState);
+        // System.out.println("State changing from " + currentState + " to " + newState);
         currentState = newState;
         renderCurrentState();
     }

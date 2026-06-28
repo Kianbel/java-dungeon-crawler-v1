@@ -20,7 +20,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
     // --- DROP ON DEATH WEIGHTS ---
     protected int OWN_DROP_WEIGHT = 100;
     protected int NULL_WEIGHT = 110;
-    protected int MONSTER_MEAT_WEIGHT = 80;
+    protected int MONSTER_MEAT_WEIGHT = 90;
     protected int HEART_WEIGHT = 40;
     protected int COIN_WEIGHT = 40;
 
