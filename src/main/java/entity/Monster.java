@@ -6,10 +6,7 @@ import item.weapon.Weapon;
 import util.Position;
 import util.TILE;
 import core.room.type.Room;
-import world.InteractableTile;
-import world.SpikeTrap;
-import world.Trap;
-import world.Web;
+import world.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -201,7 +198,7 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
                     neighbor.setConnection(currentNode);
 
                     if (!inSearch) {
-                        neighbor.setH(neighbor.getPosition().getDistanceTo(toPos));
+                        neighbor.setH(neighbor.getPosition().getSquaredDistanceTo(toPos));
                         toSearch.add(neighbor);
                         openSet[neighbor.y][neighbor.x] = true;
                     }
@@ -268,8 +265,11 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         List<InteractableTile> interactableTiles = currentRoom.getInteractableTiles();
         for (int i = 0; i < interactableTiles.size(); i++) {
             InteractableTile interactableTile = interactableTiles.get(i);
-            if (interactableTile.roomLayoutPosition.equals(targetPosition)
-                    && interactableTile.isSolid) return false;
+            if (interactableTile.roomLayoutPosition.equals(targetPosition)) {
+                if(interactableTile.isSolid) return false;
+                if(interactableTile instanceof Trap) return false;
+                if(interactableTile instanceof Fire) return false;
+            }
         }
 
         List<Entity> entities = EntityRoomManager.getInstance().getEntitiesInRoom(currentRoom);

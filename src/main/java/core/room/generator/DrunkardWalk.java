@@ -113,8 +113,21 @@ public class DrunkardWalk extends Generator {
         }
 
         if (!roomsToChange.isEmpty()) {
-            Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
-            mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
+            int changeableRoomsAmount = roomsToChange.size();
+            int treasureRoomsAmount = Math.toIntExact(Math.round(changeableRoomsAmount * 0.2));
+            int specialRoomsAmount = Math.toIntExact(Math.round(changeableRoomsAmount * 0.4));
+
+            // --- TREASURE ROOMS ---
+            for(int i = 0; i < treasureRoomsAmount; i++) {
+                Position treasureRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+                mapLayout[treasureRoomPos.y][treasureRoomPos.x] = MAP.TREASURE;
+            }
+
+            // --- SPECIAL ROOMS ---
+            for(int i = 0; i < specialRoomsAmount; i++) {
+                Position specialRoomPos = roomsToChange.remove(random.nextInt(roomsToChange.size()));
+                mapLayout[specialRoomPos.y][specialRoomPos.x] = MAP.SPECIAL;
+            }
         }
     }
 

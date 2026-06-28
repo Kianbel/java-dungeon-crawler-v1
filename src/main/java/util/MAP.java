@@ -4,6 +4,7 @@ public enum MAP {
     SPAWN,
     BOSS,
     NORMAL,
+    SPECIAL,
     TREASURE,
     STAIR,
     VCORRIDOR,

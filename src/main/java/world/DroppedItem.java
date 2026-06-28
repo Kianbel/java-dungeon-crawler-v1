@@ -9,6 +9,7 @@ import gui.GUIManager;
 import gui.dataclass.UITheme;
 import item.Item;
 import item.armor.Armor;
+import item.armor.special.SpecialArmor;
 import item.key.Key;
 import item.weapon.Ammo;
 import javafx.scene.paint.Color;
@@ -63,10 +64,19 @@ public class DroppedItem extends InteractableTile {
 
                 currentRoom.addInteractableTile(new DroppedItem(roomLayoutPosition, oldWeapon));
             }
-            else if(item instanceof Armor a) {
+            else if(item instanceof Armor newArmor) {
                 Armor oldArmor = player.armor;
 
-                int armorDifference = a.armorPoints - oldArmor.armorPoints;
+                if(oldArmor instanceof SpecialArmor oldSpecialArmor) {
+                    oldSpecialArmor.takeOffEffect();
+                    System.out.println("old armor off: " + player.getIlluminationRange());
+                }
+                if(newArmor instanceof SpecialArmor newSpecialArmor) {
+                    newSpecialArmor.wearEffect();
+                    System.out.println("new armor on: " + player.getIlluminationRange());
+                }
+
+                int armorDifference = newArmor.armorPoints - oldArmor.armorPoints;
 
                 String armorDiff = (armorDifference == 0) ? "" : String.format("%+dDEF", armorDifference);
                 Color pickupColor;
@@ -74,9 +84,9 @@ public class DroppedItem extends InteractableTile {
                 else if(armorDifference < 0) pickupColor = Color.RED;
                 else pickupColor = UITheme.LOG_WORLD;
 
-                GUIManager.getInstance().triggerTextPopup(String.format("+%s %s", a.name, armorDiff), pickupColor, player.position, 1000);
-                GUIManager.getInstance().printLog(String.format("Picked up: %s %s", a.name, armorDiff), pickupColor);
-                player.setArmor(a);
+                GUIManager.getInstance().triggerTextPopup(String.format("+%s %s", newArmor.name, armorDiff), pickupColor, player.position, 1000);
+                GUIManager.getInstance().printLog(String.format("Picked up: %s %s", newArmor.name, armorDiff), pickupColor);
+                player.setArmor(newArmor);
                 EntityRoomManager.getInstance().removeInteractableTile(this);
 
                 if(oldArmor != null) {

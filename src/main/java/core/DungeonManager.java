@@ -17,21 +17,25 @@ public class DungeonManager {
         return instance;
     }
 
-    private final int ROOM_AMOUNT = 5;
+    private int roomAmount = 5;
     private final int MAP_HEIGHT = 31;
     private final int MAP_LENGTH = 31;
 
     private MAP[][] mapLayout;
-    private List<Room> roomList = new ArrayList<>(ROOM_AMOUNT);
+    private List<Room> roomList;
 
     /**
      * @return Spawn room
      */
     public Room generateDungeon() {
+        int floorLevel = GameManager.getInstance().getCurrentFloor();
+        roomAmount = 2 * floorLevel + 3;
+        roomList = new ArrayList<>(roomAmount);
+
         roomList.clear();
 
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk(MAP_HEIGHT, MAP_LENGTH));
-        dungeonMapGenerator.generate(ROOM_AMOUNT);
+        dungeonMapGenerator.generate(roomAmount);
         mapLayout = dungeonMapGenerator.getMapLayout();
 
         RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
@@ -77,6 +81,7 @@ public class DungeonManager {
                     case MAP.TREASURE -> newRoom = new TreasureRoom(minimapPosition);
                     case MAP.BOSS -> newRoom = new BossRoom(minimapPosition);
                     case MAP.NORMAL -> newRoom = new NormalRoom(minimapPosition);
+                    case MAP.SPECIAL -> newRoom = new SpecialRoom(minimapPosition);
                     case MAP.STAIR -> newRoom = new StaircaseRoom(minimapPosition);
                     case MAP.EMPTY -> {continue;}
                     default -> throw new RuntimeException(mapLayout[y][x] + " is not instantiated");

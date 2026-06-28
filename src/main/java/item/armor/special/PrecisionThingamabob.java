@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 
 public class PrecisionThingamabob extends SpecialArmor {
     public PrecisionThingamabob() {
-        super("Precision Thingamabob", 10);
-        overrideCharacter("🪖");
+        super("Precision Thingamabob", 8);
+        overrideCharacter("◘");
         overrideColor(Color.WHITESMOKE);
     }
 

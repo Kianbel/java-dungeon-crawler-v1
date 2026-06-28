@@ -43,4 +43,10 @@ public class Position {
         int dy = to.y - y;
         return Math.sqrt(dx*dx + dy*dy);
     }
+
+    public double getSquaredDistanceTo(Position to) {
+        int dx = to.x - x;
+        int dy = to.y - y;
+        return dx*dx + dy*dy;
+    }
 }

@@ -164,7 +164,7 @@ public class GameController {
     public void updateRenderingPipeline() {
         final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if (activeRoom == null) return;
-        final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
+        final Player player = GameManager.getInstance().getPlayer();
 
         final TILE[][] roomLayout = activeRoom.getLayout();
         final int roomHeight = roomLayout.length;
@@ -179,13 +179,13 @@ public class GameController {
         GlyphRegistry glyphRegistry = GlyphRegistry.getInstance();
         synchronizeSpatialCaches(roomWidth, roomHeight);
 
-        // Map interactables
-        List<InteractableTile> interactables = activeRoom.getInteractableTiles();
-        if (interactables != null) {
-            for (InteractableTile interactable : interactables) {
-                Position pos = interactable.roomLayoutPosition;
+        // Interactable tiles
+        List<InteractableTile> interactableTiles = activeRoom.getInteractableTiles();
+        if (interactableTiles != null) {
+            for (InteractableTile interactableTile : interactableTiles) {
+                Position pos = interactableTile.roomLayoutPosition;
                 if (pos.y >= 0 && pos.y < roomHeight && pos.x >= 0 && pos.x < roomWidth) {
-                    interactableGridCache[pos.y][pos.x] = interactable;
+                    interactableGridCache[pos.y][pos.x] = interactableTile;
                 }
             }
         }
@@ -277,8 +277,9 @@ public class GameController {
 
                     if (entity instanceof Player p) {
                         activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
+                        int oldIlluminationRange = p.getIlluminationRange();
                         if(tile == TILE.GRASS) p.setIlluminationRange(0);
-                        else p.resetIlluminationRange();
+                        else p.setIlluminationRange(oldIlluminationRange);
                     }
                     else {
                         if (entity.getColor() != null) {

@@ -45,7 +45,8 @@ public class SpikeTrap extends Trap implements MoveAfterPlayer {
             else {
                 resetColor();
                 if(player == null) player = GameManager.getInstance().getPlayer();
-                if(player.position.getDistanceTo(roomLayoutPosition) <= 3) {
+                final int SPIKE_SOUND_DISTANCE = 3;
+                if(player.position.getSquaredDistanceTo(roomLayoutPosition) <= SPIKE_SOUND_DISTANCE*SPIKE_SOUND_DISTANCE) {
                     AudioManager.getInstance().playSFX("spike_activate");
                 }
             }

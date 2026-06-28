@@ -2,10 +2,9 @@ package world;
 
 import core.GameManager;
 import item.armor.*;
-import item.armor.special.FlamenCloak;
 import item.armor.special.IlluminiteCloak;
 import item.armor.special.PrecisionThingamabob;
-import item.armor.special.Shield;
+import item.armor.special.HeavyShield;
 import item.heal.HealingPotion;
 import item.weapon.*;
 import util.Position;
@@ -28,7 +27,7 @@ public class TreasureChest extends Chest {
                 switch (Randomizer.pick(1, 2, 3)) {
                     case 1 -> chestDrop = new DroppedItem(roomLayoutPosition, new GreatSword());
                     case 2 -> chestDrop = new DroppedItem(roomLayoutPosition, new IronMail());
-                    case 3 -> chestDrop = new DroppedItem(roomLayoutPosition, new Shield());
+                    case 3 -> chestDrop = new DroppedItem(roomLayoutPosition, new HeavyShield());
                 }
             }
             case 3 -> {
@@ -46,10 +45,9 @@ public class TreasureChest extends Chest {
                 }
             }
             case 5 -> {
-                switch (Randomizer.pick(1, 2, 3)) {
+                switch (Randomizer.pick(1, 2)) {
                     case 1 -> chestDrop = new DroppedItem(roomLayoutPosition, new Claymore());
                     case 2 -> chestDrop = new DroppedItem(roomLayoutPosition, new CobaltChestplate());
-                    case 3 -> chestDrop = new DroppedItem(roomLayoutPosition, new FlamenCloak());
                 }
             }
         }

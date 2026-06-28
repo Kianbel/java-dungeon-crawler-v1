@@ -68,6 +68,7 @@ public class RoomLayoutLoader {
         switch(classString) {
             case "boss" -> roomClass = BossRoom.class;
             case "normal" -> roomClass = NormalRoom.class;
+            case "special" -> roomClass = SpecialRoom.class;
             case "spawn" -> roomClass = SpawnRoom.class;
             case "treasure" -> roomClass = TreasureRoom.class;
             case "staircase" -> roomClass = StaircaseRoom.class;

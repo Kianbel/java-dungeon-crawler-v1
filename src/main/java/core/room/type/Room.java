@@ -48,12 +48,29 @@ public abstract class Room {
             }
 
             double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.2;
-            for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
-                Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
-                switch (Randomizer.pick(1,2)) {
-                    case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.PASSABLE_OBSTACLE;
-                    case 2 -> {
-                        if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
+            if(this instanceof SpecialRoom) {
+                FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.6;
+                for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+                    Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
+                    switch (Randomizer.pick(1,2,3)) {
+                        case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.PASSABLE_OBSTACLE;
+                        case 2 -> {
+                            if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
+                        }
+                        case 3 -> {
+                            if(Math.random() <= 0.2) layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
+                        }
+                    }
+                }
+            }
+            else {
+                for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+                    Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
+                    switch (Randomizer.pick(1,2)) {
+                        case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.PASSABLE_OBSTACLE;
+                        case 2 -> {
+                            if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
+                        }
                     }
                 }
             }
@@ -65,7 +82,7 @@ public abstract class Room {
         final double BOOKSHELF_SPAWN_CHANCE = 0.8;
         final double SOLID_OBSTACLE_SPAWN_CHANCE = 0.8;
         final double WEB_SPAWN_CHANCE = 0.5;
-        final double BREAKABLE_WALL_CHANCE = 0.5;
+        final double BREAKABLE_WALL_CHANCE = (this instanceof SpecialRoom) ? 0.8 : 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
 
         for(int y = 0; y < height; y++) {
@@ -159,6 +176,7 @@ public abstract class Room {
 
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
+        if(this instanceof SpecialRoom) return; // handled by SpecialRoom class
 
         EntitySpawner entitySpawner = new EntitySpawner(this);
         final int floor = GameManager.getInstance().getCurrentFloor();

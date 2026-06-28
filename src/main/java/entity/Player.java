@@ -17,6 +17,7 @@ import item.weapon.AncientSword;
 import util.Position;
 import core.room.type.Room;
 import world.InteractableTile;
+import world.SpikeTrap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,9 @@ public class Player extends Entity {
 
     private final int DEFAULT_ILLUMINATION_RANGE = 3;
 
-    private final int HUNGER_DECREASE_MOVE_COOLDOWN = 50;
-    private int hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+    private final int DEFAULT_HUNGER_DECREASE_MOVES_COOLDOWN = 50;
+    public int hungerDecreaseMovesCooldown = DEFAULT_HUNGER_DECREASE_MOVES_COOLDOWN;
+    public int hungerDecreaseCounter = hungerDecreaseMovesCooldown;
 
     private final int NATURAL_HEALING_MOVE_COOLDOWN = 15;
     private int naturalHealingDecreaseCounter = NATURAL_HEALING_MOVE_COOLDOWN;
@@ -67,7 +69,7 @@ public class Player extends Entity {
         }
         else {
             GUIManager.getInstance().printDevLog("DISABLED GOD MODE");
-            hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+            hungerDecreaseCounter = DEFAULT_HUNGER_DECREASE_MOVES_COOLDOWN;
             hunger = 100;
             setWeapon(new AncientSword());
             setArmor(new BareLeatherTunic());
@@ -251,7 +253,7 @@ public class Player extends Entity {
             GUIManager.getInstance().printLog("You are starving", UITheme.STAT_HUNGER);
             GUIManager.getInstance().triggerTextPopup("I need to eat", UITheme.STAT_HUNGER, position);
         }
-        hungerDecreaseCounter = HUNGER_DECREASE_MOVE_COOLDOWN;
+        hungerDecreaseCounter = hungerDecreaseMovesCooldown;
     }
 
     public List<Item> getInventory() {
@@ -308,5 +310,9 @@ public class Player extends Entity {
 
     public void resetIlluminationRange() {
         setIlluminationRange(DEFAULT_ILLUMINATION_RANGE);
+    }
+
+    public void resetHungerDecreaseCooldown() {
+        hungerDecreaseCounter = DEFAULT_HUNGER_DECREASE_MOVES_COOLDOWN;
     }
 }

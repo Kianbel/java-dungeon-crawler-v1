@@ -25,7 +25,7 @@ public class Web extends InteractableTile {
         if(!(entity instanceof GiantSpider)) {
             entity.stun(STUN_MOVE_AMOUNT);
             EntityRoomManager.getInstance().removeInteractableTile(this);
-            if(entity instanceof Player p) {
+            if(entity instanceof Player p && p.isStunnable) {
                 GUIManager.getInstance().triggerTextPopup("webbed", Color.WHITESMOKE, p.position);
                 GUIManager.getInstance().printLog("You stepped into a web and got stuck!", UITheme.LOG_PLAYER_ACTION);
                 GUIManager.getInstance().triggerScreenShake();

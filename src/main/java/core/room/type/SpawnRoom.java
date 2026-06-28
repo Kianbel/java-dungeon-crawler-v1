@@ -4,9 +4,12 @@ import core.EntityRoomManager;
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
+import item.armor.special.HeavyShield;
 import util.Position;
 import util.TILE;
+import world.DroppedItem;
 import world.NormalChest;
+import world.Staircase;
 
 public class SpawnRoom extends Room {
 
@@ -15,14 +18,15 @@ public class SpawnRoom extends Room {
 
         super(layout, minimapPosition);
 
-//        addInteractableTile(new Staircase(new Position(5, 3)));
-        addInteractableTile(new NormalChest(new Position(6,3)));
-        addInteractableTile(new NormalChest(new Position(7,3)));
-        addInteractableTile(new NormalChest(new Position(8,3)));
-        addInteractableTile(new NormalChest(new Position(6,4)));
-        addInteractableTile(new NormalChest(new Position(7,4)));
-        addInteractableTile(new NormalChest(new Position(8,4)));
-        addInteractableTile(new NormalChest(new Position(9,4)));
+        addInteractableTile(new Staircase(new Position(5, 3)));
+//        addInteractableTile(new NormalChest(new Position(6,3)));
+        addInteractableTile(new NormalChest(new Position(6,3), new DroppedItem(new Position(6,3), new HeavyShield())));
+//        addInteractableTile(new NormalChest(new Position(7,3)));
+//        addInteractableTile(new NormalChest(new Position(8,3)));
+//        addInteractableTile(new NormalChest(new Position(6,4)));
+//        addInteractableTile(new NormalChest(new Position(7,4)));
+//        addInteractableTile(new NormalChest(new Position(8,4)));
+//        addInteractableTile(new NormalChest(new Position(9,4)));
     }
 
     @Override
