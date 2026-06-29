@@ -277,9 +277,9 @@ public class GameController {
 
                     if (entity instanceof Player p) {
                         activeColor = (entity.getColor() != null) ? entity.getColor() : entityStyle.color();
-                        int oldIlluminationRange = p.getIlluminationRange();
-                        if(tile == TILE.GRASS) p.setIlluminationRange(0);
-                        else p.setIlluminationRange(oldIlluminationRange);
+//                        int oldIlluminationRange = p.getIlluminationRange();
+//                        if(tile == TILE.GRASS) p.setIlluminationRange(0);
+//                        else p.setIlluminationRange(oldIlluminationRange);
                     }
                     else {
                         if (entity.getColor() != null) {

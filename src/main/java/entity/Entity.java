@@ -3,6 +3,7 @@ package entity;
 import core.EntityRoomManager;
 import core.GameManager;
 import core.IlluminationData;
+import core.room.type.SpecialRoom;
 import gui.AudioManager;
 import gui.GUIManager;
 import gui.dataclass.UITheme;
@@ -76,9 +77,16 @@ public abstract class Entity {
             Room targetRoom = getAdjacentRoomFromUnitPos(unitPos);
             EntityRoomManager.getInstance().transferEntityFromToRoom(this, currentRoom, targetRoom);
             fixEntityPositionAfterTransferFromUnitPos(oldUnitPos);
-            if(this instanceof Player) {
+            if(this instanceof Player p) {
                 GUIManager.getInstance().triggerRoomTransitionFlash();
                 AudioManager.getInstance().playSFX("door_enter");
+                if(targetRoom instanceof SpecialRoom) {
+                    p.setIlluminationRange(p.getIlluminationRange() * 3);
+                    System.out.println(targetRoom);
+                }
+                else {
+                    p.resetIlluminationRange();
+                }
             }
         }
     }

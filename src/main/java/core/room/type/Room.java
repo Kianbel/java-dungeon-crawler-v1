@@ -50,17 +50,10 @@ public abstract class Room {
             double FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.2;
             if(this instanceof SpecialRoom) {
                 FLOOR_OBSTACLES_AMOUNT = replaceablePositions.size() * 0.6;
-                for(int i = 0; i < FLOOR_OBSTACLES_AMOUNT; i++) {
+                int potsAmount = (int) (FLOOR_OBSTACLES_AMOUNT * 0.05);
+                for(int i = 0; i < potsAmount; i++) {
                     Position replacedPos = replaceablePositions.remove(random.nextInt(replaceablePositions.size()));
-                    switch (Randomizer.pick(1,2,3)) {
-                        case 1 -> layout[replacedPos.y][replacedPos.x] = TILE.PASSABLE_OBSTACLE;
-                        case 2 -> {
-                            if(Math.random() <= 0.33) layout[replacedPos.y][replacedPos.x] = TILE.WEB;
-                        }
-                        case 3 -> {
-                            if(Math.random() <= 0.2) layout[replacedPos.y][replacedPos.x] = TILE.SPIKE;
-                        }
-                    }
+                    layout[replacedPos.y][replacedPos.x] = TILE.POT;
                 }
             }
             else {
@@ -84,10 +77,14 @@ public abstract class Room {
         final double WEB_SPAWN_CHANCE = 0.5;
         final double BREAKABLE_WALL_CHANCE = (this instanceof SpecialRoom) ? 0.8 : 0.5;
         final double CARPET_PUT_CHANCE = 0.6;
+        final double GRASS_PUT_CHANCE = 0.5; // for special rooms
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < length; x++) {
                 switch(layout[y][x]) {
+                    case GRASS -> {
+                        if(Math.random() <= GRASS_PUT_CHANCE) layout[y][x] = TILE.FLOOR;
+                    }
                     case WOODEN_DOOR -> {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new WoodenDoor(new Position(x,y)));
@@ -136,7 +133,7 @@ public abstract class Room {
                         this.layout[y][x] = TILE.FLOOR;
                         addInteractableTile(new TreasureChest(new Position(x,y)));
                     }
-                    case BOX -> {
+                    case POT -> {
                         layout[y][x] = TILE.FLOOR;
                         if(Math.random() <= POT_SPAWN_CHANCE) addInteractableTile(new Pot(new Position(x, y)));
                     }

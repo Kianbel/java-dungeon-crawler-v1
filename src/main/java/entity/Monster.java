@@ -34,7 +34,9 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
     @Override
     public void makeMove() {
         final int MAKE_SOUND_DISTANCE_THRESHOLD = 8;
-        if(Math.random() <= 0.1 && getDistanceFromPlayer() <= MAKE_SOUND_DISTANCE_THRESHOLD) makeSoundTextPopup();
+        if(Math.random() <= 0.1 && getSquaredDistanceFromPlayer() <= MAKE_SOUND_DISTANCE_THRESHOLD*MAKE_SOUND_DISTANCE_THRESHOLD) {
+            makeSoundTextPopup();
+        }
     }
 
     public boolean hasLineOfSight(Position start, Position end) {
@@ -287,5 +289,13 @@ public abstract class Monster extends Entity implements MoveAfterPlayer {
         int dx = player.position.x - position.x;
         int dy = player.position.y - position.y;
         return (int) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public int getSquaredDistanceFromPlayer() {
+        Entity player = EntityRoomManager.getInstance().getPlayer();
+        if (player == null) return 0;
+        int dx = player.position.x - position.x;
+        int dy = player.position.y - position.y;
+        return dx * dx + dy * dy;
     }
 }

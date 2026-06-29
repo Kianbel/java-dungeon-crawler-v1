@@ -218,7 +218,7 @@ public class FlareWitchFSM extends MonsterFSM<FlareWitchFSM.STATE> {
             return;
         }
 
-        if (owner.getDistanceFromPlayer() == 1) {
+        if (owner.getSquaredDistanceFromPlayer() == 1) {
             switchState(STATE.ATTACK);
             return;
         }

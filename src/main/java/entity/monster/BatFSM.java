@@ -51,7 +51,7 @@ public class BatFSM extends StandardMonsterFSM<BatFSM.STATE> {
 
     @Override
     protected void handleIdle() {
-        if(owner.hasLineOfSight(owner.position, player.position) && owner.getDistanceFromPlayer() <= getFollowRange()) {
+        if(owner.hasLineOfSight(owner.position, player.position) && owner.getSquaredDistanceFromPlayer() <= getFollowRange()*getFollowRange()) {
             switchState(STATE.ANGERED);
             GUIManager.getInstance().triggerTextPopup(owner.name + " found you", Color.WHITE, owner.position);
             GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);

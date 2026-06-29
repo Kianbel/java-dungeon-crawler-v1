@@ -18,6 +18,7 @@ import util.Position;
 import core.room.type.Room;
 import world.InteractableTile;
 import world.SpikeTrap;
+import world.WoodenDoor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +115,7 @@ public class Player extends Entity {
         for(InteractableTile tile: interactableTiles) {
             if(tile.roomLayoutPosition.equals(targetPosition) && tile.isSolid) {
                 GUIManager.getInstance().triggerAttackAnimation(this, tile.roomLayoutPosition);
+                GUIManager.getInstance().triggerScreenShake(2,100);
                 tile.onEntityBump(this);
                 return;
             }
@@ -135,6 +137,7 @@ public class Player extends Entity {
             targetEntity.hurt(inflictedDamage, this);
 
             GUIManager.getInstance().triggerAttackAnimation(this, targetEntity);
+            GUIManager.getInstance().triggerScreenShake();
 
             if(!targetEntity.isAlive()) {
                 GUIManager.getInstance().printLog("You killed " + targetEntity.name + ".", UITheme.LOG_PLAYER_ACTION);
@@ -250,6 +253,7 @@ public class Player extends Entity {
         setHunger(hunger - random.nextInt(1,5));
         if(hunger <= 0) {
             hurt(5);
+            GUIManager.getInstance().triggerScreenShake();
             GUIManager.getInstance().printLog("You are starving", UITheme.STAT_HUNGER);
             GUIManager.getInstance().triggerTextPopup("I need to eat", UITheme.STAT_HUNGER, position);
         }

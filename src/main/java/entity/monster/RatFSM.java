@@ -61,7 +61,7 @@ public class RatFSM extends StandardMonsterFSM<RatFSM.STATE> {
 
 
     protected void handleFollow() {
-        if(owner.getDistanceFromPlayer() == 1) {
+        if(owner.getSquaredDistanceFromPlayer() == 1) {
             switchState(STATE.ATTACK);
             return;
         }

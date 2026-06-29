@@ -3,9 +3,7 @@ package core.room.type;
 import core.EntitySpawner;
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
-import entity.monster.Bat;
-import entity.monster.Rat;
-import entity.monster.Zombie;
+import entity.monster.*;
 import util.Position;
 import util.TILE;
 
@@ -27,12 +25,14 @@ public class SpecialRoom extends Room {
             case 1 -> {
                 entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(5,10));
                 entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(5,10));
-                entitySpawner.spawnMonstersAmount(Zombie::new, random.nextInt(5,10));
+                entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(2,5));
             }
-            case 2 -> {}
-            case 3 -> {}
-            case 4 -> {}
-            case 5 -> {}
+            default -> {
+                entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(5,10));
+                entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(5,10));
+                entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(2+floor,5+floor));
+                entitySpawner.spawnMonstersAmount(Goblin::new, random.nextInt(floor,5+floor));
+            }
         }
     }
 }

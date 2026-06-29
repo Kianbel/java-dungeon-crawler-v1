@@ -48,7 +48,7 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
     protected void handleIdle() {
         if (player == null) player = GameManager.getInstance().getPlayer();
 
-        if (owner.hasLineOfSight(owner.position, player.position) && owner.getDistanceFromPlayer() <= getFollowRange()) {
+        if (owner.hasLineOfSight(owner.position, player.position) && owner.getSquaredDistanceFromPlayer() <= getFollowRange()*getFollowRange()) {
             switchState(getAngeredState());
             playAlertEffects();
             return;
@@ -69,7 +69,7 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
     }
 
     protected void handleAngered() {
-        if (owner.getDistanceFromPlayer() <= getFollowRange()) {
+        if (owner.getSquaredDistanceFromPlayer() <= getFollowRange()*getFollowRange()) {
             switchState(getFollowState());
         }
     }

@@ -10,7 +10,7 @@ public enum TILE {
     SOLID_OBSTACLE,
     PASSABLE_OBSTACLE,
     BOOKSHELF,
-    BOX,
+    POT,
     WEB,
     FIRE,
     TREASURE_CHEST,

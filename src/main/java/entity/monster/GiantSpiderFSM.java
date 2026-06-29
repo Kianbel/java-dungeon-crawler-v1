@@ -61,18 +61,16 @@ public class GiantSpiderFSM extends StandardMonsterFSM<GiantSpiderFSM.STATE> {
     }
 
     protected void handleFollow() {
-        int distanceToPlayer = owner.getDistanceFromPlayer();
+        int squaredDistance = owner.getSquaredDistanceFromPlayer();
 
-        // 1. Backoff trigger check[cite: 5]
-        if (distanceToPlayer <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && owner.health <= owner.maxHealth / 2) {
+        if (squaredDistance <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD*AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && owner.health <= owner.maxHealth / 2) {
             if (Math.random() <= BACK_OFF_CHANCE) {
                 switchState(STATE.BACKOFF);
                 handleBackOff();
                 return;
             }
         }
-        // 2. Specialized web zoning check[cite: 5]
-        else if (distanceToPlayer <= WEBBING_DISTANCE_TO_PLAYER_THRESHOLD && distanceToPlayer > AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD) {
+        else if (squaredDistance <= WEBBING_DISTANCE_TO_PLAYER_THRESHOLD && squaredDistance > AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD*AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD) {
             if (Math.random() <= WEBBING_CHANCE && webShootCooldown <= 0) {
                 switchState(STATE.WEBBING);
                 handleWebbing();
@@ -80,7 +78,6 @@ public class GiantSpiderFSM extends StandardMonsterFSM<GiantSpiderFSM.STATE> {
             }
         }
 
-        // 3. Movement pursuit execution[cite: 5]
         Position moveVector = owner.pathfindToPlayerPosition();
         if(moveVector.x == 0 && moveVector.y == 0) return;
 
@@ -99,7 +96,7 @@ public class GiantSpiderFSM extends StandardMonsterFSM<GiantSpiderFSM.STATE> {
 
     protected void handleAttack() {
         owner.attack(player);
-        if (owner.getDistanceFromPlayer() <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && owner.health <= owner.maxHealth / 2 && Math.random() <= BACK_OFF_CHANCE) {
+        if (owner.getSquaredDistanceFromPlayer() <= AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD*AGGRESSIVE_DISTANCE_TO_PLAYER_THRESHOLD && owner.health <= owner.maxHealth / 2 && Math.random() <= BACK_OFF_CHANCE) {
             switchState(STATE.BACKOFF);
         } else {
             switchState(STATE.FOLLOW);
