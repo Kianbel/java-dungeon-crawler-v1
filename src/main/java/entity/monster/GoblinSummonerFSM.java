@@ -6,19 +6,16 @@ import core.room.type.Room;
 import entity.Entity;
 import entity.Monster;
 import entity.StandardMonsterFSM;
-import entity.boss.FlareWitch;
-import entity.boss.FlareWitchFSM;
-import entity.projectile.Fireball;
 import gui.GUIManager;
+import gui.dataclass.UITheme;
 import javafx.scene.paint.Color;
 import util.Position;
-import util.Randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GoblinWizardFSM extends StandardMonsterFSM<GoblinWizardFSM.STATE> {
+public class GoblinSummonerFSM extends StandardMonsterFSM<GoblinSummonerFSM.STATE> {
     public enum STATE {
         IDLE,
         FOLLOW,
@@ -30,7 +27,7 @@ public class GoblinWizardFSM extends StandardMonsterFSM<GoblinWizardFSM.STATE> {
 
     private final Random random = new Random();
 
-    public GoblinWizardFSM(Monster owner) {
+    public GoblinSummonerFSM(Monster owner) {
         super(owner);
         setupInitialState();
     }
@@ -125,6 +122,8 @@ public class GoblinWizardFSM extends StandardMonsterFSM<GoblinWizardFSM.STATE> {
             if(chance <= 0.1) summon = new GoblinTank(summonPosition);
             else if(chance <= 0.4) summon = new GoblinArcher(summonPosition);
             else summon = new GoblinSwordsman(summonPosition);
+
+            summon.overrideColor(UITheme.ENTITY_GOBLIN_SUMMONER);
 
             summon.setIlluminated(true);
             summon.setIlluminationRange(1);

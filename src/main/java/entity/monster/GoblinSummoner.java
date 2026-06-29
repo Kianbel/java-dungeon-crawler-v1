@@ -2,15 +2,14 @@ package entity.monster;
 
 import entity.Monster;
 import item.weapon.GenericDamager;
-import item.weapon.Weapon;
 import util.Position;
 
-public class GoblinWizard extends Monster {
-    private final GoblinWizardFSM fsm;
+public class GoblinSummoner extends Monster {
+    private final GoblinSummonerFSM fsm;
 
-    public GoblinWizard(Position position) {
+    public GoblinSummoner(Position position) {
         super("Goblin Wizard", 40, 8, new GenericDamager(8, 0.4), position);
-        fsm = new GoblinWizardFSM(this);
+        fsm = new GoblinSummonerFSM(this);
     }
 
     @Override

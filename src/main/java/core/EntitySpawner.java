@@ -46,7 +46,7 @@ public class EntitySpawner {
         int gobSwordsmans = 0;
         int gobArchers = 0;
         int gobTanks = 0;
-        int gobWizards = 0;
+        int gobSummoner = 0;
         int flareApprentices = 0;
 
         switch (floorLevel) {
@@ -83,7 +83,7 @@ public class EntitySpawner {
                 gobSwordsmans = 3;
                 gobArchers = 3;
                 gobTanks = 1;
-                gobWizards = 1;
+                gobSummoner = 1;
             }
             case 4 -> {
                 bats = 6;
@@ -97,7 +97,7 @@ public class EntitySpawner {
                 gobSwordsmans = 3;
                 gobArchers = 3;
                 gobTanks = 1;
-                gobWizards = 1;
+                gobSummoner = 1;
                 flareApprentices = 1;
             }
             case 5 -> {
@@ -109,7 +109,7 @@ public class EntitySpawner {
                 gobSwordsmans = 4;
                 gobArchers = 4;
                 gobTanks = 2;
-                gobWizards = 2;
+                gobSummoner = 2;
                 flareApprentices = 2;
             }
         }
@@ -127,7 +127,7 @@ public class EntitySpawner {
         spawnMonstersAmount(GoblinSwordsman::new, get1ToMax(gobSwordsmans));
         spawnMonstersAmount(GoblinArcher::new, get1ToMax(gobArchers));
         spawnMonstersAmount(GoblinTank::new, get1ToMax(gobTanks));
-        spawnMonstersAmount(GoblinWizard::new, get1ToMax(gobWizards));
+        spawnMonstersAmount(GoblinSummoner::new, get1ToMax(gobSummoner));
         spawnMonstersAmount(FlareApprentice::new, get1ToMax(flareApprentices));
     }
 

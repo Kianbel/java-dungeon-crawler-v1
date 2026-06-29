@@ -96,14 +96,22 @@ public class GlyphRegistry {
 
         // --- MONSTER ENTITY REGISTRY ---
         registerEntity(Player.class, "@", UITheme.ENTITY_PLAYER);
-        registerEntity(Zombie.class, "Z", UITheme.ENTITY_ZOMBIE);
+        registerEntity(Zombie.class, "z", UITheme.ENTITY_ZOMBIE);
         registerEntity(GiantSpider.class, "🕷", UITheme.ENTITY_SPIDER);
         registerEntity(FlareWitch.class, "༒", UITheme.ENTITY_FLARE_WITCH);
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
         registerEntity(Bat.class, "🦇", UITheme.ENTITY_BAT);
         registerEntity(Kobold.class, "🦎", UITheme.ENTITY_KOBOLD);
-        registerEntity(GoblinArcher.class, "g", UITheme.ENTITY_GOBLIN);
-
+        registerEntity(GoblinArcher.class, "a", UITheme.ENTITY_GOBLIN_ARCHER);
+        registerEntity(GoblinSwordsman.class, "s", UITheme.ENTITY_GOBLIN_SWORDSMAN);
+        registerEntity(GoblinTank.class, "t", UITheme.ENTITY_GOBLIN_TANK);
+        registerEntity(GoblinSummoner.class, "q", UITheme.ENTITY_GOBLIN_SUMMONER);
+        registerEntity(Moth.class, "m", UITheme.ENTITY_MOTH);
+        registerEntity(Roach.class, "r", UITheme.ENTITY_ROACH);
+        registerEntity(JuvenileGiantCentipede.class, "c", UITheme.ENTITY_JUVENILE_GIANT_CENTIPEDE);
+        registerEntity(GiantCentipede.class, "C", UITheme.ENTITY_GIANT_CENTIPEDE);
+        registerEntity(Golem.class, "G", UITheme.ENTITY_GOLEM);
+        registerEntity(FlareApprentice.class, "f", UITheme.ENTITY_FLARE_APPRENTICE);
 
         // --- PROJECTILE ENTITY REGISTRY ---
         registerEntity(Fireball.class, "🔥", UITheme.PROJECTILE_FIREBALL);

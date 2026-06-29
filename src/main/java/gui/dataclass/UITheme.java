@@ -85,7 +85,16 @@ public class UITheme {
     public static Color ENTITY_RAT = Color.web("#731144");
     public static Color ENTITY_BAT = Color.web("#6476e8");
     public static Color ENTITY_KOBOLD = Color.web("#ba6156");
-    public static Color ENTITY_GOBLIN = Color.web("#3ca370");
+    public static Color ENTITY_GOBLIN_ARCHER = Color.web("#3ca370");
+    public static Color ENTITY_GOBLIN_SWORDSMAN = Color.web("#3ca370").darker();
+    public static Color ENTITY_GOBLIN_TANK = Color.web("#3ca370").darker().darker();
+    public static Color ENTITY_GOBLIN_SUMMONER = Color.web("#8c3f5d");
+    public static Color ENTITY_MOTH = Color.web("#c2c2d1");
+    public static Color ENTITY_ROACH = Color.web("#eb564b").darker();
+    public static Color ENTITY_JUVENILE_GIANT_CENTIPEDE = Color.web("#ba6156").brighter();
+    public static Color ENTITY_GIANT_CENTIPEDE = Color.web("#ba6156");
+    public static Color ENTITY_GOLEM = Color.web("#ba6156");
+    public static Color ENTITY_FLARE_APPRENTICE = Color.web("#e36433");
 
     // --- PROJECTILES
     public static Color PROJECTILE_FIREBALL = Color.web("#f2a65e");

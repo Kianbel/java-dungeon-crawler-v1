@@ -17,25 +17,21 @@ public class DungeonManager {
         return instance;
     }
 
-    private int roomAmount = 5;
+    private final int ROOM_AMOUNT = 5;
     private final int MAP_HEIGHT = 31;
     private final int MAP_LENGTH = 31;
 
     private MAP[][] mapLayout;
-    private List<Room> roomList;
+    private final List<Room> ROOM_LIST = new ArrayList<>(ROOM_AMOUNT);
 
     /**
      * @return Spawn room
      */
     public Room generateDungeon() {
-        int floorLevel = GameManager.getInstance().getCurrentFloor();
-        roomAmount = 2 * floorLevel + 3;
-        roomList = new ArrayList<>(roomAmount);
-
-        roomList.clear();
+        ROOM_LIST.clear();
 
         DungeonMapGenerator dungeonMapGenerator = new DungeonMapGenerator(new DrunkardWalk(MAP_HEIGHT, MAP_LENGTH));
-        dungeonMapGenerator.generate(roomAmount);
+        dungeonMapGenerator.generate(ROOM_AMOUNT);
         mapLayout = dungeonMapGenerator.getMapLayout();
 
         RoomLayoutLoader.getInstance().loadAllLayouts("src/main/java/core/room/loader/layout");
@@ -43,7 +39,7 @@ public class DungeonManager {
         generateRooms();
 
         Room spawnRoom = null;
-        for(Room r : roomList) {
+        for(Room r : ROOM_LIST) {
             EntityRoomManager.getInstance().addRoom(r);
             if(r instanceof SpawnRoom) spawnRoom = r;
             r.populateWithEntities();
@@ -54,7 +50,7 @@ public class DungeonManager {
     }
 
     private void generateRooms() {
-        roomList.clear();
+        ROOM_LIST.clear();
         if(mapLayout == null) throw new RuntimeException("Cannot generate rooms as minimapLayout is not initialized");
 
         final int MAP_HEIGHT = mapLayout.length;
@@ -88,7 +84,7 @@ public class DungeonManager {
                 }
 
                 newRoom.generate(northDoor,eastDoor,southDoor,westDoor);
-                roomList.add(newRoom);
+                ROOM_LIST.add(newRoom);
             }
         }
     }
