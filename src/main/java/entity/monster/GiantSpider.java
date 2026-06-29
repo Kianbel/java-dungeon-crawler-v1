@@ -18,7 +18,7 @@ public class GiantSpider extends Monster {
     private GiantSpiderFSM stateMachine;
 
     public GiantSpider(Position position) {
-        super("Giant Spider", 30, 3, new GiantSpiderFang(), position);
+        super("Giant Spider", 30, 5, new GiantSpiderFang(), position);
         this.stateMachine = new GiantSpiderFSM(this);
     }
 

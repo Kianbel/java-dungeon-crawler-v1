@@ -20,7 +20,7 @@ public class Kobold extends Monster {
     private final KoboldFSM stateMachine;
 
     public Kobold(Position position) {
-        super("Kobold", 20, 2, new Dagger(), position);
+        super("Kobold", 20, 5, new Dagger(), position);
         stateMachine = new KoboldFSM(this);
     }
 

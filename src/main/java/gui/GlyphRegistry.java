@@ -102,7 +102,7 @@ public class GlyphRegistry {
         registerEntity(Rat.class, "🐁", UITheme.ENTITY_RAT);
         registerEntity(Bat.class, "🦇", UITheme.ENTITY_BAT);
         registerEntity(Kobold.class, "🦎", UITheme.ENTITY_KOBOLD);
-        registerEntity(Goblin.class, "g", UITheme.ENTITY_GOBLIN);
+        registerEntity(GoblinArcher.class, "g", UITheme.ENTITY_GOBLIN);
 
 
         // --- PROJECTILE ENTITY REGISTRY ---

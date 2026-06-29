@@ -7,7 +7,7 @@ import entity.StandardMonsterFSM;
 import util.Position;
 import util.Randomizer;
 
-public class GoblinFSM extends StandardMonsterFSM<GoblinFSM.STATE> {
+public class GoblinArcherFSM extends StandardMonsterFSM<GoblinArcherFSM.STATE> {
     public enum STATE {
         IDLE,
         FOLLOW,
@@ -18,7 +18,7 @@ public class GoblinFSM extends StandardMonsterFSM<GoblinFSM.STATE> {
 
     int shootCooldown;
 
-    public GoblinFSM(Monster owner) {
+    public GoblinArcherFSM(Monster owner) {
         super(owner);
         setupInitialState();
     }

@@ -31,7 +31,7 @@ public class SpecialRoom extends Room {
                 entitySpawner.spawnMonstersAmount(Bat::new, random.nextInt(5,10));
                 entitySpawner.spawnMonstersAmount(Rat::new, random.nextInt(5,10));
                 entitySpawner.spawnMonstersAmount(Kobold::new, random.nextInt(2+floor,5+floor));
-                entitySpawner.spawnMonstersAmount(Goblin::new, random.nextInt(floor,5+floor));
+                entitySpawner.spawnMonstersAmount(GoblinArcher::new, random.nextInt(floor,5+floor));
             }
         }
     }

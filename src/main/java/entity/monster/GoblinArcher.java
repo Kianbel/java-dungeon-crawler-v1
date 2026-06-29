@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Goblin extends RangedMonster {
-    private final GoblinFSM stateMachine;
+public class GoblinArcher extends RangedMonster {
+    private final GoblinArcherFSM stateMachine;
 
-    public Goblin(Position position) {
-        super("Goblin", 30, 3, new WoodenBow(), new Arrow(999), position);
-        this.stateMachine = new GoblinFSM(this);
+    public GoblinArcher(Position position) {
+        super("Goblin", 30, 5, new WoodenBow(), new Arrow(999), position);
+        this.stateMachine = new GoblinArcherFSM(this);
     }
 
     @Override

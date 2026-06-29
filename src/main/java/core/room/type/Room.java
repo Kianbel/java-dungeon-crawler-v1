@@ -197,7 +197,7 @@ public abstract class Room {
             case 3 -> {
                 int goblins = random.nextInt(3,8);
 
-                if(goblins > 0) entitySpawner.spawnMonstersAmount(Goblin::new, goblins);
+                if(goblins > 0) entitySpawner.spawnMonstersAmount(GoblinArcher::new, goblins);
             }
             case 4 -> {
 

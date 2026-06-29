@@ -22,7 +22,7 @@ public class Zombie extends Monster {
     private ZombieFSM zombieFSM;
 
     public Zombie(Position position) {
-        super("Zombie", 20, 0, new GenericDamager(5, 0.2), position);
+        super("Zombie", 20, 0, new GenericDamager(5, 0.1), position);
         zombieFSM = new ZombieFSM(this);
     }
 
