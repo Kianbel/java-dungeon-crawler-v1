@@ -173,39 +173,10 @@ public abstract class Room {
 
     public void populateWithEntities() {
         if(!isRoomGenerated) throw new RuntimeException("Cannot populate with entities as room has not generated");
-        if(this instanceof SpecialRoom) return; // handled by SpecialRoom class
 
-        EntitySpawner entitySpawner = new EntitySpawner(this);
         final int floor = GameManager.getInstance().getCurrentFloor();
-        switch(floor) {
-            case 1 -> {
-                int zombies = random.nextInt(4,8);
-                int bats = random.nextInt(2,8);
-
-                if(zombies > 0) entitySpawner.spawnMonstersAmount(Zombie::new, zombies);
-                if(bats > 0) entitySpawner.spawnMonstersAmount(Bat::new, bats);
-            }
-            case 2 -> {
-                int koboldAmount = random.nextInt(1,8);
-                int spiderAmount = random.nextInt(1,8);
-                int bats = random.nextInt(1,4);
-
-                if(koboldAmount > 0) entitySpawner.spawnMonstersAmount(Kobold::new, koboldAmount);
-                if(spiderAmount > 0) entitySpawner.spawnMonstersAmount(Bat::new, spiderAmount);
-                if(bats > 0) entitySpawner.spawnMonstersAmount(Bat::new, bats);
-            }
-            case 3 -> {
-                int goblins = random.nextInt(3,8);
-
-                if(goblins > 0) entitySpawner.spawnMonstersAmount(GoblinArcher::new, goblins);
-            }
-            case 4 -> {
-
-            }
-            case 5 -> {
-
-            }
-        }
+        EntitySpawner entitySpawner = new EntitySpawner(this);
+        entitySpawner.spawnMonstersBasedOnFloor(floor);
     }
 
     public List<Position> getSpawnablePositions() {

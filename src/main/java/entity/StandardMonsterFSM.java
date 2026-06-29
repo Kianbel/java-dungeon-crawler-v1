@@ -29,11 +29,15 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
      */
     protected double getBackOffChance() {return 0.4;}
 
+    protected int getForgetAngerMoveAmount() {return 10;}
+
     protected abstract T getIdleState();
     protected abstract T getAngeredState();
     protected abstract T getFollowState();
     protected abstract T getAttackState();
     protected abstract T getBackOffState();
+
+    protected int forgetCounter = getForgetAngerMoveAmount();
 
     /**
      * Optional hook if a monster has a custom sound/alert when finding the player.
@@ -41,7 +45,7 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
      */
     protected void playAlertEffects() {
         GUIManager.getInstance().printLog(owner.name + " found you.", UITheme.LOG_MONSTER_ACTION);
-        GUIManager.getInstance().triggerTextPopup("!", Color.WHITE, owner.position);
+        GUIManager.getInstance().triggerTextPopup("!", Color.YELLOW, owner.position);
         AudioManager.getInstance().playSFX("enemy_see_player");
     }
 
@@ -96,6 +100,17 @@ public abstract class StandardMonsterFSM<T extends Enum<T>> extends MonsterFSM<T
     }
 
     protected void handleFollow() {
+        if(!owner.hasLineOfSight(owner.position, player.position)) forgetCounter--;
+        else forgetCounter = getForgetAngerMoveAmount();
+
+        if(forgetCounter <= 0) {
+            switchState(getIdleState());
+            GUIManager.getInstance().triggerTextPopup("?", Color.YELLOW, owner.position);
+            forgetCounter = getForgetAngerMoveAmount();
+            handleIdle();
+            return;
+        }
+
         Position moveVector = owner.pathfindToPlayerPosition();
         if(player.position.equals(owner.position.add(moveVector))) {
             switchState(getAttackState());

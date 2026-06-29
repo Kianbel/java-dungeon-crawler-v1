@@ -46,11 +46,18 @@ public class AudioManager {
 
         AudioClip clip = sfxRegistry.get(key);
         if (clip != null) {
-            // If variance is 0.10, randomRate will fall safely between 0.90 and 1.10
+            // Calculate variables safely outside the thread block
             double randomModifier = (random.nextDouble() * 2.0 - 1.0) * PITCH_VARIANCE;
             double randomRate = 1.0 + randomModifier;
 
-            clip.play(sfxVolume, 0.0, randomRate, 0.0, 0);
+            // FIX: Run audio dispatch asynchronously to prevent engine lag from dropping audio frames
+            javafx.application.Platform.runLater(() -> {
+                try {
+                    clip.play(sfxVolume, 0.0, randomRate, 0.0, 0);
+                } catch (Exception e) {
+                    System.err.println("Audio clip failed to fire: " + e.getMessage());
+                }
+            });
         }
     }
 
@@ -60,9 +67,11 @@ public class AudioManager {
      */
     public void playBGM(String resourcePath) {
         try {
-            // Stop previous music if running
+            // FIX: Explicitly stop AND dispose of the previous player to free native audio lines
             if (bgmPlayer != null) {
                 bgmPlayer.stop();
+                bgmPlayer.dispose();
+                bgmPlayer = null;
             }
 
             URL resource = getClass().getResource(resourcePath);
@@ -84,7 +93,11 @@ public class AudioManager {
     }
 
     public void stopBGM() {
-        if (bgmPlayer != null) bgmPlayer.stop();
+        if (bgmPlayer != null) {
+            bgmPlayer.stop();
+            bgmPlayer.dispose(); // FIX: Clear resources when explicitly stopping music too
+            bgmPlayer = null;
+        }
     }
 
     public void setSFXVolume(double volume) { this.sfxVolume = Math.clamp(volume, 0.0, 1.0); }
