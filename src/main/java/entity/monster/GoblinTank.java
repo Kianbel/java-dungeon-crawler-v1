@@ -9,7 +9,7 @@ public class GoblinTank extends Monster {
     private final GoblinTankFSM fsm;
 
     public GoblinTank(Position position) {
-        super("Goblin Tank", 50, 10, new GenericDamager(8, 0.1), position);
+        super("Goblin Tank", 50, 10, new GenericDamager(4, 0.1), position);
         fsm = new GoblinTankFSM(this);
     }
 

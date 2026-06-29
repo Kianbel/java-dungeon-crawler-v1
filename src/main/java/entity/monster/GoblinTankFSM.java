@@ -19,6 +19,9 @@ public class GoblinTankFSM extends StandardMonsterFSM<GoblinTankFSM.STATE> {
         setupInitialState();
     }
 
+    @Override protected double getFollowChance() {return 0.3;}
+    @Override protected double getBackOffChance() {return 0;}
+
     @Override protected STATE getIdleState() {return STATE.IDLE;}
     @Override protected STATE getAngeredState() {return STATE.ANGERED;}
     @Override protected STATE getFollowState() {return STATE.FOLLOW;}

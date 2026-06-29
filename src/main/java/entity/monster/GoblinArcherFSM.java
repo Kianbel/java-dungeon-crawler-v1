@@ -23,6 +23,9 @@ public class GoblinArcherFSM extends StandardMonsterFSM<GoblinArcherFSM.STATE> {
         setupInitialState();
     }
 
+    @Override protected int getFollowRange() {return 12;}
+    @Override protected double getBackOffChance() {return 0.8;}
+
     @Override protected STATE getIdleState() {return STATE.IDLE;}
     @Override protected STATE getAngeredState() {return STATE.ANGERED;}
     @Override protected STATE getFollowState() {return STATE.FOLLOW;}

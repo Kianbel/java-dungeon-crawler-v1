@@ -19,6 +19,9 @@ public class GolemFSM extends StandardMonsterFSM<GolemFSM.STATE> {
         setupInitialState();
     }
 
+    @Override protected int getFollowRange() {return 12;}
+    @Override protected double getFollowChance() {return 0.2;}
+
     @Override protected STATE getIdleState() {return STATE.IDLE;}
     @Override protected STATE getAngeredState() {return STATE.ANGERED;}
     @Override protected STATE getFollowState() {return STATE.FOLLOW;}

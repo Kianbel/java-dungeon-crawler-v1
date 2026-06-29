@@ -1,9 +1,11 @@
 package core.room.type;
 
 import core.EntityRoomManager;
+import core.EntitySpawner;
 import core.GameManager;
 import core.room.loader.RoomLayoutRegistry;
 import entity.Player;
+import entity.monster.*;
 import item.armor.special.HeavyShield;
 import util.Position;
 import util.TILE;
@@ -37,7 +39,7 @@ public class SpawnRoom extends Room {
             GameManager.getInstance().setPlayer(player);
         }
 
-//        EntitySpawner entitySpawner = new EntitySpawner(this);
-//        entitySpawner.spawnMonstersAmount(Bat::new, 1);
+        EntitySpawner entitySpawner = new EntitySpawner(this);
+        entitySpawner.spawnMonstersAmount(Roach::new, 1);
     }
 }

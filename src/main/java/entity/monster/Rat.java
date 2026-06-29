@@ -54,17 +54,6 @@ public class Rat extends Monster {
     @Override
     public void makeMove() {
         super.makeMove();
-
-        Position unitPos = new Position(0,0);
-        switch(random.nextInt(4)) {
-            case 0 -> unitPos.y = 1;
-            case 1 -> unitPos.y = -1;
-            case 2 -> unitPos.x = 1;
-            case 3 -> unitPos.x = -1;
-        }
-
-        if(isValidTargetPosition(position.add(unitPos))) {
-            walk(unitPos);
-        }
+        stateMachine.update();
     }
 }
