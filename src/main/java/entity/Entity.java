@@ -69,7 +69,6 @@ public abstract class Entity {
             Position oldPos = position;
             position = dPos;
             GUIManager.getInstance().triggerMoveAnimation(this, oldPos);
-            AudioManager.getInstance().playSFX("walk");
             handleOnEntityEnterInteractableTiles();
         }
         else if(tile == TILE.DOOR) {

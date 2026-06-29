@@ -81,6 +81,7 @@ public class Player extends Entity {
     @Override
     public void walk(Position unitPos) {
         super.walk(unitPos);
+        AudioManager.getInstance().playSFX("walk");
     }
 
     public void handleMove(Position unitPos) {

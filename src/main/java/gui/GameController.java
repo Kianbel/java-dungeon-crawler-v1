@@ -79,25 +79,24 @@ public class GameController {
         hudManager = new HUDManager(this);
 
         // Audio
-        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3");
-        AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3");
-        AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3");
-        AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3");
-        AudioManager.getInstance().registerSFX("spike_activate", "/audio/spike_activate.mp3");
-        AudioManager.getInstance().registerSFX("web_sling", "/audio/web_sling.mp3");
-        AudioManager.getInstance().registerSFX("chest_open", "/audio/chest_open.mp3");
-        AudioManager.getInstance().registerSFX("burn", "/audio/temp_burn.mp3");
-        AudioManager.getInstance().registerSFX("pickup", "/audio/pickup.mp3");
-        AudioManager.getInstance().registerSFX("stun", "/audio/stun.mp3");
-        AudioManager.getInstance().registerSFX("enemy_die", "/audio/enemy_die.mp3");
-        AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3");
-        AudioManager.getInstance().registerSFX("enemy_see_player", "/audio/enemy_see_player.mp3");
-        AudioManager.getInstance().registerSFX("wall_break", "/audio/wall_break.mp3");
+        AudioManager.getInstance().registerSFX("walk", "/audio/walk.mp3", 0.4);
+        AudioManager.getInstance().registerSFX("hurt", "/audio/hurt.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("door_enter", "/audio/door_enter.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("pot_break", "/audio/pot_break.mp3", 0.3);
+        AudioManager.getInstance().registerSFX("spike_activate", "/audio/spike_activate.mp3", 0.2);
+        AudioManager.getInstance().registerSFX("web_sling", "/audio/web_sling.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("chest_open", "/audio/chest_open.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("burn", "/audio/temp_burn.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("pickup", "/audio/pickup.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("stun", "/audio/stun.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("enemy_die", "/audio/enemy_die.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("attack", "/audio/attack.mp3", 0.5);
+        AudioManager.getInstance().registerSFX("enemy_see_player", "/audio/enemy_see_player.mp3", 0.3);
+        AudioManager.getInstance().registerSFX("wall_break", "/audio/wall_break.mp3", 0.5);
 
         AudioManager.getInstance().playBGM("/audio/temp_bgm.mp3");
 //        AudioManager.getInstance().playBGM("/audio/bgm2.mp3");
 
-        AudioManager.getInstance().setSFXVolume(0.5);
         AudioManager.getInstance().setBGMVolume(0.3);
 
         GameManager.initialize(this);
@@ -120,7 +119,6 @@ public class GameController {
     }
 
     private void setup() {
-        AudioManager.getInstance().setSFXVolume(0);
         animationManager.clearAllAnimations();
         hudManager.clearLogContainer();
         EntityRoomManager.getInstance().clear();
@@ -132,7 +130,6 @@ public class GameController {
         Room currentRoom = EntityRoomManager.getInstance().getPlayerRoom();
 
         viewport.updateCameraFocus(player.position, currentRoom.length, currentRoom.height);
-        AudioManager.getInstance().setSFXVolume(0.5);
     }
 
     private void handleWindowResize() {

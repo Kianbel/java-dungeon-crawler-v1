@@ -14,17 +14,17 @@ public class AudioManager {
     public static AudioManager getInstance() {return instance;}
 
     private final Map<String, AudioClip> sfxRegistry = new HashMap<>();
+    private final Map<String, Double> sfxVolumeRegistry = new HashMap<>();
     private MediaPlayer bgmPlayer;
-    private double sfxVolume = 1.0;
     private double bgmVolume = 0.5;
     private Random random = new Random();
 
-    /**
-     * Registers a short audio clip into the memory cache.
-     * @param key          Unique identifier for the sound effect (e.g., "hurt", "coin").
-     * @param resourcePath Path relative to the source root (e.g., "/audio/hit.wav").
-     */
+
     public void registerSFX(String key, String resourcePath) {
+        registerSFX(key, resourcePath, 1);
+    }
+
+    public void registerSFX(String key, String resourcePath, double volume) {
         try {
             URL resource = getClass().getResource(resourcePath);
             if (resource == null) {
@@ -33,6 +33,7 @@ public class AudioManager {
             }
             AudioClip clip = new AudioClip(resource.toExternalForm());
             sfxRegistry.put(key, clip);
+            sfxVolumeRegistry.put(key, volume);
         } catch (Exception e) {
             System.err.println("Failed to load SFX [" + key + "]: " + e.getMessage());
         }
@@ -45,6 +46,7 @@ public class AudioManager {
         final double PITCH_VARIANCE = 0.1;
 
         AudioClip clip = sfxRegistry.get(key);
+        double volume = sfxVolumeRegistry.get(key);
         if (clip != null) {
             // Calculate variables safely outside the thread block
             double randomModifier = (random.nextDouble() * 2.0 - 1.0) * PITCH_VARIANCE;
@@ -53,7 +55,7 @@ public class AudioManager {
             // FIX: Run audio dispatch asynchronously to prevent engine lag from dropping audio frames
             javafx.application.Platform.runLater(() -> {
                 try {
-                    clip.play(sfxVolume, 0.0, randomRate, 0.0, 0);
+                    clip.play(volume, 0.0, randomRate, 0.0, 0);
                 } catch (Exception e) {
                     System.err.println("Audio clip failed to fire: " + e.getMessage());
                 }
@@ -100,7 +102,6 @@ public class AudioManager {
         }
     }
 
-    public void setSFXVolume(double volume) { this.sfxVolume = Math.clamp(volume, 0.0, 1.0); }
     public void setBGMVolume(double volume) {
         this.bgmVolume = Math.clamp(volume, 0.0, 1.0);
         if (bgmPlayer != null) bgmPlayer.setVolume(this.bgmVolume);
