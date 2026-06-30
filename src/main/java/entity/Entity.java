@@ -81,7 +81,6 @@ public abstract class Entity {
                 AudioManager.getInstance().playSFX("door_enter");
                 if(targetRoom instanceof SpecialRoom) {
                     p.setIlluminationRange(p.getIlluminationRange() * 3);
-                    System.out.println(targetRoom);
                 }
                 else {
                     p.resetIlluminationRange();

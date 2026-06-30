@@ -104,7 +104,7 @@ public class DrunkardWalk extends Generator {
                 if (spawnRoomPosition.equals(x, y)) {
                     mapLayout[y][x] = MAP.SPAWN;
                 } else if (bossRoomPosition.equals(x, y)) {
-                    if(GameManager.getInstance().getCurrentFloor() % 3 == 0) mapLayout[y][x] = MAP.BOSS;
+                    if(GameManager.getInstance().getCurrentFloor() % 5 == 0) mapLayout[y][x] = MAP.BOSS;
                     else mapLayout[y][x] = MAP.STAIR;
                 } else {
                     roomsToChange.add(new Position(x, y));

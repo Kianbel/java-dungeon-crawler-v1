@@ -45,7 +45,6 @@ public class GoblinArcherFSM extends StandardMonsterFSM<GoblinArcherFSM.STATE> {
             case BACKOFF -> handleBackOff();
         }
 
-        System.out.println(shootCooldown);
     }
 
     protected void handleIdle() {

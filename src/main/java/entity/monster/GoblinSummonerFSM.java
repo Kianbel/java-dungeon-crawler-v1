@@ -112,7 +112,6 @@ public class GoblinSummonerFSM extends StandardMonsterFSM<GoblinSummonerFSM.STAT
                 summonPositions.add(spawnablePos);
             }
         }
-        System.out.println(summonPositions.size());
         if (summonPositions.isEmpty()) return;
 
         for (int i = 0; i < SUMMON_COUNT; i++) {
