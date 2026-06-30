@@ -11,26 +11,22 @@ import java.util.*;
 
 public class HUDManager {
     private final HBox rootContainer;
-    private final VBox statsPanel, logsPanel, controlsPanel, controlsBox, logContainer, inventoryBox, inventoryPanel;
-    private final Label statsHeader, logsHeader, controlsHeader, inventoryHeader;
+    private final VBox statsPanel, logsPanel, logContainer, inventoryBox, inventoryPanel;
+    private final Label statsHeader, logsHeader, inventoryHeader;
     private final Label lblHealth, lblHunger, lblCoins, lblArmor, lblWeapon;
     private final Label healthBar, healthValText, hungerBar, hungerValText, armorText, weaponText, coinsText;
 
-    private final int MAX_LOG_LINES = 6;
+    private final int MAX_LOG_LINES = 8;
 
     public HUDManager(GameController controller) {
-        // Reflection fields initialization using package-private visibility mapping or standard getters
         this.rootContainer = controller.rootContainer;
         this.statsPanel = controller.statsPanel;
         this.logsPanel = controller.logsPanel;
-        this.controlsPanel = controller.controlsPanel;
-        this.controlsBox = controller.controlsBox;
         this.logContainer = controller.logContainer;
         this.inventoryBox = controller.inventoryBox;
         this.inventoryPanel = controller.inventoryPanel;
         this.statsHeader = controller.statsHeader;
         this.logsHeader = controller.logsHeader;
-        this.controlsHeader = controller.controlsHeader;
         this.inventoryHeader = controller.inventoryHeader;
         this.lblHealth = controller.lblHealth;
         this.lblHunger = controller.lblHunger;
@@ -52,13 +48,11 @@ public class HUDManager {
         String subPanelStyle = "-fx-border-color: " + UITheme.BORDER_NORMAL + "; -fx-border-width: 2; -fx-background-color: " + UITheme.BG_CARD + ";";
         statsPanel.setStyle(subPanelStyle);
         logsPanel.setStyle(subPanelStyle);
-        controlsPanel.setStyle(subPanelStyle);
         inventoryPanel.setStyle(subPanelStyle);
 
         String headerStyle = UITheme.STYLE_HEADER + " -fx-text-fill: #ede6c8;";
         statsHeader.setStyle(headerStyle);
         logsHeader.setStyle(headerStyle);
-        controlsHeader.setStyle(headerStyle);
         inventoryHeader.setStyle(headerStyle);
 
         lblHealth.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.STAT_HEALTH) + ";");
@@ -77,12 +71,10 @@ public class HUDManager {
         armorText.setStyle(activeMetricStyle);
         weaponText.setStyle(activeMetricStyle);
         coinsText.setStyle(activeMetricStyle);
-
-        buildControlsReferenceHud();
     }
 
     public void addLog(String txt, Color col) {
-        Label element = new Label(txt);
+        Label element = new Label("-- " + txt);
         element.setStyle(UITheme.STYLE_LOG + " -fx-text-fill: " + toHexWebColor(col) + ";");
         element.setWrapText(true);
 
@@ -115,19 +107,6 @@ public class HUDManager {
             Label itemLabel = new Label(String.format("- %s ( x%d )", entry.getKey(), entry.getValue()));
             itemLabel.setStyle(UITheme.STYLE_TEXT + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_PARCHMENT) + ";");
             inventoryBox.getChildren().add(itemLabel);
-        }
-    }
-
-    private void buildControlsReferenceHud() {
-        controlsBox.getChildren().clear();
-        String[] mappings = {
-                "[WASD]  Move Explorer          [M] Open Map",
-                "[SPACE] Rest / Skip Turn       [+/-] Zoom",
-        };
-        for (String item : mappings) {
-            Label element = new Label(item);
-            element.setStyle(UITheme.STYLE_CTRL + " -fx-text-fill: " + toHexWebColor(UITheme.TEXT_MUTED) + ";");
-            controlsBox.getChildren().add(element);
         }
     }
 

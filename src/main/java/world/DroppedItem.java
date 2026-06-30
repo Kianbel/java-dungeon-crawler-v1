@@ -69,11 +69,9 @@ public class DroppedItem extends InteractableTile {
 
                 if(oldArmor instanceof SpecialArmor oldSpecialArmor) {
                     oldSpecialArmor.takeOffEffect();
-                    System.out.println("old armor off: " + player.getIlluminationRange());
                 }
                 if(newArmor instanceof SpecialArmor newSpecialArmor) {
                     newSpecialArmor.wearEffect();
-                    System.out.println("new armor on: " + player.getIlluminationRange());
                 }
 
                 int armorDifference = newArmor.armorPoints - oldArmor.armorPoints;

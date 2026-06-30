@@ -16,21 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameFSM {
-    private enum STATE {
+    public enum STATE {
         RUNNING,
         MAP,
-        DIED,
-        EXIT,
         PAUSE,
-        RESET
+        RESET,
+        TITLE,
+        GAME_OVER,
+        CONTROLS,
     }
+
+    private boolean fromPause;
+    private boolean fromTitle;
 
     private final GameController gameController;
     private STATE currentState;
 
     public GameFSM(GameController gameController) {
         this.gameController = gameController;
-        this.currentState = STATE.RUNNING; // Safely initialize default state
+        this.currentState = STATE.TITLE;
     }
 
     public void runGame() {
@@ -44,10 +48,11 @@ public class GameFSM {
         switch (currentState) {
             case RUNNING -> handleRunning(key);
             case MAP     -> handleMap(key);
-            case DIED    -> handleDied(key);
             case PAUSE   -> handlePause(key);
             case RESET   -> handleReset(key);
-            case EXIT    -> handleExit();
+            case TITLE -> handleTitle(key);
+            case GAME_OVER -> handleGameOver(key);
+            case CONTROLS -> handleControls(key);
         }
     }
 
@@ -64,18 +69,55 @@ public class GameFSM {
 
     private void renderCurrentState() {
         switch (currentState) {
-            case RUNNING -> gameController.updateRenderingPipeline();
-            case MAP     -> gameController.openMap();
-            case DIED    -> {
-                gameController.updateRenderingPipeline();
-                // TODO: gameController.showGameOverOverlay();
-            }
-            case PAUSE   -> {
-                // TODO: gameController.showPauseOverlay();
-            }
-            case EXIT    -> {
-                System.exit(0);
-            }
+            case RUNNING, TITLE, GAME_OVER, PAUSE, CONTROLS -> gameController.updateRenderingPipeline();
+            case MAP -> gameController.openMap();
+        }
+    }
+
+    private void handleGameOver(KeyCode key) {
+        if(key == KeyCode.SPACE) {
+            gameController.resetGame();
+            switchState(STATE.RUNNING);
+        }
+        else if(key == KeyCode.BACK_SPACE) {
+            switchState(STATE.TITLE);
+        }
+    }
+
+    private void handleTitle(KeyCode key) {
+        if(key == KeyCode.SPACE) {
+            gameController.resetGame();
+            switchState(STATE.RUNNING);
+        }
+        else if(key == KeyCode.H) {
+            switchState(STATE.CONTROLS);
+            fromTitle = true;
+        }
+        else if(key == KeyCode.ESCAPE) {
+            System.exit(0);
+        }
+    }
+
+    private void handlePause(KeyCode key) {
+        if (key == KeyCode.ESCAPE) {
+            switchState(STATE.RUNNING);
+        }
+        else if(key == KeyCode.BACK_SPACE) {
+            switchState(STATE.TITLE);
+        }
+        else if(key == KeyCode.H) {
+            switchState(STATE.CONTROLS);
+            fromPause = true;
+        }
+    }
+
+    private void handleControls(KeyCode key) {
+        if(key == KeyCode.H) {
+            if(fromPause) switchState(STATE.PAUSE);
+            else if(fromTitle) switchState(STATE.TITLE);
+
+            fromTitle = false;
+            fromPause = false;
         }
     }
 
@@ -83,9 +125,8 @@ public class GameFSM {
         final Player player = (Player) EntityRoomManager.getInstance().getPlayer();
 
         // Safety check if player died out-of-turn
-        if (player.isDead) {
-            switchState(STATE.DIED);
-            handleDied(key);
+        if (player == null || player.isDead) {
+            switchState(STATE.GAME_OVER);
             return;
         }
 
@@ -106,9 +147,9 @@ public class GameFSM {
             }
             case M -> {
                 switchState(STATE.MAP);
-                return; // Gracefully exit handler
+                return;
             }
-            case P, ESCAPE -> {
+            case ESCAPE -> {
                 switchState(STATE.PAUSE);
                 return;
             }
@@ -137,7 +178,7 @@ public class GameFSM {
 
             // Check immediately if the player died during this tick action
             if (player.isDead) {
-                switchState(STATE.DIED);
+                switchState(STATE.GAME_OVER);
                 return;
             }
 
@@ -150,32 +191,8 @@ public class GameFSM {
         switchState(STATE.RUNNING);
     }
 
-    private void handlePause(KeyCode key) {
-        // Pressing P or ESCAPE unpauses the game
-        if (key == KeyCode.P || key == KeyCode.ESCAPE) {
-            switchState(STATE.RUNNING);
-        }
-    }
-
     private void handleReset(KeyCode key) {
-        // Assuming your controller has a way to rebuild/reset the world
         gameController.resetGame();
         switchState(STATE.RUNNING);
-    }
-
-    private void handleDied(KeyCode key) {
-        if (key == KeyCode.R) {
-            switchState(STATE.RESET);
-            handleReset(key); // Execute reset sequence immediately
-        }
-        if(key == KeyCode.M) {
-            switchState(STATE.MAP);
-            renderCurrentState();
-        }
-    }
-
-    private void handleExit() {
-        // Graceful exit fallback if needed
-        System.exit(0);
     }
 }

@@ -45,7 +45,7 @@ public class DungeonManager {
             r.populateWithEntities();
         }
 
-        dungeonMapGenerator.printMapLayout();
+//        dungeonMapGenerator.printMapLayout();
         return spawnRoom;
     }
 

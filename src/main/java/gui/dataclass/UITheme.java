@@ -15,22 +15,18 @@ public class UITheme {
 
     // Dynamic Sizing Rules
     public static final double DEFAULT_ZOOM    = 18.0;
-    public static final double MIN_ZOOM        = 10.0;
-    public static final double MAX_ZOOM        = 45.0;
 
     // Fixed Sidebar Sizing Rules
-    public static final double FONT_SIZE_HEADER = 13.0;
-    public static final double FONT_SIZE_TEXT   = 13.0;
+    public static final double FONT_SIZE_HEADER = 18.0;
+    public static final double FONT_SIZE_TEXT   = 14.0;
     public static final double FONT_SIZE_BAR    = 18.0;
-    public static final double FONT_SIZE_LOG    = 12.0;
-    public static final double FONT_SIZE_CTRL   = 12.0;
+    public static final double FONT_SIZE_LOG    = 14.0;
 
     // Pre-composed Font Style Mixins for Quick FXML/Label Injection
     public static final String STYLE_HEADER = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_HEADER + "px; -fx-font-weight: bold;";
     public static final String STYLE_TEXT   = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_TEXT + "px;";
     public static final String STYLE_BAR    = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_BAR + "px;";
     public static final String STYLE_LOG    = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_LOG + "px; -fx-font-weight: bold;";
-    public static final String STYLE_CTRL   = CSS_FONT_FAMILY + " -fx-font-size: " + FONT_SIZE_CTRL + "px;";
 
     // --- STRUCTURAL SIDEBAR INTERFACE LAYOUTS (HEX Strings) ---
     public static final String BG_ROOT         = "#000000";

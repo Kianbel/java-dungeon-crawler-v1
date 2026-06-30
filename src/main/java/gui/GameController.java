@@ -14,6 +14,7 @@ import gui.dataclass.TextPopupData;
 import gui.dataclass.UITheme;
 import item.armor.Armor;
 import item.weapon.Weapon;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import util.ANIMATION_CURVE;
 import util.MAP;
@@ -46,6 +47,11 @@ public class GameController {
     @FXML Label armorText, weaponText, coinsText;
     @FXML VBox inventoryPanel, inventoryBox;
     @FXML Label inventoryHeader;
+
+    @FXML VBox vboxTitle;
+    @FXML VBox vboxGameOver;
+    @FXML VBox vboxPause;
+    @FXML VBox vboxHowToPlay;
 
     private GameCanvas gameCanvas;
     private Viewport viewport;
@@ -103,7 +109,6 @@ public class GameController {
         GUIManager.getInstance().registerController(this);
 
         hudManager.applyInterfaceTheme();
-        setup();
 
         canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setWidth(newVal.doubleValue());
@@ -114,7 +119,6 @@ public class GameController {
             handleWindowResize();
         });
 
-        gameFSM.runGame();
         attachKeyboardHandlers();
     }
 
@@ -159,6 +163,30 @@ public class GameController {
     }
 
     public void updateRenderingPipeline() {
+        GameFSM.STATE currentState = gameFSM.getCurrentState();
+        if(currentState == GameFSM.STATE.TITLE) {
+            showTitle();
+            return;
+        }
+        else if(currentState == GameFSM.STATE.GAME_OVER) {
+            showGameOver();
+            return;
+        }
+        else if(currentState == GameFSM.STATE.PAUSE) {
+            showPause();
+            return;
+        }
+        else if(currentState == GameFSM.STATE.CONTROLS) {
+            showControls();
+            return;
+        }
+
+        canvas.setVisible(true);
+        vboxPause.setVisible(false);
+        vboxTitle.setVisible(false);
+        vboxGameOver.setVisible(false);
+        vboxHowToPlay.setVisible(false);
+
         final Room activeRoom = EntityRoomManager.getInstance().getPlayerRoom();
         if (activeRoom == null) return;
         final Player player = GameManager.getInstance().getPlayer();
@@ -342,17 +370,29 @@ public class GameController {
     private void attachKeyboardHandlers() {
         canvas.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
-                newScene.setOnKeyPressed(e -> {
+                // Change from setOnKeyPressed to addEventFilter
+                newScene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                     KeyCode code = e.getCode();
                     switch (code) {
-                        case EQUALS -> { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); return; }
-                        case MINUS -> { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); return; }
+                        case EQUALS -> { adjustTileSize(TILE_SIZE_CHANGE_AMOUNT); e.consume(); return; }
+                        case MINUS -> { adjustTileSize(-TILE_SIZE_CHANGE_AMOUNT); e.consume(); return; }
                         case F11 -> {
                             Stage stage = (Stage) rootContainer.getScene().getWindow();
+                            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+                            stage.setFullScreenExitHint("");
                             stage.setFullScreen(!stage.isFullScreen());
+                            e.consume();
+                            return;
                         }
                     }
+
+                    // Pass key straight to your FSM state machine
                     gameFSM.update(code);
+
+                    // If actively running gameplay, consume it so the UI doesn't react
+                    if (gameFSM.getCurrentState() == GameFSM.STATE.RUNNING) {
+                        e.consume();
+                    }
                 });
             }
         });
@@ -372,6 +412,38 @@ public class GameController {
 
         viewport.updateCameraFocus(player.position, spawnRoom.length, spawnRoom.height);
         updateRenderingPipeline();
+    }
+
+    public void showTitle() {
+        vboxTitle.setVisible(true);
+        vboxGameOver.setVisible(false);
+        vboxPause.setVisible(false);
+        vboxHowToPlay.setVisible(false);
+        canvas.setVisible(false);
+    }
+
+    public void showGameOver() {
+        vboxGameOver.setVisible(true);
+        vboxTitle.setVisible(false);
+        vboxPause.setVisible(false);
+        vboxHowToPlay.setVisible(false);
+        canvas.setVisible(false);
+    }
+
+    public void showPause() {
+        vboxPause.setVisible(true);
+        vboxTitle.setVisible(false);
+        vboxGameOver.setVisible(false);
+        vboxHowToPlay.setVisible(false);
+        canvas.setVisible(false);
+    }
+
+    public void showControls() {
+        vboxHowToPlay.setVisible(true);
+        vboxTitle.setVisible(false);
+        vboxGameOver.setVisible(false);
+        vboxPause.setVisible(false);
+        canvas.setVisible(false);
     }
 
     public void openMap() {
