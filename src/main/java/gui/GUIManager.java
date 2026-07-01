@@ -111,4 +111,12 @@ public class GUIManager {
             this.controller.updateInventory(inventory);
         }
     }
+
+    public void killedBy(String attackerName) {
+        if (isPipelineOperational()) controller.killedBy(attackerName);
+    }
+
+    public void setScore(int score) {
+        if (isPipelineOperational()) controller.setScore(score);
+    }
 }

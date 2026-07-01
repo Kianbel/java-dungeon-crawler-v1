@@ -50,6 +50,8 @@ public class GameController {
 
     @FXML VBox vboxTitle;
     @FXML VBox vboxGameOver;
+    @FXML Label labelKilledBy;
+    @FXML Label labelScore;
     @FXML VBox vboxPause;
     @FXML VBox vboxHowToPlay;
 
@@ -178,6 +180,10 @@ public class GameController {
         }
         else if(currentState == GameFSM.STATE.CONTROLS) {
             showControls();
+            return;
+        }
+        else if(currentState == GameFSM.STATE.MAP) {
+            openMap();
             return;
         }
 
@@ -510,5 +516,13 @@ public class GameController {
 
     public void triggerScreenShake(double intensity, double durationMs) {
         animationManager.triggerScreenShake(intensity, durationMs);
+    }
+
+    public void killedBy(String attackerName) {
+        labelKilledBy.setText("KILLED BY " + attackerName.toUpperCase());
+    }
+
+    public void setScore(int score) {
+        labelScore.setText("SCORE: " + score);
     }
 }

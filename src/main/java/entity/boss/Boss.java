@@ -20,8 +20,6 @@ public abstract class Boss extends Monster {
         super(name, health, armor, weapon, position);
     }
 
-    /** Override to add chest drop
-     */
     @Override
     public void die() {
         Room currentRoom = EntityRoomManager.getInstance().getRoomFromEntity(this);
@@ -32,11 +30,12 @@ public abstract class Boss extends Monster {
         summonedEntities.clear();
 
         GUIManager.getInstance().triggerColorFlash(Color.WHITESMOKE, 500);
-        Position playerPosition = EntityRoomManager.getInstance().getPlayer().position;
 
-        Position stairSpawnPos = new Position(currentRoom.length/2, currentRoom.height/2);
-        if(playerPosition.equals(stairSpawnPos)) stairSpawnPos.x++;
-        currentRoom.addInteractableTile(new Staircase(stairSpawnPos));
+        // TODO: add chant sfx
+        // TODO: add end screen after killing boss
+        // TODO; add boss drop like fire gem for lore, like the hero needs the gem for
+        //      making world peace or whatever. and then say something like, the dungeon
+        //      became safe, for now...
 
         super.die();
     }

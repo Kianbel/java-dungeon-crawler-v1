@@ -10,7 +10,7 @@ public class FlareWitch extends Boss {
 
 
     public FlareWitch(Position position) {
-        super("Flare Witch", 100, 2, new Fist(), position);
+        super("Flare Witch", 100, 2, new Fist(), position); // TODO: rework armor, weapon
         stateMachine = new FlareWitchFSM(this);
         stateMachine.setupInitialState();
         setIlluminated(true);

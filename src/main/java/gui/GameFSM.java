@@ -58,7 +58,7 @@ public class GameFSM {
 
     public void switchState(STATE newState) {
         if (currentState == newState) return;
-        System.out.println("State changing from " + currentState + " to " + newState);
+//        System.out.println("State changing from " + currentState + " to " + newState);
         currentState = newState;
         renderCurrentState();
     }
@@ -68,18 +68,15 @@ public class GameFSM {
     }
 
     private void renderCurrentState() {
-        switch (currentState) {
-            case RUNNING, TITLE, GAME_OVER, PAUSE, CONTROLS -> gameController.updateRenderingPipeline();
-            case MAP -> gameController.openMap();
-        }
+        gameController.updateRenderingPipeline();
     }
 
     private void handleGameOver(KeyCode key) {
-        if(key == KeyCode.SPACE) {
+        if(key == KeyCode.R) {
             gameController.resetGame();
             switchState(STATE.RUNNING);
         }
-        else if(key == KeyCode.BACK_SPACE) {
+        else if(key == KeyCode.ESCAPE) {
             switchState(STATE.TITLE);
         }
     }
@@ -153,7 +150,7 @@ public class GameFSM {
                 switchState(STATE.PAUSE);
                 return;
             }
-            case R -> {
+            case R -> { // TODO: remove on release
                 switchState(STATE.RESET);
                 return;
             }

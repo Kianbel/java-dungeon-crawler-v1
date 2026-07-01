@@ -17,14 +17,13 @@ public class GoblinArcher extends RangedMonster {
     private final GoblinArcherFSM stateMachine;
 
     public GoblinArcher(Position position) {
-        super("Goblin", 30, 5, new WoodenBow(), new Arrow(999), position);
+        super("Goblin Archer", 30, 5, new WoodenBow(), new Arrow(999), position);
         this.stateMachine = new GoblinArcherFSM(this);
     }
 
     @Override
     public void die() {
         List<WeightedObject> drops = new ArrayList<>();
-//        drops.add(new WeightedObject(new WoodenBow(), position, 1));
         drops.add(new WeightedObject(new GoblinTeeth(Randomizer.pick(1,2,3)), position, OWN_DROP_WEIGHT));
         drops.add(new WeightedObject(new MonsterMeat(new Random().nextInt(2,5)), position, MONSTER_MEAT_WEIGHT));
         drops.add(new WeightedObject(new Arrow(new Random().nextInt(3,8)), position, 50));

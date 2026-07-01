@@ -194,7 +194,14 @@ public class Player extends Entity {
         AudioManager.getInstance().playSFX("hurt");
         GUIManager.getInstance().setHP(health);
 
-        if(health == 0) die();
+        if(health == 0) {
+            die();
+            if(attacker != null) GUIManager.getInstance().killedBy(attacker.name);
+            else {
+                if(hunger == 0) GUIManager.getInstance().killedBy("starvation");
+            }
+            GUIManager.getInstance().setScore(coins);
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <HBox fx:id="rootContainer" minWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.GameController">
 
@@ -16,16 +17,17 @@
 
         <VBox fx:id="vboxTitle" alignment="CENTER" visible="false">
             <children>
-                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 40px;" text="DUNGEON SCRAWL" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
+                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 70px;" text="DUNGEON SCRAWL" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets />
                     </VBox.margin>
                 </Label>
                 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                     <children>
-                  <Label text="SPACE to start" textFill="#ffd300" />
-                        <Label text="H for controls" textFill="#ffd300" />
-                        <Label text="ESC to exit" />
+                        <Label style="-fx-font-size: 22px;" text="" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="SPACE to start" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="H for controls" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="ESC to exit" />
                     </children>
                 </VBox>
             </children>
@@ -33,32 +35,45 @@
 
         <VBox fx:id="vboxPause" alignment="CENTER" visible="false">
             <children>
-                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 40px;" text="GAME PAUSED" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
+                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 70px;" text="GAME PAUSED" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets />
                     </VBox.margin>
                 </Label>
                 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="ESC to resume" textFill="#ffd300" />
-                        <Label text="H to open help" textFill="#ffd300" />
-                        <Label text="BACKSPACE to title screen" />
+                        <Label style="-fx-font-size: 22px;" text="" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="ESC to resume" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="H to open help" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="BACKSPACE to title screen" />
                     </children>
                 </VBox>
             </children>
         </VBox>
 
-        <VBox fx:id="vboxGameOver" alignment="CENTER" visible="false">
+        <VBox fx:id="vboxGameOver" alignment="CENTER">
             <children>
-                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 40px;" text="GAME OVER" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
+                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 70px;" text="YOU DIED" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets />
                     </VBox.margin>
                 </Label>
                 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="SPACE to restart" textFill="#ffd300" />
-                        <Label text="BACKSPACE to title screen" />
+                  <Label fx:id="labelKilledBy" text="KILLED BY MAGIC" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Bauhaus 93" size="21.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="labelScore" layoutX="215.0" layoutY="10.0" text="SCORE: 100" textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Bauhaus 93" size="21.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="294.0" layoutY="34.0" style="-fx-font-size: 22px;" text="" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="R to restart" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="ESCAPE to title screen" />
                     </children>
                 </VBox>
             </children>
@@ -66,20 +81,21 @@
 
         <VBox fx:id="vboxHowToPlay" alignment="CENTER" visible="false">
             <children>
-                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 40px;" text="HOW TO PLAY" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
+                <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-family: 'Bauhaus 93'; -fx-font-size: 70px;" text="HOW TO PLAY" textAlignment="CENTER" textFill="WHITE" wrapText="true" VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets top="60.0" />
                     </VBox.margin>
                 </Label>
                 <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="[WASD] Move" textFill="WHITE" />
-                        <Label text="[F] Eat" textFill="WHITE" />
-                        <Label text="[H] Heal" textFill="WHITE" />
-                        <Label text="[M] Open map" textFill="WHITE" />
-                        <Label text="[+/-] Zoom control" textFill="WHITE" />
-                  <Label layoutX="157.0" layoutY="78.0" textFill="WHITE" />
-                        <Label text="H to return" textFill="#ffd300" />
+                        <Label style="-fx-font-size: 22px;" text="" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="[WASD] Move" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="[F] Eat" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="[H] Heal" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="[M] Open map" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="[+/-] Zoom control" textFill="WHITE" />
+                        <Label layoutX="157.0" layoutY="78.0" style="-fx-font-size: 22px;" textFill="WHITE" />
+                        <Label style="-fx-font-size: 22px;" text="H to return" textFill="#ffd300" />
                     </children>
                <VBox.margin>
                   <Insets bottom="50.0" />

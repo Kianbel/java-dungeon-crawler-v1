@@ -6,9 +6,9 @@ public class HealingPotion extends Potion {
     public int healPoints;
 
     public HealingPotion(int amount) {
-        super("Healing Potion", amount);
-        healPoints = 10;
-        overrideCharacter("𐃯"); // TODO: change character
+        super("Healing Potion +30HP", amount);
+        healPoints = 30;
+        overrideCharacter("▲");
         overrideColor(UITheme.STAT_HEALTH);
     }
 }
